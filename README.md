@@ -1,4 +1,4 @@
-SCFramwork
+SCFramework
 ==========
 
 Framework for Spatial Crowdsourcing
