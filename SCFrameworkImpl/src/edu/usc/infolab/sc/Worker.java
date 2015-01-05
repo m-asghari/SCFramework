@@ -1,4 +1,4 @@
-package sc.infolab.usc.edu;
+package edu.usc.infolab.sc;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
