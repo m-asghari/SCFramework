@@ -4,8 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class Worker extends SpatialEntity{
-	Integer releaseFrame;
-	Integer retractFrame;
+	public Integer retractFrame;
 	
 	Boolean active;
 	ArrayList<Task> assignedTasks;
@@ -37,6 +36,10 @@ public class Worker extends SpatialEntity{
 		}
 	}
 	
+	public void AddTask(Task task) {
+		assignedTasks.add(task);
+	}
+	
 	private void MoveToward(Point2D dest, Double length) {
 		Double dist = location.distance(dest);
 		Double deltaX = length * (dest.getX() - location.getX()) / dist;
@@ -44,6 +47,13 @@ public class Worker extends SpatialEntity{
 		Double deltaY = length * (dest.getY() - location.getY()) / dist;
 		Double newY = location.getY() + deltaY;
 		location.setLocation(newX, newY);
+	}
+	
+	public Boolean CanPerform(Task task) {
+		if (assignedTasks.size() == maxNumberOfTasks) {
+			return false;
+		}
+		return true;
 	}
 	
 	

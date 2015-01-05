@@ -1,7 +1,10 @@
-package edu.usc.infolab.sc;
+package edu.usc.infolab.sc.AssignmentAlgorithms;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import edu.usc.infolab.sc.Task;
+import edu.usc.infolab.sc.Worker;
 
 public abstract class TaskAssignmentAlgorithm {
 	Integer currentFrame;
