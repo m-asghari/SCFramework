@@ -1,3 +1,34 @@
 \section{Exact Algorithm}
 
-Exact Algorithm
+% In a real world crowdsourcing environment, the server has no information with regard to tasks (workers) becoming available in the future. The server becomes aware of a task (worker) and all its subsequent information only when the task (worker) becomes available. Due to this lack of knowledge, at each time, the server might make an assignment that will prove not to be towards an optimal solution once more information becomes available in the future. 
+In order to solve the TASC problem, the server requires a global knowledge of all the spatial tasks and workers. In such case, the server can assign tasks to workers such that the value of the matching is maximized. However, the server will not have such global knowledge. The server will become aware of a task (worker) and all its subsequent information once the task (worker) becomes available. Due to this lack of knowledge, finding a globally optimal solution will not be feasible.\\
+
+In this section we assume there exists a clairvoyant which has a global knowledge of tasks and workers. The result of this algorithm can later serve as a baseline to evaluate how well the server assigns tasks to workers. We propose a two step algorithm which finds the optimal solution to TASC problem. In the first step we find all potential subsets of tasks that a single worker is able to complete. Having the output of step 1, in the next step we find a matching with maximum value. In the following subsections, we describe different steps of the algorithm and later will argue about the complexity of the algorithm. At the end, we will discuss how adopting the algorithm to incorporate a more general spatial crowdsourcing framework. This adoption will not only deteriorate the performance of the algorithm, but will most likely improve it.
+
+\subsection{Discovering Potential Task Subsets}
+In the first step of the algorithm we focus on finding all task subsets that a worker \emph{w} will be able to complete. We can define a Potential Task Subset as:
+
+\begin{definition} [Potential Task Subset]
+We call $PTS \subset T$ a potential task subset for worker w iff there exists a path that starts from w.l and for every $t \in PTS$ the path visits t.l at time $\delta$ such that $t.r \leq \delta < t.d$. Also the path should not start earlier than w.s and end before w.e. We define the value of PST as:
+\begin{equation*}
+Value(PST) = \sum_{t \in PST} t.v
+\end{equation*}
+\end{definition}
+
+For each worker \emph{w}, we define \emph{w.PST} as the union of all such potential task subsets.\\
+
+In order to find all PTSs for a single worker, a straight forward method is to go through all subsets of \emph{T} and check whether it's a PTS for the worker or not. It's trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore we will adopt a branch and bound algorithm similar to the one introduced in \cite{deng13}. We use the following two propositions for pruning purposes in our branch and bound algorithm.
+
+\begin{proposition}
+For every $t \in T$ and $w \in W$ if $\left(t.r, t.d \right] \cap \left( w.s, w.e \right] = \emptyset$ then for every $PST \in w.PST$ we have $t \not\in PST$.
+\end{proposition}
+
+\begin{proposition}
+For every $w \in W$ if $PST \in w.PST$ for every $pst \subset PST$ we will have $pst \in w.PST$
+\end{proposition}
+
+We model the entire solution space as a tree () and use a depth-first approach to search the solution space. Each node of the tree corresponds to a subset of T. Therefore, for any node \emph{n} of the tree, if the corresponding subset of \emph{n} is not in \emph{w.PST}, based on then we can prune the entire sub-tree rooted at \emph{n}.
+
+\subsection{Finding the Maximal Matching}
+
+\subsection{Complexity Analysis}

@@ -1,3 +1,24 @@
 \section{Problem Definition}
 
-Problem Definition
+In this section, we define a set of terminologies in order to define the task assignment problem in spatial crowdsourcing.
+
+\begin{definition} [Spatial Task]
+A spatial task t is a task (query) to be answered at location t.l in the 2D space. The task becomes available at t.r (release time) and expires at t.d (deadline). Also, t.v is the obtained reward after completing t.
+\end{definition}
+
+It should be pointed out that in a spatial crowdsourcing environment, a spatial task \emph{t} can be executed only if a worker is at location \emph{t.l}. For example, if the query is to report the traffic situation at a specific location, someone has to actually be present at the location to be able to report the traffic. From here on, whenever we use \emph{task} we're actually referring to a spatial task. Now, we formally define a worker.
+
+\begin{definition} [Worker]
+A worker w is a person willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
+\end{definition}
+
+We assume once a task is assigned to a worker, the worker has no option to perform the task. Hence, the server will assign a task to a worker only if it's possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, the worker has to be able to complete every task within his availability interval before the tasks' deadlines expire.
+
+\begin{definition} [Matching]
+Assuming we have a set of workers W and a set of tasks T, we call $M \subset W \times T$ a matching if for each $t \in T$ there's at most on $w \in W$ such that $\left( w, t \right) \in M$. We call $\left( w, t \right) \in M$ an \emph{assignment} and say t has been assigned to w. For each matching M, we define the value (benefit) of M as:
+\begin{equation*}
+Value(M) = \sum_{\left( w, t \right) \in M} t.v
+\end{equation*}
+\end{definition}
+
+The goal of the task assignment problem in spatial crowdsourcing (TASC) is to find the matching \emph{M} with the maximum value. In case, every task has a value of 1, the problem become similar to the MTA problem in \cite{kazemi12}.
