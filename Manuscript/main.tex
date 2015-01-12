@@ -5,7 +5,7 @@
 \usepackage{times}
 
 \usepackage{amsmath}
-
+\usepackage{float}
 \usepackage{verbatim}
 \usepackage{epsfig}
 \usepackage[iso]{umlaute}
@@ -15,12 +15,9 @@
 \usepackage{subfigure}
 \usepackage{ifthen}
 \usepackage{url}
-\usepackage{algorithm}
 \usepackage{color}
 \usepackage{marginnote}
 
-\usepackage{algorithm}
-\usepackage{algorithmic}
 \usepackage{paralist}
 \usepackage{tabularx}
 \usepackage{ifthen}
@@ -47,12 +44,20 @@
 \newcommand{\CP}[1]{{\color{red}#1}}
 \newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
-\newtheorem{theorem}{Theorem}[section]
+%Theorem, Lemma, etc.
+\usepackage[capitalise]{cleveref}
+\newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 \newtheorem{example}{Example}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \graphicspath{.}
 \newboolean{TR}
@@ -67,17 +72,18 @@
 
 \title{On Task Assignment in Spatial Crowdsourcing}
 \begin{document}
-\numberofauthors{1}
-\author{{Mohammad Asghari, Liyue Fan, Cyrus Shahabi}\\
-\\
-\fontsize{10}{10}\selectfont\rmfamily\itshape
-Integrated Media Systems Center, University of Southern California\\
-\fontsize{9}{9}\selectfont\ttfamily\upshape
-\{masghari, liyuefan, shahabi\}@usc.edu\\
-}
+%\numberofauthors{1}
+%\author{{Mohammad Asghari, Liyue Fan, Cyrus Shahabi}\\
+%\\
+%\fontsize{10}{10}\selectfont\rmfamily\itshape
+%Integrated Media Systems Center, University of Southern California\\
+%\fontsize{9}{9}\selectfont\ttfamily\upshape
+%\{masghari, liyuefan, shahabi\}@usc.edu\\
+%}
 
 \maketitle
 \begin{abstract}
+Abstract
 \end{abstract}
 
 \input{sec_introduction}

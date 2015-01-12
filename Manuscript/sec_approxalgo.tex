@@ -1,3 +1,28 @@
 \section{Approximate Algorithms}
 
-Approximate Algorithms
+\begin{algorithm}[t]
+\caption{MostValuableFirst($W, T$)}
+\label{algo:MVF}
+\begin{algorithmic}[1]
+\REQUIRE $W$ is the set of workers and $T$ is the set of tasks
+\ENSURE $M$ is a set of assignments between tasks and workers
+\STATE $M = \emptyset$
+\STATE $T_{sorted} = $ Sort $T$ based on $t.v$
+\WHILE{$T_{sorted} \neq \emptyset$}
+	\STATE $W_t = W$
+	\WHILE{$W_t \neq \emptyset$}
+		\STATE $w = w \in W_t$ with minimum distance to $t$
+		\IF{IsPotentialSubset($w.T \cup t, w$)}
+			\STATE assign $t$ to $w$.
+			\STATE $M = M \cup \left\langle w, t \right\rangle$
+			\IF{$\left\vert w.T \right\vert = w.max$}
+				\STATE $W = W \setminus w$
+			\ENDIF
+		\ELSE
+			\STATE $W_t = W_t \setminus w$
+		\ENDIF
+	\ENDWHILE
+\ENDWHILE
+\RETURN $M$
+\end{algorithmic}
+\end{algorithm}
