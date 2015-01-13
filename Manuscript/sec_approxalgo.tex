@@ -1,6 +1,9 @@
 \section{Approximate Algorithms}
+\label{sec:approxalgo}
 
-\begin{algorithm}[t]
+The algorithm presented in \cref{sec:exactalgo} in NP-Complete. In this section we present a greedy algorithm for solving the TASC problem. We use two rather simple heuristics; (1) We give priority to tasks with higher values and (2) among different workers that can execute task $t$, we select the worker which is closest to $t$. The logic behind heuristic (1) is to assign tasks with larger benefit gains first in order to maximize the overall benefit. We can see similar heuristics in many job scheduling problems \cite{Kolen07}. As for the second heuristic, we try to assign tasks to nearby workers so the amount of time spent to execute a specific task is minimized. This is turn will leave the worker with more time to execute other tasks.
+
+\begin{algorithm}[h]
 \caption{MostValuableFirst($W, T$)}
 \label{algo:MVF}
 \begin{algorithmic}[1]
@@ -26,3 +29,7 @@
 \RETURN $M$
 \end{algorithmic}
 \end{algorithm}
+
+\cref{algo:MVF} outlines the implementation of these heuristics. In line 2, we sort the tasks based on their values in accordance with heuristic (1). For the sort method, we break ties by giving a higher priority to tasks with smaller distance to their nearest worker. This means that if two task have equal values, the one with smaller distance to its nearest worker will have a higher priority. In this way, the MostValuableFirst() method will work perfectly fine in the case all tasks have similar value and the goal is to only maximize the number of assigned tasks.\\
+
+In line 7 of \cref{algo:MVF} we use the IsPotentialSubset() method described in \cref{algo:IsPTS}. In \cref{subsec:exactcomplexity} we showed that the complexity of \cref{algo:IsPTS} is $O(p^{p+1})$. This can make \cref{algo:MVF} computationally expensive to run which contradicts the goal of implementing a fast heuristic algorithm. In the case of larger values of $p$, instead of the exact solution proposed in \cref{algo:IsPTS}, we can use several approximate algorithms that have been proposed for vehicle routing problems. Depending on the desired accuracy we seek to achieve, these algorithm can run as fast as $O(p)$ \cite{Laporte00}.
