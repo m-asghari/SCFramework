@@ -1,3 +1,46 @@
 \section{Spatial Distribution}
 
-Spatial Distribution
+\begin{definition}[Kullback-Leibler Divergence]
+\label{def:KLD}
+Let $P_1$ and $P_2$ be two discrete probability distributions. The \emph{KL} divergence of $P_2$ from $P_1$ is defined as:
+\begin{equation*}
+D_{KL}\left( P_1 \parallel P_2 \right) = \sum_i P_1(i) \log \frac{P_1(i)}{P_2(i)}
+\end{equation*}
+\end{definition}
+
+\begin{definition}[Jensen-Shannon Divergence]
+Let $P_1$ and $P_2$ be two discrete probability distributions. The \emph{JS} divergence of $P_2$ from $P_1$ is defined as:
+\begin{equation*}
+D_{JS}\left( P_1 \parallel P_2 \right) = H \left( \pi_1P_1 + \pi_2P_2 \right) - \pi_1H\left( P_1 \right) - \pi_2H\left( P_2 \right)
+\end{equation*}
+where $p_i$ is the relative weight for distribution $P_i$ and $H()$ is the Shannon entropy.
+\end{definition}
+
+For two distributions of similar importance, we set $\pi_1 = \pi_2 = \frac{1}{2}$. Then we will have:
+\begin{equation*}
+D_{JS}\left( P_1 \parallel P_2 \right) = \frac{1}{2}D_{KL} \left( P_1 \parallel Q \right) + \frac{1}{2}D_{KL} \left( P_2 \parallel Q \right)
+\end{equation*}
+where $Q = \frac{1}{2} \left( P_1 + P_2 \right)$.
+
+\begin{algorithm}
+\caption{OnlineTASC($W, P_T, t$)}
+\label{algo:OnlineTASC}
+\begin{algorithmic}[1]
+\REQUIRE $W$ is the set of currently available workers, $P_T$ is the spatial distribution of tasks and $t$ is a task the has just released
+\ENSURE Either $w \in W$ as the worker task $t$ should be assigned to or \emph{null} if no worker is selected
+\STATE $w_{selected} = $ \emph{null}
+\STATE $min = \infty$
+\STATE $P_W = $ Spatial Distribution of current workers
+\STATE $W_{sorted} = $ Sort $W$ based their distance to $t$.
+\FOR{$w \in W_{sorted}$}
+	\IF{IsPotentialSubset($w.T \cup t, w$)}
+		\STATE $Q_w = $ Modify $P_W$ by moving $w$ from $w.l$ to $t.l$
+		\IF{$D_{JS}\left( Q_w \parallel P_T \right) < min$}
+			\STATE $min = \delta$
+			\STATE $w_{selected} = w$
+		\ENDIF
+	\ENDIF
+\ENDFOR
+\RETURN $w_{selected}$
+\end{algorithmic}
+\end{algorithm}
