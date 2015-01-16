@@ -1,7 +1,7 @@
-\section{Approximate Algorithms}
+\section{Approximate Clairvoyant Algorithms}
 \label{sec:approxalgo}
 
-The algorithm presented in \cref{sec:exactalgo} in NP-Complete. In this section we present a greedy algorithm for solving the TASC problem. We use two rather simple heuristics; (1) We give priority to tasks with higher values and (2) among different workers that can execute task $t$, we select the worker which is closest to $t$. The logic behind heuristic (1) is to assign tasks with larger benefit gains first in order to maximize the overall benefit. We can see similar heuristics in many job scheduling problems \cite{Kolen07}. As for the second heuristic, we try to assign tasks to nearby workers so the amount of time spent to execute a specific task is minimized. This is turn will leave the worker with more time to execute other tasks.
+The algorithm presented in \cref{sec:exactalgo} is computationally expensive to run. In this section we present a greedy algorithm for solving the TASC problem. We use two rather simple heuristics; (1) We give priority to tasks with higher values and (2) among different workers that can execute task $t$, we select the worker which is closest to $t$. The logic behind heuristic (1) is to assign tasks with larger benefit gains first in order to maximize the overall benefit. We can see similar heuristics in many job scheduling problems \cite{Kolen07}. As for the second heuristic, we try to assign tasks to nearby workers so the amount of time spent to execute a specific task is minimized. This is turn will leave the worker with more time to execute other tasks.
 
 \begin{algorithm}[h]
 \caption{MostValuableFirst($W, T$)}

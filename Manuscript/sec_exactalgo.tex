@@ -1,10 +1,10 @@
-\section{Exact Algorithm}
+\section{Exact Clairvoyant Algorithm}
 \label{sec:exactalgo}
 
 % In a real world crowdsourcing environment, the server has no information with regard to tasks (workers) becoming available in the future. The server becomes aware of a task (worker) and all its subsequent information only when the task (worker) becomes available. Due to this lack of knowledge, at each time, the server might make an assignment that will prove not to be towards an optimal solution once more information becomes available in the future. 
-In order to solve the TASC problem, the server requires a global knowledge of all the spatial tasks and workers. In such case, the server can assign tasks to workers such that the value of the matching is maximized. However, the server will not have such global knowledge. The server will become aware of a task (worker) and all its subsequent information once the task (worker) becomes available. Due to this lack of knowledge, finding a globally optimal solution will not be feasible.\\
+In order to solve the TASC problem, the server requires a global knowledge of all the current and incoming spatial tasks and workers. In such case, the server can assign tasks to workers such that the value of the matching is maximized. However, the server does not have such global knowledge. The server will become aware of a task (worker) and all its corresponding information once the task (worker) becomes available. Due to this lack of future knowledge, finding a globally optimal solution is not feasible.\\
 
-In this section we assume there exists a clairvoyant which has a global knowledge of tasks and workers. The result of this algorithm can later serve as a baseline to evaluate how well the server assigns tasks to workers. We propose a two step algorithm which finds the optimal solution to TASC problem. In the first step we find all potential subsets of tasks that a single worker is able to complete. Having the output of step 1, in the next step we find a matching with maximum value. In the following subsections, we describe different steps of the algorithm and later will argue about the complexity of the algorithm. At the end, we will discuss how adopting the algorithm to incorporate a more general spatial crowdsourcing framework. This adoption will not only deteriorate the performance of the algorithm, but will most likely improve it.
+In this section, we assume there exists a clairvoyant server which has a global knowledge of tasks and workers. The result of this algorithm can later serve as an upper bound to evaluate how well the server assigns tasks to workers. We propose a two step algorithm which finds the optimal solution to TASC problem. In the first step we find all potential subsets of tasks that a single worker is able to complete. Having the output of step 1, in the next step we find a matching with maximum value. In the following sections, we describe different steps of the algorithm and later discuss the complexity of the algorithm. At the end, we show how to adopt the algorithm to address a more general spatial crowdsourcing framework. This adoption does not deteriorate the performance of the algorithm, and in most cases will even improve it.
 
 \subsection{Discovering Potential Task Subsets}
 \label{subsec:FindPTS}
@@ -12,7 +12,7 @@ In the first step of the algorithm we focus on finding all task subsets that a w
 
 \begin{definition} [Potential Task Subset]
 \label{def:PTS}
-We call $PTS \subset T$ a potential task subset for worker w iff there exists a path that starts from w.l and for every $t \in PTS$ the path visits t.l at time $\delta$ such that $t.r \leq \delta < t.d$. Also the path should not start earlier than w.s and end before w.e. We define the value of PTS as:
+We call $PTS \subset T$ a potential task subset for worker w iff there exists a route that starts from w.l and for every $t \in PTS$ the path visits t.l at time $\delta$ such that $t.r \leq \delta < t.d$. Also the path should not start earlier than w.s and end before w.e. We define the value of PTS as:
 \begin{equation*}
 Value(PTS) = \sum_{t \in PTS} t.v
 \end{equation*}
@@ -20,7 +20,7 @@ Value(PTS) = \sum_{t \in PTS} t.v
 
 For each worker \emph{w}, we define \emph{w.PTS} as the union of all such potential task subsets.\\
 
-In order to find all PTSs for a single worker, a straight forward method is to go through all subsets of \emph{T} and check whether it's a PTS for the worker or not. It's trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore we will adopt a branch and bound algorithm similar to the one introduced in \cite{deng13}. We use the following two propositions for pruning purposes in our branch and bound algorithm.
+In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether it's a PTS for the worker or not. It's trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore we will adopt a branch and bound algorithm similar to the one introduced in \cite{deng13}. We use the following propositions for pruning purposes in our branch and bound algorithm.
 
 \begin{proposition}
 \label{prop:overlap}
@@ -116,7 +116,7 @@ We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a dep
 \end{algorithmic}
 \end{algorithm}
 
-\cref{algo:SearchBranch} finds all the PTSs under a specific branch of the search space. The current subset ($pts$) is expanded with a new task ($t$) if $w$ temporally overlaps with $t$ (lines 4-8). If the new subset $s$ is a PTS itself we continue the search for more PTSs in the sub-tree rooted at $s$ (lines  9-15). \cref{algo:IsPTS} checks if a subset $s$ can be a PTS for $w$. According to \cref{def:PTS}, the desired path should start from the current location of $w$ and no sooner than the time the worker becomes available (lines  1-2). We consider all permutations of $s$ and check if a permutation satisfies all the temporal constraints of \cref{def:PTS} (lines 5-14). $s$ will be a PTS only if a permutation is found to satisfy all constraints. Finally in \cref{algo:FindPTS} for each worker we search for PTSs starting the search at the root of the tree.
+\cref{algo:SearchBranch} finds all the PTSs under a specific branch of the search space. The current subset ($pts$) is expanded with a new task ($t$) if $w$ temporally overlaps with $t$ (lines 4-8). If the new subset $s$ is a PTS itself we continue the search for more PTSs in the sub-tree rooted at $s$ (lines  9-15). \cref{algo:IsPTS} checks if a subset $s$ can be a PTS for $w$. According to \cref{def:PTS}, the desired path should start from the current location of $w$ and no sooner than the time the worker becomes available (lines  1-2). We consider all permutations of $s$ and check if a permutation satisfies all the temporal constraints of \cref{def:PTS} (lines 5-14). The subset $s$ will be a PTS only if a permutation is found to satisfy all constraints. Finally in \cref{algo:FindPTS} for each worker we search for PTSs starting the search at the root of the tree.
 			
 \subsection{Finding the Maximal Matching}
 \label{subsec:FindMM}
@@ -179,7 +179,7 @@ In \cref{algo:MWC} we start with an arbitrary node ordering. \cite{Ostergard01} 
 \subsection{Complexity Analysis}
 \label{subsec:exactcomplexity}
 
-Here we analyze the time complexity of our proposed exact algorithm. For simplicity we assume $\left\vert T \right\vert = n$, $\left\vert W \right\vert = m$ and $\left\vert w.max \right\vert = p$. We start with \cref{algo:IsPTS}. The size of set $s$ will at most be equal to $p$, hence the number of permutations of $s$ will be $O(p^p)$. Also the for loop in line 5 will run at most $p$ times which will make the overall complexity of \cref{algo:IsPTS} $O(p^{p+1})$. For \cref{algo:SearchBranch} we can assume that we're running the IsPotentialPTS() method for each node of the search space tree(\cref{fig:PTS_tree}) once. At level $i$ of the search space tree we will have at most $C(n,i)$. Also for each node in level $i$ the size of the task subsets will be $i$. Hence, the IsPotentialSubset() method will run in $O(i^{i+1})$. Therefore the amortized time complexity of \cref{algo:SearchBranch} will be:
+Here we analyze the time complexity of our proposed exact algorithm. For simplicity we assume $\left\vert T \right\vert = n$, $\left\vert W \right\vert = m$ and $\left\vert w.max \right\vert = p$. We start with \cref{algo:IsPTS}. The size of set $s$ is at most equal to $p$, hence the number of permutations of $s$ is $O(p^p)$. Also the for loop in line 5 will run at most $p$ times which will make the overall complexity of \cref{algo:IsPTS} $O(p^{p+1})$. For \cref{algo:SearchBranch} we can assume that we are running the IsPotentialPTS() method for each node of the search space tree(\cref{fig:PTS_tree}) once. At level $i$ of the search space tree we will have at most $C(n,i)$. Also for each node in level $i$ the size of the task subsets will be $i$. Hence, the IsPotentialSubset() method will run in $O(i^{i+1})$. Therefore the amortized time complexity of \cref{algo:SearchBranch} will be:
 
 \begin{equation*}
 \mathlarger{\mathlarger{\sum}}_{i = 1}^{p} \dbinom{n}{i} O(i^{i+1}) = O(n^{n-p}p^{p+1})
@@ -194,7 +194,7 @@ The TASC problem is NP-Complete.
 \end{theorem}
 
 \begin{proof}
-By reducing the \emph{TASC} problem to a known NP-Complete problem we show the NP-Completeness of \emph{TASC}. In this section we showed how we can reduce the \emph{TASC} problem to solving a \emph{Maximum Weighted Clique (MWC)}problem. The \emph{Clique Decision} problem itself is one of Richard Karp's original 21 problems shown to be NP-Complete \cite{Karp72}.
+By reducing the \emph{TASC} problem to a known NP-Complete problem we show the NP-Completeness of \emph{TASC}. In this section we showed how we can reduce the \emph{TASC} problem to solving a \emph{Maximum Weighted Clique (MWC)} problem. The \emph{Clique Decision} problem itself is one of Richard Karp's original 21 problems shown to be NP-Complete \cite{Karp72}.
 \end{proof}
 
 We end the section with a discussion on how generalizing the spatial crowdsourcing framework can affect the algorithm introduced in this section. In \cite{Kazemi13} it's assumed that each task requires a certain level of \emph{confidence} and only workers with a \emph{trust} level higher than than will be able to perform the task. It's also seen that in some spatial crowdsouring frameworks, workers define a spatial range and only perform task within this range. Constraints like this will only remove a subset of tasks from the list of tasks a certain worker is able to execute. As a result, the search space of \cref{algo:FindPTS} will get reduced and we end up with few number of PTSs per worker. This in turn will reduce the size of the PTS-Graph in \cref{subsec:FindMM}.

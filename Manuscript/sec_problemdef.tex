@@ -1,24 +1,70 @@
-\section{Problem Definition}
+\section{Preliminaries}
+
+In this section, we define the terminologies used in the paper and give a formal definition of the problem under consideration. Also, we analyze the complexity of the problem and its hardness.
+
+\subsection{Problem Definition}
 
 In this section, we define a set of terminologies in order to define the task assignment problem in spatial crowdsourcing.
 
 \begin{definition} [Spatial Task]
-A spatial task t is a task (query) to be answered at location t.l in the 2D space. The task becomes available at t.r (release time) and expires at t.d (deadline). Also, t.v is the obtained reward after completing t.
+A spatial task t is a task to be performed at location t.l with geographical coordinates, i.e. latitude and longitude. The task becomes available at t.r (release time) and expires at t.d (deadline). Also, t.v is the obtained reward after completing t.
 \end{definition}
 
-It should be pointed out that in a spatial crowdsourcing environment, a spatial task \emph{t} can be executed only if a worker is at location \emph{t.l}. For example, if the query is to report the traffic situation at a specific location, someone has to actually be present at the location to be able to report the traffic. From here on, whenever we use \emph{task} we're actually referring to a spatial task. Now, we formally define a worker.
+It should be pointed out that in a spatial crowdsourcing environment, a spatial task \emph{t} can be executed only if a worker is at location \emph{t.l}. For example, if the query is to report the traffic situation at a specific location, someone has to actually be present at the location to be able to report the traffic. From here on, whenever we use \emph{task} we are actually referring to a spatial task. Now, we formally define a worker.
 
 \begin{definition} [Worker]
-A worker w is a person willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
+A worker w is any entity willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
 \end{definition}
 
-We assume once a task is assigned to a worker, the worker has no option to perform the task. Hence, the server will assign a task to a worker only if it's possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, the worker has to be able to complete every task within his availability interval before the tasks' deadlines expire.
+We assume once a task is assigned to a worker, the worker has no option but to perform the task. Hence, the server will assign a task to a worker only if it is possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, the worker has to be able to complete every task within his availability interval before the tasks' deadlines expire.
 
 \begin{definition} [Matching]
-Assuming we have a set of workers W and a set of tasks T, we call $M \subset W \times T$ a matching if for each $t \in T$ there's at most on $w \in W$ such that $\left( w, t \right) \in M$. We call $\left( w, t \right) \in M$ an \emph{assignment} and say t has been assigned to w. For each matching M, we define the value (benefit) of M as:
+Assuming we have a set of workers W and a set of tasks T, we call $M \subset W \times T$ a matching if for each $t \in T$ there is at most one $w \in W$ such that $\left( w, t \right) \in M$. We call $\left( w, t \right) \in M$ an \emph{assignment} and say t has been assigned to w. For each matching M, we define the value (benefit) of M as:
 \begin{equation*}
 Value(M) = \sum_{\left( w, t \right) \in M} t.v
 \end{equation*}
 \end{definition}
 
-The goal of the task assignment problem in spatial crowdsourcing (TASC) is to find the matching \emph{M} with the maximum value. In the case where every task has a value of 1, the problem become similar to the MTA problem in \cite{kazemi12}.
+Now we can formally define the Task Assignment in Spatial Crowdsourcing (TASC) as follows:
+
+\begin{definition}[Task Assignment in Spatial Crowdsourcing]
+Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $l: \left( W \times T \right) \cup \left( T \times T \right) \rightarrow \mathbb{R}$ where $l \left( \left\langle a,b \right\rangle \right)$ is the distance between $a$ and $b$, the goal of the TASC$\left\langle W, T, l \right\rangle$ problem is to find a matching $M$ with maximum value.
+\end{definition}
+
+The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{kazemi12}.
+
+\subsection{Complexity Analysis}
+
+In this section we use a slightly modified version of the well knows Hamiltonian Path Problem. We call it the Minimum Length Hamiltonian Path Problem (Min-Ham-Path) and define it as follows:
+
+\begin{definition}[Min-Ham-Path]
+On a directed graph $G(V,E)$ where each edge $e \in E$ is assigned a length $l: E \rightarrow \mathbb{R}$, a source node $s$ and a length $L \in \mathbb{R}$, the Min-Ham-Path problem $\left\langle G, l, s, L \right\rangle$ is to decide whether there exists a path in $G$ that starts from $s$, visits every other node exactly once and has a length of at most $L$.
+\end{definition}
+
+\begin{theorem}
+\label{th:MinHam}
+The Min-Ham-Path problem is NP-Hard.
+\end{theorem}
+
+\begin{proof}
+%Proof is shown in \cref{app:MinHamProof}.
+In order to prove NP-Hardness of Min-Ham-Path we show Ham-Path $\leq_p$ Min-Ham-Path. The Hamiltonian Path problem asks the following question: Given a directed graph $G(V,E)$ does there exist a path that goes through every node exactly once?\\
+
+Given and instance of the Ham-Path problem $\left\langle G \right\rangle$ we modify graph $G(V,E)$ and generate a new graph $G'(V', E')$ where $V' = V \cup \left\{ o \right\}$ and $E' = E \cup \left\{ \left\langle o, v \right\rangle : v \in V \right\}$. Also, for every $e \in E'$ we Assume $l(e) = 1$.\\
+
+Now we show that Ham-Path$\left\langle G \right\rangle$ is true \emph{iff} Min-Ham-Path$\left\langle G', l, o, n \right\rangle$ is true where $n$ is the number of vertices in $G$. If Min-Ham-Path returns a path of length $n$, we can remove the first edge from the path which will result in a Hamiltonian Path for the Ham-Path$\left\langle G \right\rangle$ problem. On the other hand every Hamiltonian Path on graph $G$ will have length $n-1$. By adding vertex $o$ and connecting it to the starting vertex, we end up with a Hamiltonian Path of length $n$ on $G'$.
+\end{proof}
+
+\begin{theorem}
+\label{th:TASC}
+The TASC problem is NP-Complete.
+\end{theorem}
+
+\begin{proof}
+%Proof is shown in \cref{app:TASCProof}
+We start the proof by showing that the decision problem of TASC is NP. Given a matching M, we can check that no task is assigned to more than one worker in polynomial time. Also, we can find the value of M with a adding the value of every task in M.\\
+
+Now we prove TASC is NP-Hard by showing to reduction Min-Ham-Path $\leq_p$ TASC. Given an instance of the Min-Ham-Path problem $\left\langle G(V,E), l, o, K \right\rangle$ we reduce it to an instance of the TASC$\left\langle W, T, l', n \right\rangle$ problem such that $W = \left\{ o \right\}$, $T = V \setminus \left\{ o \right\}$. For every task $t$ we set $t.v = 1$, $t.r = 0$ and $t.d = K$ (We assume workers travel one unit of length with every unit of time). Also for every $e \in E, l'(e) = l(e)$. In addition for every $e' \in \left( W \times T \right) \cup \left( T \times T \right) $ where $e' \not\in E$ we set $l'(e') = \infty$.\\ 
+
+Finally we show the result of Min-Ham-Path$\left\langle G, l, o, K \right\rangle$ is true if TASC$\left\langle W, T, l', n-1 \right\rangle$ is true where $n$ is the number of vertices in $G$. Considering that $\left\vert T \right\vert = n - 1$ and $t.v = 1$ for every $t \in T$, if there exists a matching with size $n - 1$ it means every task has been assigned to the single worker. Also, since we set the deadline of every task to $K$ this means the worker visits every task no later than $K$. Therefore, the path that the worker traverses starts at $o$ and goes through every other vertex $v \in V \setminus \left\{ o \right\}$ where the length of the path is no more than $K$.
+\end{proof}
