@@ -36,16 +36,17 @@ For any $w \in W$ for every $PTS \in w.PTS$ we have $\left\vert{PTS}\right\vert 
 \label{prop:subset}
 For every $w \in W$ if $PTS \in w.PTS$ for every $pts \subset PTS$ we will have $pts \in w.pts$
 \end{proposition}
-We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a depth-first approach to search the solution space. By \cref{prop:size} we know that we only have to extend the tree up to depth $w.max$ levels for worker $w$. Each node of the tree corresponds to a subset of \emph{T}. Therefore, for any node \emph{n} of the tree, if the corresponding subset of \emph{n} is not in \emph{w.PTS}, according to \cref{prop:subset}, then we can prune the entire sub-tree rooted at \emph{n}.
 
 \begin{figure}[t]
 	\centering
 	\includegraphics[width = 0.85\columnwidth]{figures/PTS_tree.png}
 			\vspace{-0.2cm}
-	\caption{PTS search space for $\left\vert T \right\vert = 4$ and $w.max=3$}
+	\caption{PTS search space for $\left\vert T \right\vert = 4$}
 	\label{fig:PTS_tree}
 			\vspace{-0.2cm}
 \end{figure}
+
+We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a depth-first approach to search the solution space. By \cref{prop:size} we know that we only have to extend the tree up to depth $w.max$ levels for worker $w$. Each node of the tree corresponds to a subset of \emph{T}. Therefore, for any node \emph{n} of the tree, if the corresponding subset of \emph{n} is not in \emph{w.PTS}, according to \cref{prop:subset}, then we can prune the entire sub-tree rooted at \emph{n}.
 
 \begin{algorithm}[h]
 \caption{FindPTSs($T, W$)}
@@ -128,6 +129,15 @@ E = \left\{ \left\langle n_{ai}, n_{bj} \right\rangle \middle | a \neq b \land \
 \end{equation}
 where $PTS_lm$ refers to the corresponding PTS of node $n_{lm}$. In other words, there will be an edge between two nodes in different layers if the corresponding PTSs of the two nodes don't contain a similar task.
 
+\begin{figure}[t]
+	\centering
+	\includegraphics[width = 0.85\columnwidth]{figures/PTS_graph.png}
+			\vspace{-0.2cm}
+	\caption{A sample two layered PTS-Graph}
+	\label{fig:PTS_tree}
+			\vspace{-0.2cm}
+\end{figure}
+
 Given the PTS-Graph $G(V, E)$, we associate an assignment of tasks to workers with a set of vertices $N \subset V$ as follows: if $n_{lm} \in N$, then every task $t \in PTS_{lm}$ is assigned to $w_l$.
 
 \begin{definition} [Clique]
@@ -187,14 +197,6 @@ Here we analyze the time complexity of our proposed exact algorithm. For simplic
 
 Since we run the SearchBranch method for each worker once in, we can conclude the the time complexity of \ref{algo:FindPTS} is $O(mn^{n-p}p^{p+1})$.\\
 
-In \cref{algo:MWC} we implement the FindMaxClique() method, we use a branch and bound algorithm described in \cite{Ostergard01}. The time complexity of this algorithm will be $O(n^n)$ for a graph of size $n$. Therefore, for a graph of size $n$, the overall time complexity of \cref{algo:MWC} will be $O(n^{n+1})$.
-
-\begin{theorem}
-The TASC problem is NP-Complete.
-\end{theorem}
-
-\begin{proof}
-By reducing the \emph{TASC} problem to a known NP-Complete problem we show the NP-Completeness of \emph{TASC}. In this section we showed how we can reduce the \emph{TASC} problem to solving a \emph{Maximum Weighted Clique (MWC)} problem. The \emph{Clique Decision} problem itself is one of Richard Karp's original 21 problems shown to be NP-Complete \cite{Karp72}.
-\end{proof}
+In \cref{algo:MWC} we implement the FindMaxClique() method, we use a branch and bound algorithm described in \cite{Ostergard01}. The time complexity of this algorithm will be $O(n^n)$ for a graph of size $n$. Therefore, for a graph of size $n$, the overall time complexity of \cref{algo:MWC} will be $O(n^{n+1})$.\\
 
 We end the section with a discussion on how generalizing the spatial crowdsourcing framework can affect the algorithm introduced in this section. In \cite{Kazemi13} it's assumed that each task requires a certain level of \emph{confidence} and only workers with a \emph{trust} level higher than than will be able to perform the task. It's also seen that in some spatial crowdsouring frameworks, workers define a spatial range and only perform task within this range. Constraints like this will only remove a subset of tasks from the list of tasks a certain worker is able to execute. As a result, the search space of \cref{algo:FindPTS} will get reduced and we end up with few number of PTSs per worker. This in turn will reduce the size of the PTS-Graph in \cref{subsec:FindMM}.

@@ -31,7 +31,29 @@ Now we can formally define the Task Assignment in Spatial Crowdsourcing (TASC) a
 Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $l: \left( W \times T \right) \cup \left( T \times T \right) \rightarrow \mathbb{R}$ where $l \left( \left\langle a,b \right\rangle \right)$ is the distance between $a$ and $b$, the goal of the TASC$\left\langle W, T, l \right\rangle$ problem is to find a matching $M$ with maximum value.
 \end{definition}
 
-The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{kazemi12}.
+The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{kazemi12}. \cref{tab:notation} lists the notations we frequently use in this paper.\\
+
+\begin{table}
+\label{tab:notation}
+\begin{center}
+\begin{tabular}{| c | l |} \hline
+Notation	&	Description \\ \hline
+$t.l$			&	location of task $t$ \\ \hline
+$t.r$			&	release time of task $t$ \\ \hline
+$t.d$		& 	deadline of task $t$ \\ \hline
+$t.v$		&	value of task $t$ \\ \hline
+$w.l$		&	location of worker $w$ \\ \hline
+$w.s$		&	the time worker $w$ becomes available \\ \hline
+$w.e$		&	the time worker $w$ becomes unavailable \\ \hline
+$w.T$		&	list of tasks assigned to worker $w$ \\ \hline
+$w.max$	&	maximum number of tasks worker $w$ \\
+				&	performs \\ \hline
+$w.PTS$	&	list of all potential task subsets worker $w$ \\
+				&	can perform \\ \hline
+\end{tabular}
+\caption{List of notations}
+\end{center}
+\end{table}
 
 \subsection{Complexity Analysis}
 

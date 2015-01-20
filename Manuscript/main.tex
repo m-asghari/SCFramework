@@ -1,50 +1,20 @@
 \documentclass{vldb}
 
 \usepackage{graphicx}
+\usepackage{subfigure}
+\graphicspath{.}
+
 \usepackage{appendix}
 
+% use this package if you need more space
 \usepackage{times}
 
 \usepackage{amsmath}
 \usepackage{relsize}
-\usepackage{float}
 \usepackage{verbatim}
-\usepackage{epsfig}
-\usepackage[iso]{umlaute}
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{bbm}
-\usepackage{subfigure}
-\usepackage{ifthen}
-\usepackage{url}
 \usepackage{color}
-\usepackage{marginnote}
-
 \usepackage{paralist}
 \usepackage{tabularx}
-\usepackage{ifthen}
-\newcommand{\DB}{\ensuremath{\mathcal{D}}}
-\newcommand{\db}{\ensuremath{\mathcal{D}}} %the database
-\newcommand{\NN}{\ensuremath{\mathbb{N}}}
-\newcommand{\RR}{\ensuremath{\mathbb{R}}}
-\newcommand{\statevec}{\ensuremath{\vec{s}} }
-\newcommand{\query}{\ensuremath{q} } %the query object
-\newcommand{\loc}{\ensuremath{x} } %a single location
-\newcommand{\sd}{\ensuremath{\mathcal{S}}} %spatial domain
-\newcommand{\td}{\ensuremath{\mathcal{T}}} %time domain
-\newcommand{\tint}{\ensuremath{t} }
-\newcommand{\dbobj}{\ensuremath{o} }
-\newcommand{\vardbobj}{\ensuremath{g}}
-\newcommand{\vart}{\ensuremath{h}}
-\newcommand{\tm}{\ensuremath{M}} %transitionmatrix
-\newcommand{\probm}{\ensuremath{J}}
-\newcommand{\pw}{\ensuremath{\bullet}} %piecewise multiplication
-\newcommand{\mm}{\ensuremath{\cdot}} %matrix multiplication
-\newcommand{\tpoint}[1]{\ensuremath{\mathbb{#1}} }
-\newcommand{\plusequal}{\ensuremath{{ + \atop =}}}
-\newcommand{\obs}{\ensuremath{ob}}
-\newcommand{\CP}[1]{{\color{red}#1}}
-\newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
 %Theorem, Lemma, etc.
 \usepackage[capitalise]{cleveref}
@@ -61,9 +31,8 @@
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
 
-\graphicspath{.}
-\newboolean{TR}
-\setboolean{TR}{false}
+% Floats
+\usepackage{float}
 \renewcommand{\textfraction}{0.00}
 \renewcommand{\topfraction}{1.0}
 \renewcommand{\bottomfraction}{1.0}
@@ -71,6 +40,7 @@
 \setcounter{bottomnumber}{100}
 \setcounter{topnumber}{100}
 
+\newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
 \title{On Task Assignment in Spatial Crowdsourcing}
 \begin{document}
