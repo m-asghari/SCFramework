@@ -4,15 +4,14 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class Worker extends SpatialEntity{
-	public Integer retractFrame;
-	
 	Boolean active;
 	ArrayList<Task> assignedTasks;
 	Integer maxNumberOfTasks;
 	Double travledDistance;
+	PTSs ptsSet;
 		
-	public Worker() {		
-		
+	public Worker() {
+		ptsSet = new PTSs();
 	}
 	
 	public void UpdateLocation() {
@@ -54,6 +53,57 @@ public class Worker extends SpatialEntity{
 			return false;
 		}
 		return true;
+	}
+	
+	public Boolean IsPTS(PTS pts) {
+		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
+		for (ArrayList<Task> p : taskPerms) {
+			Boolean possible = true;
+			Point2D.Double loc = this.location;
+			int time = this.releaseFrame;
+			for (int i = 0; i < p.size(); ++i) {
+				Task current = p.get(i);
+				int nextTime = Math.max(current.releaseFrame, time + (int)loc.distance(current.location));
+				if (nextTime < current.retractFrame && nextTime < this.retractFrame) {
+					loc = current.location;
+					time = nextTime;
+				}
+				else {
+					possible = false;
+					break;
+				}
+			}
+			if (!possible) continue;
+			else return true;
+		}
+		return false;
+	}
+	
+	public PTSs GetPTSSet() {
+		return this.ptsSet;
+	}
+	
+	public void FindPTSs(PTS prefix, ArrayList<Task> tasks) {
+		this.ptsSet = this.GetPTSs(prefix, tasks);
+	}
+	
+	private PTSs GetPTSs(PTS prefix, ArrayList<Task> tasks) {
+		PTSs retPTSs = new PTSs();
+		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
+		for (Task t : tasks) {
+			tasks_c.remove(t);
+			if (!this.Overlap(t)) continue;
+			PTS pts = new PTS(prefix.list);
+			pts.AddTask(t);
+			if (IsPTS(pts)) {
+				retPTSs.AddSubset(pts);
+				if (pts.size() < this.maxNumberOfTasks && tasks_c.size() > 0) {
+					PTSs newPTSs = this.GetPTSs(pts, tasks_c);
+					retPTSs.addAll(newPTSs);
+				}
+			}
+		}
+		return retPTSs;
 	}
 	
 	

@@ -69,16 +69,16 @@ We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a dep
 \ENSURE \emph{PTSs} is the set of all potential task subsets for \emph{w}
 \STATE $PTSs = \emptyset$
 \STATE $T_{copy} = T$
-\FOR{$t$ in $T_{copy}$}
-	\STATE $T = T \setminus t$
+\FOR{$t$ in $T$}
+	\STATE $T_{copy} = T_{copy} \setminus t$
 	\IF{$t$ doesn't temporally overlap with $w$}
 		\STATE continue
 	\ENDIF
-	\STATE $s = t \cup pts$
+	\STATE $s = pts \cup t$
 	\IF{IsPotentialSubset($s, w$)}
-		\STATE $PTSs = PTSs \cup t$
-		\IF{$\left\vert{s}\right\vert < w.max$ and $T \neq \emptyset$}
-			\STATE $S =$ Search\_Branch($s, T, w$)
+		\STATE $PTSs = PTSs \cup s$
+		\IF{$\left\vert{s}\right\vert < w.max$ and $T_{copy} \neq \emptyset$}
+			\STATE $S =$ Search\_Branch($s, T_{copy}, w$)
 			\STATE $PTSs = PTSs \cup S$
 		\ENDIF
 	\ENDIF
@@ -93,10 +93,10 @@ We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a dep
 \begin{algorithmic}[1]
 \REQUIRE $s$ is the input set
 \ENSURE $true$ if $s$ is a PTS for $w$ and $false$ otherwise
-\STATE $loc = w.l$
-\STATE $time = w.s$
 \FOR{$P$ in PermutationsOf($s$)}
 	\STATE $possible = true$
+	\STATE $loc = w.l$
+	\STATE $time = w.s$
 	\FOR{$i=1$ to $\left\vert{P}\right\vert$}
 		\STATE $nextTime = $max($P[i].r, time +$ dist($w.l, P[i].l$)
 		\IF{$nextTime < P[i].d$ and $nextTime < w.e$}
