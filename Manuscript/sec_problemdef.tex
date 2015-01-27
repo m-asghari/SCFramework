@@ -28,8 +28,9 @@ Value(M) = \sum_{\left( w, t \right) \in M} t.v
 Now we can formally define the Task Assignment in Spatial Crowdsourcing (TASC) as follows:
 
 \begin{definition}[Task Assignment in Spatial Crowdsourcing]
-Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $l: \left( W \times T \right) \cup \left( T \times T \right) \rightarrow \mathbb{R}$ where $l \left( \left\langle a,b \right\rangle \right)$ is the distance between $a$ and $b$, the goal of the TASC$\left\langle W, T, l \right\rangle$ problem is to find a matching $M$ with maximum value.
+Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $d: \left( W \times T \right) \cup \left( T \times T \right) \rightarrow \mathbb{R}$ where $d \left( \left\langle a,b \right\rangle \right)$ is the distance between $a$ and $b$, the goal of the TASC$\left\langle W, T, d \right\rangle$ problem is to find a matching $M$ with maximum value.
 \end{definition}
+Throughout the paper we assume every worker moves one unit of length per unit of time. Therefore, we can assume that $d \left( \left\langle a,b \right\rangle \right)$ is also the \emph{time} required to move from $a$ to $b$.\\
 
 The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{kazemi12}. \cref{tab:notation} lists the notations we frequently use in this paper.\\
 
