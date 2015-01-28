@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.RandomGenerator;
+package edu.usc.infolab.sc.Distributions;
 
 import java.awt.geom.Point2D;
 import java.util.Random;

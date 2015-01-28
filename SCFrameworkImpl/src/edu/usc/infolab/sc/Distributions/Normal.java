@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.RandomGenerator;
+package edu.usc.infolab.sc.Distributions;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
