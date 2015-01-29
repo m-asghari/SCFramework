@@ -2,7 +2,7 @@ package edu.usc.infolab.sc.Distributions;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
-public class Poisson {	
+public class Poisson extends Distribution{	
 	PoissonDistribution dist;
 	
 	public Poisson(double mean) {
@@ -10,6 +10,11 @@ public class Poisson {
 	}
 	
 	public int Next() {
+		return dist.sample();
+	}
+	
+	@Override
+	public double Sample() {
 		return dist.sample();
 	}
 
