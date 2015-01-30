@@ -10,14 +10,14 @@ public class Poisson2D extends PointDistribution {
 	Double intensity;
 	Random rand;
 	
-	public Poisson2D(Grid grid, Double intensity) {
-		this.grid = grid;
-		this.intensity = intensity;
+	public Poisson2D(Poisson2DConfig config) {
+		this.grid = config.grid;
+		this.intensity = config.intensity;
 		rand = new Random();		
 	}
 	
 	public void Initialize() {
-		Poisson p = new Poisson(intensity);
+		Poisson p = new Poisson(new PoissonConfig(this.intensity));
 		Double sum = 0.0;
 		for (int cell = 0; cell < grid.cellProb.size(); ++cell) {
 			double prob = p.Next()*1.0;

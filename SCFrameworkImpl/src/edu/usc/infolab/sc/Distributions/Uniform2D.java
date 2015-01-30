@@ -23,8 +23,7 @@ public class Uniform2D extends PointDistribution {
 		return c;
 	}
 	
-	public Uniform2D(DistributionConfig c) {
-		Uniform2DConfig config = (Uniform2DConfig) c;
+	public Uniform2D(Uniform2DConfig config) {
 		minx = config.minx;
 		miny = config.miny;
 		maxx = config.maxx;

@@ -6,7 +6,6 @@ import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class BivariateNormal extends PointDistribution{
 	
@@ -36,8 +35,8 @@ public class BivariateNormal extends PointDistribution{
 	NormalDistribution normal2;
 	MultivariateNormalDistribution dist;
 	
-	public BivariateNormal(DistributionConfig c) {
-		BivariateNormalConfig config = (BivariateNormalConfig) c;
+	public BivariateNormal(BivariateNormalConfig config) {
+		//BivariateNormalConfig config = (BivariateNormalConfig) c;
 		double[] means = {config.mean1, config.mean2};
 		if (config.covar == null) {
 			normal1 = new NormalDistribution(config.mean1, config.sd1);

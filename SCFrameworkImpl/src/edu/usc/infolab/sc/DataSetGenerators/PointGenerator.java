@@ -36,11 +36,14 @@ public class PointGenerator {
 		double defaultProb = unusedProb / unassignedProb;
 		for (Config c : pgConfig) {
 			String distClass = String.format("%s.%s", DistributionPackage, c.distName);
+			String configClass = String.format("%sConfig", distClass);
 			try {
 				Class<?> clazz = Class.forName(distClass);
 				Method parseMethod = clazz.getMethod("Parse", new Class<?>[]{Element.class});
-				DistributionConfig config = (DistributionConfig) parseMethod.invoke(clazz, new Object[]{c.settings});
-				Constructor<?> cons = clazz.getConstructor(DistributionConfig.class);
+				Class<?> configClazz = Class.forName(configClass);
+				Object config = configClazz.newInstance();
+				config = configClazz.cast(parseMethod.invoke(clazz, new Object[]{c.settings}));
+				Constructor<?> cons = clazz.getConstructor(configClazz);
 				PointDistribution dist = (PointDistribution) cons.newInstance(config);
 				double distProb = (c.prob == -1) ? defaultProb : c.prob; 
 				dists.add(new DistProbPair<PointDistribution>(dist, distProb));				

@@ -5,8 +5,8 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 public class Poisson extends Distribution{	
 	PoissonDistribution dist;
 	
-	public Poisson(double mean) {
-		dist = new PoissonDistribution(mean);
+	public Poisson(PoissonConfig config) {
+		dist = new PoissonDistribution(config.mean);
 	}
 	
 	public int Next() {

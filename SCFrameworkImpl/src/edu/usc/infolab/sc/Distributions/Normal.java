@@ -5,8 +5,8 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class Normal extends Distribution {
 	NormalDistribution dist;
 	
-	public Normal(double mean, double sd) {
-		dist = new NormalDistribution(mean, sd);
+	public Normal(NormalConfig config) {
+		dist = new NormalDistribution(config.mean, config.sd);
 	}
 	
 	@Override
