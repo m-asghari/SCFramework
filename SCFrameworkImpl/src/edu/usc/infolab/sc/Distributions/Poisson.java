@@ -2,7 +2,7 @@ package edu.usc.infolab.sc.Distributions;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
-public class Poisson extends Distribution{	
+public class Poisson extends Distribution<Double>{	
 	PoissonDistribution dist;
 	
 	public Poisson(PoissonConfig config) {
@@ -14,8 +14,12 @@ public class Poisson extends Distribution{
 	}
 	
 	@Override
-	public double Sample() {
-		return dist.sample();
+	public Double Sample() {
+		return (double) dist.sample();
+	}
+	
+	public static Class<?> GetConfigClass() {
+		return PoissonConfig.class;
 	}
 
 }

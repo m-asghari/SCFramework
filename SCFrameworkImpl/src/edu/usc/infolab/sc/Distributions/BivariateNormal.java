@@ -7,9 +7,9 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.w3c.dom.Element;
 
-public class BivariateNormal extends PointDistribution{
+public class BivariateNormal extends Distribution<Point2D.Double>{
 	
-	public static BivariateNormalConfig Parse(Element e) {
+	public static BivariateNormalConfig ParseConfig(Element e) {
 		BivariateNormalConfig c = new BivariateNormalConfig();
 		c.mean1 = Double.parseDouble(((Element) e.getElementsByTagName("mean1").item(0)).getAttribute("value"));
 		c.mean2 = Double.parseDouble(((Element) e.getElementsByTagName("mean2").item(0)).getAttribute("value"));
@@ -74,6 +74,10 @@ public class BivariateNormal extends PointDistribution{
 	public Point2D.Double Sample() {
 		double[] p = dist.sample();
 		return new Point2D.Double(p[0], p[1]);
+	}
+	
+	public static Class<?> GetConfigClass() {
+		return BivariateNormalConfig.class;
 	}
 
 }

@@ -1,16 +1,20 @@
 package edu.usc.infolab.sc.Distributions;
 
-public class Constant extends Distribution {
-	double value;
+public class Constant extends Distribution<Double> {
+	Double value;
 	
 	public Constant(ConstantConfig config) {
 		this.value = config.value;
 	}
 	
 	@Override
-	public double Sample() {
+	public Double Sample() {
 		// TODO Auto-generated method stub
-		return 0;
+		return value;
+	}
+	
+	public static Class<?> GetConfigClass() {
+		return ConstantConfig.class;
 	}
 
 }

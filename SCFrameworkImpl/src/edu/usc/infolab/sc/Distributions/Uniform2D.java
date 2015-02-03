@@ -5,7 +5,7 @@ import java.util.Random;
 
 import org.w3c.dom.Element;
 
-public class Uniform2D extends PointDistribution {
+public class Uniform2D extends Distribution<Point2D.Double> {
 	Random rand;
 	double minx;
 	double miny;
@@ -14,7 +14,7 @@ public class Uniform2D extends PointDistribution {
 	double dx;
 	double dy;
 	
-	public static Uniform2DConfig Parse(Element e) {
+	public static Uniform2DConfig ParseConfig(Element e) {
 		Uniform2DConfig c = new Uniform2DConfig();
 		c.minx = Double.parseDouble(((Element) e.getElementsByTagName("minx").item(0)).getAttribute("value"));
 		c.maxx = Double.parseDouble(((Element) e.getElementsByTagName("maxx").item(0)).getAttribute("value"));
@@ -39,6 +39,10 @@ public class Uniform2D extends PointDistribution {
 		double newX = (rand.nextDouble() * dx) + minx;
 		double newY = (rand.nextDouble() * dy) + miny;
 		return new Point2D.Double(newX, newY);
+	}
+	
+	public static Class<?> GetConfigClass() {
+		return Uniform2DConfig.class;
 	}
 
 }

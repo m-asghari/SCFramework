@@ -5,4 +5,8 @@ import java.awt.geom.Point2D;
 public abstract class PointDistribution {
 	
 	public abstract Point2D.Double Sample();
+	
+	public static Class<?> GetConfigClass() {
+		return DistributionConfig.class;
+	}
 }

@@ -5,7 +5,7 @@ import java.util.Random;
 
 import edu.usc.infolab.sc.Grid;
 
-public class Poisson2D extends PointDistribution {
+public class Poisson2D extends Distribution<Point2D.Double> {
 	Grid grid;
 	Double intensity;
 	Random rand;
@@ -37,5 +37,9 @@ public class Poisson2D extends PointDistribution {
 		double cdf = 0.0;
 		while ((cdf += grid.cellProb.get(cell++)) < p );
 		return grid.RandomPoint(cell);
+	}
+	
+	public static Class<?> GetConfigClass() {
+		return Poisson2DConfig.class;
 	}
 }

@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.Distributions;
+package edu.usc.infolab.sc.DataSetGenerators;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -7,17 +7,13 @@ import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class Distribution<T> {
-	public T Sample() {
-		return null;
-	};
+import edu.usc.infolab.sc.Distributions.DistProbPair;
+import edu.usc.infolab.sc.Distributions.PointDistribution;
+
+public class Utils {
 	
-	public static Class<?> GetConfigClass() {
-		return DistributionConfig.class;
-	}
-	
-	public static <R> ArrayList<DistProbPair<Distribution<R>>> Parse(Element e, R obj) {
-		ArrayList<DistProbPair<Distribution<R>>> dists = new ArrayList<DistProbPair<Distribution<R>>>();
+	public static <T> ArrayList<DistProbPair<T>> ParseDistributions(Element e, Class<T> clazz) {
+		ArrayList<DistProbPair<T>> dists = new ArrayList<DistProbPair<T>>();
 		NodeList distributions = e.getElementsByTagName("Distribution");
 		String DistributionPackage = PointDistribution.class.getPackage().getName();
 		double unusedProb = 1.0;
@@ -27,29 +23,30 @@ public class Distribution<T> {
 				Element distElemetn = (Element) distributions.item(i);
 				String distClass = String.format("%s.%s", DistributionPackage, distElemetn.getAttribute("name"));
 				try {
-					@SuppressWarnings("unchecked")
-					Class<Distribution<R>> distClazz = (Class<Distribution<R>>) Class.forName(distClass);
+					Class<?> distClazz = Class.forName(distClass);
 					Method getConfigClassMethod = distClazz.getMethod("GetConfigClass", new Class<?>[]{});
 					Class<?> configClazz = Class.class.cast(getConfigClassMethod.invoke(distClazz, new Object[]{}));
-					Method parseMethod = distClazz.getMethod("ParseConfig", new Class<?>[]{Element.class});
+					Method parseMethod = distClazz.getMethod("Parse", new Class<?>[]{Element.class});
 					Element settings = (Element) distElemetn.getElementsByTagName("Settings").item(0);		
 					Object config = configClazz.cast(parseMethod.invoke(distClazz, new Object[]{settings}));
-					Constructor<Distribution<R>> cons = distClazz.getConstructor(configClazz);
-					Distribution<R> dist = cons.newInstance(config);
+					Constructor<?> cons = distClazz.getConstructor(configClazz);
+					T dist = clazz.cast(cons.newInstance(config));
 					double prob = Double.parseDouble(distElemetn.getAttribute("prob"));
 					if (prob == -1) unassignedProb++;
 					else unusedProb -= prob;
-					dists.add(new DistProbPair<Distribution<R>>(dist, prob));
+					dists.add(new DistProbPair<T>(dist, prob));
 					}
 				catch (Exception exc) {
 					exc.printStackTrace();
 				}
 			}
 			double defaultPrb = unusedProb / unassignedProb;
-			for (DistProbPair<Distribution<R>> p : dists) {
+			for (DistProbPair<T> p : dists) {
 				if (p.prob == -1) p.prob = defaultPrb;
 			}
 		}
 		return dists;
+		
 	}
+
 }
