@@ -3,15 +3,30 @@ package edu.usc.infolab.sc;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import org.w3c.dom.Element;
+
 public class Worker extends SpatialEntity{
-	Boolean active;
-	ArrayList<Task> assignedTasks;
-	Integer maxNumberOfTasks;
+	public Boolean active;
+	public ArrayList<Task> assignedTasks;
+	public Integer maxNumberOfTasks;
 	Double travledDistance;
 	PTSs ptsSet;
 		
 	public Worker() {
+		Initialize();
+	}
+	
+	public Worker(Element e) {
+		super(e);
+		Initialize();
+		this.maxNumberOfTasks = Integer.parseInt(e.getAttribute("max"));
+	}
+	
+	private void Initialize() {
 		ptsSet = new PTSs();
+		assignedTasks = new ArrayList<Task>();
+		travledDistance = 0.0;
+		active = false;
 	}
 	
 	public void UpdateLocation() {
@@ -105,6 +120,10 @@ public class Worker extends SpatialEntity{
 		}
 		return retPTSs;
 	}
-	
-	
+
+	public Element Fill(Element w) {
+		w = super.Fill(w);
+		w.setAttribute("max", Integer.toString(maxNumberOfTasks));
+		return w;
+	}
 }

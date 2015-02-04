@@ -3,12 +3,27 @@ package edu.usc.infolab.sc.Distributions;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
+import org.w3c.dom.Element;
+
 import edu.usc.infolab.sc.Grid;
 
 public class Poisson2D extends Distribution<Point2D.Double> {
 	Grid grid;
 	Double intensity;
 	Random rand;
+	
+	public static Poisson2DConfig ParseConfig(Element e) {
+		Poisson2DConfig c = new Poisson2DConfig();
+		c.intensity = Double.parseDouble(((Element)e.getElementsByTagName("intensity").item(0)).getAttribute("value"));
+		Double minx = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("minx"));
+		Double miny = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("miny"));
+		Double maxx = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("maxx"));
+		Double maxy = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("maxy"));
+		Double w = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("w"));
+		Double l = Double.parseDouble(((Element)e.getElementsByTagName("grid").item(0)).getAttribute("l"));
+		c.grid = new Grid(new Point2D.Double(minx, miny), new Point2D.Double(maxx, maxy), w, l);
+		return c;
+	}
 	
 	public Poisson2D(Poisson2DConfig config) {
 		this.grid = config.grid;

@@ -1,5 +1,5 @@
 <DataSpecification>
-	<Workers>
+	<Workers size="50">
 		<Location>
 			<Distribution name="BivariateNormal" prob="-1">
 				<Settings>
@@ -19,5 +19,28 @@
 				</Settings>
 			</Distribution>
 		</Location>
+		<ReleaseTime>
+			<Distribution name="Normal" prob="1">
+				<Settings>
+					<mean value="5"/>
+					<sd value="1"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="2"/>
+					<max value="6"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<MaxTasks>
+			<Distribution name="Constant" prob="1">
+				<Settings>
+					<mean value="3"/>
+				</Settings>
+			</Distribution>
+		</MaxTasks>
 	</Workers>
 </DataSpecification>

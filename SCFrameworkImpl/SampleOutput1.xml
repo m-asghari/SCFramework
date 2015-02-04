@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Data>
+  <Workers>
+    <Worker max="3" release="5" retract="8" x="3.809392317776312" y="2.775281066541431"/>
+    <Worker max="3" release="4" retract="6" x="3.899233922873466" y="2.3802753636623253"/>
+    <Worker max="3" release="6" retract="10" x="3.7593172076858563" y="4.039922512845826"/>
+    <Worker max="3" release="5" retract="9" x="3.540381089027096" y="4.75283165273141"/>
+    <Worker max="3" release="2" retract="4" x="2.336640421423118" y="6.7612888489289915"/>
+    <Worker max="3" release="5" retract="8" x="4.034722029002035" y="1.1370535971942681"/>
+    <Worker max="3" release="3" retract="9" x="3.5664675962379953" y="2.76112990464961"/>
+    <Worker max="3" release="5" retract="9" x="7.799134889072566" y="3.832011904755801"/>
+    <Worker max="3" release="5" retract="7" x="1.8506530117080868" y="4.193398272895972"/>
+    <Worker max="3" release="5" retract="8" x="2.7283171011188943" y="4.076436647454576"/>
+    <Worker max="3" release="5" retract="7" x="3.30138678900848" y="6.341329318225296"/>
+    <Worker max="3" release="3" retract="9" x="3.8722466453974964" y="1.4261392973038878"/>
+    <Worker max="3" release="4" retract="7" x="3.5422949218605337" y="3.1522523603570622"/>
+    <Worker max="3" release="3" retract="8" x="2.0908244781087157" y="4.477476792457362"/>
+    <Worker max="3" release="4" retract="7" x="4.714065064556247" y="2.6770071490161946"/>
+    <Worker max="3" release="4" retract="6" x="6.812562093616217" y="2.7975204379514995"/>
+    <Worker max="3" release="4" retract="6" x="9.487065587236962" y="3.9745649711010986"/>
+    <Worker max="3" release="4" retract="8" x="3.6760441561912636" y="2.2813847427707654"/>
+    <Worker max="3" release="5" retract="7" x="2.6022397015859027" y="3.981268252211298"/>
+    <Worker max="3" release="4" retract="10" x="6.9467205170769954" y="3.2028135544723155"/>
+    <Worker max="3" release="3" retract="8" x="3.475491963295356" y="1.541264404890887"/>
+    <Worker max="3" release="3" retract="6" x="3.5946401817903064" y="4.465729368798585"/>
+    <Worker max="3" release="4" retract="8" x="3.637485260367922" y="6.254728984832825"/>
+    <Worker max="3" release="5" retract="7" x="0.9996816366118426" y="2.8545146325801225"/>
+    <Worker max="3" release="4" retract="10" x="2.2771837912794703" y="1.6542590836990367"/>
+    <Worker max="3" release="4" retract="7" x="4.445221779592937" y="4.097168787271083"/>
+    <Worker max="3" release="5" retract="11" x="3.2398459964114927" y="2.7178261385935985"/>
+    <Worker max="3" release="5" retract="8" x="6.738852324871416" y="1.4171047134557084"/>
+    <Worker max="3" release="5" retract="9" x="6.351700556467095" y="3.1877239795384464"/>
+    <Worker max="3" release="5" retract="10" x="2.773069558424655" y="2.8061523875171854"/>
+    <Worker max="3" release="5" retract="9" x="3.377317744383634" y="3.056269057936837"/>
+    <Worker max="3" release="4" retract="7" x="9.501059922083574" y="2.674224277747513"/>
+    <Worker max="3" release="5" retract="7" x="3.1278074519930588" y="2.606321441676052"/>
+    <Worker max="3" release="5" retract="9" x="2.583873439233247" y="5.61055722336271"/>
+    <Worker max="3" release="5" retract="8" x="9.694664293130813" y="3.2120472112657694"/>
+    <Worker max="3" release="4" retract="9" x="6.989561857931593" y="4.980720532067252"/>
+    <Worker max="3" release="4" retract="8" x="5.712723602995835" y="4.212935071605212"/>
+    <Worker max="3" release="6" retract="12" x="4.088476498857898" y="3.6563676170870654"/>
+    <Worker max="3" release="4" retract="8" x="3.1137832259286053" y="1.6968879796920802"/>
+    <Worker max="3" release="4" retract="9" x="7.506672473179682" y="1.4569286359920923"/>
+    <Worker max="3" release="6" retract="9" x="8.642427994694703" y="2.721028100981661"/>
+    <Worker max="3" release="5" retract="9" x="4.902427613861398" y="4.990958462912101"/>
+    <Worker max="3" release="3" retract="7" x="3.212213707604826" y="3.051973536426681"/>
+    <Worker max="3" release="5" retract="8" x="4.86194218715941" y="1.8252647655102185"/>
+    <Worker max="3" release="6" retract="11" x="2.467096715647325" y="4.508840920184398"/>
+    <Worker max="3" release="6" retract="9" x="4.719647117201842" y="5.1898764120275676"/>
+    <Worker max="3" release="4" retract="7" x="2.3511549502763596" y="4.3178793022173725"/>
+    <Worker max="3" release="6" retract="9" x="3.8768908948665812" y="2.7870653736738915"/>
+    <Worker max="3" release="2" retract="7" x="9.16637498641811" y="1.2090163094915662"/>
+    <Worker max="3" release="6" retract="11" x="3.449495889120518" y="4.657712982316958"/>
+  </Workers>
+</Data>

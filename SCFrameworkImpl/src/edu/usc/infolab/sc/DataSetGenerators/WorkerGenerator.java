@@ -1,20 +1,24 @@
 package edu.usc.infolab.sc.DataSetGenerators;
 
-import java.awt.geom.Point2D;
-
 import org.w3c.dom.Element;
 
-public class WorkerGenerator {
+import edu.usc.infolab.sc.Worker;
+
+public class WorkerGenerator extends SpatialEntityGenerator{
 	
-	RandomGenerator<Point2D.Double> locationGenerator;
+	private RandomGenerator<Double> maxNumberOfTasks;
 	
-	public WorkerGenerator() {
-		locationGenerator = new RandomGenerator<Point2D.Double>();
+	public WorkerGenerator(Element e) {
+		super(e);
+		maxNumberOfTasks = new RandomGenerator<Double>(
+				(Element) e.getElementsByTagName("MaxTasks").item(0));
 	}
 	
-	public void Parse(Element e) {
-		Element location = (Element) e.getElementsByTagName("Location").item(0);
-		locationGenerator = new RandomGenerator<Point2D.Double>(location);
+	public Worker NextWorker() {
+		Worker w = new Worker();
+		w = (Worker) super.Fill(w);
+		w.maxNumberOfTasks = maxNumberOfTasks.Sample().intValue();
+		return w;
 	}
 
 }
