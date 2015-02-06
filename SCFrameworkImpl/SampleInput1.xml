@@ -1,4 +1,5 @@
 <DataSpecification>
+	<Grid minx="0" miny="0" maxx="20" maxy="10" w="1" l="1"/>
 	<Workers size="50">
 		<Location>
 			<Distribution name="BivariateNormal" prob="-1">
@@ -14,16 +15,59 @@
 				<Settings>
 					<minx value="3" />
 					<miny value="1" />
-					<maxx value="10" />
-					<maxy value="5" />
+					<maxx value="22" />
+					<maxy value="15" />
 				</Settings>
 			</Distribution>
 		</Location>
-		<ReleaseTime>
-			<Distribution name="Normal" prob="1">
+		<ReleaseTime mode="InterArrival">
+			<Distribution name="Exponential" prob="1">
 				<Settings>
 					<mean value="5"/>
-					<sd value="1"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="10"/>
+					<max value="40"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<MaxTasks>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="3"/>
+					<max value="6"/>
+				</Settings>
+			</Distribution>
+		</MaxTasks>
+	</Workers>
+	<Tasks size="250">
+		<Location>
+			<Distribution name="BivariateNormal" prob="-1">
+				<Settings>
+					<mean1 value="3" />
+					<sd1 value="1" />
+					<mean2 value="4" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="Uniform2D" prob="-1">
+				<Settings>
+					<minx value="3" />
+					<miny value="1" />
+					<maxx value="22" />
+					<maxy value="15" />
+				</Settings>
+			</Distribution>
+		</Location>
+		<ReleaseTime mode="InterArrival">
+			<Distribution name="Exponential" prob="1">
+				<Settings>
+					<mean value="1"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
@@ -35,12 +79,12 @@
 				</Settings>
 			</Distribution>
 		</Duration>
-		<MaxTasks>
+		<Value>
 			<Distribution name="Constant" prob="1">
 				<Settings>
-					<mean value="3"/>
+					<mean value="1"/>
 				</Settings>
 			</Distribution>
-		</MaxTasks>
-	</Workers>
+		</Value>
+	</Tasks>
 </DataSpecification>

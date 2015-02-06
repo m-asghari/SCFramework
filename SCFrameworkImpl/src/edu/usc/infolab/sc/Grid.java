@@ -4,6 +4,8 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.w3c.dom.Element;
+
 public class Grid {
 	double minx;
 	double miny;
@@ -15,6 +17,18 @@ public class Grid {
 	int colCount;
 	public ArrayList<Double> cellProb;
 	
+	public Grid(Element e) {
+		minx = Double.parseDouble(e.getAttribute("minx"));
+		miny = Double.parseDouble(e.getAttribute("miny"));
+		maxx = Double.parseDouble(e.getAttribute("maxx"));
+		maxy = Double.parseDouble(e.getAttribute("maxy"));
+		width = Double.parseDouble(e.getAttribute("w"));
+		length = Double.parseDouble(e.getAttribute("l"));
+		rowCount = (int)((maxy - miny)/width);
+		colCount = (int)((maxx - minx)/length);
+		cellProb = new ArrayList<Double>();
+	}
+	
 	public Grid(Point2D.Double min, Point2D.Double max, double w, double l) {
 		minx = min.getX();
 		miny = min.getY();
@@ -25,6 +39,10 @@ public class Grid {
 		rowCount = (int)((maxy - miny)/width);
 		colCount = (int)((maxx - minx)/length);
 		cellProb = new ArrayList<Double>();
+	}
+	
+	public boolean In(SpatialEntity se) {
+		return this.In(se.location);
 	}
 	
 	public boolean In(Point2D.Double p) {
@@ -48,5 +66,4 @@ public class Grid {
 		double newY = (rand.nextDouble() * width) + startY;
 		return new Point2D.Double(newX, newY);
 	}
-
 }

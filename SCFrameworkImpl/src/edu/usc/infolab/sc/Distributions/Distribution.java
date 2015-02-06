@@ -1,10 +1,9 @@
 package edu.usc.infolab.sc.Distributions;
 
 
-public class Distribution<T> {
-	public T Sample() {
-		return null;
-	};
+public abstract class Distribution<T> {
+	
+	public abstract T Sample();
 	
 	public static Class<?> GetConfigClass() {
 		return DistributionConfig.class;

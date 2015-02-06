@@ -28,8 +28,7 @@ public class Task extends SpatialEntity{
 	
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj);
-		
+		return super.equals(obj);		
 	}
 	
 	public Element Fill(Element t) {
