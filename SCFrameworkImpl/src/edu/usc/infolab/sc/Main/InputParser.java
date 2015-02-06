@@ -1,9 +1,14 @@
 package edu.usc.infolab.sc.Main;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,6 +21,7 @@ import edu.usc.infolab.sc.Worker;
 public class InputParser {
 	private Document doc;
 	private Element root;
+	private Transformer transformer;
 	
 	public InputParser(String filepath) {
 		try {
@@ -23,6 +29,9 @@ public class InputParser {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(filepath);
 			root = doc.getDocumentElement();
+			
+			TransformerFactory tf = TransformerFactory.newInstance();
+			transformer = tf.newTransformer();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -50,10 +59,23 @@ public class InputParser {
 		Element tasksElement = (Element) root.getElementsByTagName("Tasks").item(0);
 		NodeList taskElements = tasksElement.getElementsByTagName("Task");
 		for (int i = 0; i < taskElements.getLength(); ++i) {
-			Element task = (Element) taskElements.item(0);
+			Element task = (Element) taskElements.item(i);
+			this.Print(task);
 			Task t = new Task(task);
 			tasks.put(t.id, t);
 		}
 		return tasks;
+	}
+	
+	public void Print(Element e) {
+		try {
+			StringWriter sw = new StringWriter();
+			transformer.transform(new DOMSource(e), new StreamResult(sw));
+			System.out.println(sw.toString());
+		}
+		catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		
 	}
 }
