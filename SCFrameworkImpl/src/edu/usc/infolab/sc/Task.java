@@ -36,4 +36,16 @@ public class Task extends SpatialEntity{
 		t.setAttribute("value", Integer.toString(value));
 		return t;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("Task %d:\n", this.id));
+		sb.append(super.toString());
+		sb.append("Assigned Worker: ");
+		for (Worker w : assignedWorkers)
+			sb.append(String.format("w%d, ", w.id));
+		sb.append(String.format("\nValue: %d\n", value));
+		return sb.toString();
+	}
 }

@@ -51,4 +51,13 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 	public int compareTo(SpatialEntity o) {
 		return this.releaseFrame.compareTo(o.releaseFrame);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("Location: x=%.2f y=%.2f\n", location.x, location.y));
+		sb.append(String.format("Release: %d\n", releaseFrame));
+		sb.append(String.format("Retract: %d\n", retractFrame));
+		return sb.toString();
+	}
 }

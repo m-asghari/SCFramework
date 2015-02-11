@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Data>
+  <Grid l="1" maxx="20" maxy="10" minx="0" miny="0" w="1"/>
+  <Workers>
+    <Worker max="3" release="1" retract="12" x="5" y="5"/>
+  </Workers>
+  <Tasks>
+    <Task release="1" retract="10" value="1" x="8" y="9"/>
+	<Task release="1" retract="10" value="2" x="8" y="5"/>
+	<Task release="1" retract="10" value="3" x="5" y="9"/>
+  </Tasks>
+</Data>

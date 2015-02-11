@@ -1,11 +1,13 @@
 package edu.usc.infolab.sc.Clairvoyant;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Main.Log;
 
 public class ExactAlgorithm {
 	HashMap<Integer, Task> _tasks;
@@ -18,8 +20,12 @@ public class ExactAlgorithm {
 	
 	public void FindPTSs() {
 		ArrayList<Task> tasks = new ArrayList<Task>(_tasks.values());
-		for (Worker w : _workers.values()) {
+		ArrayList<Worker> workers = new ArrayList<Worker>(_workers.values());
+		Collections.sort(workers);
+		for (Worker w : workers) {
+			Log.Add(String.format("Starting FindPTSs for worker %d", w.id));
 			w.FindPTSs(new PTS(), tasks);
+			Log.Add(String.format("Finished FindPTSs for worker %d", w.id));			
 		}
 	}
 	

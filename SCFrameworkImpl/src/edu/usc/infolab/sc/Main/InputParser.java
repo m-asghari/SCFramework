@@ -47,7 +47,7 @@ public class InputParser {
 		Element workersElement = (Element) root.getElementsByTagName("Workers").item(0);
 		NodeList workerElements = workersElement.getElementsByTagName("Worker");
 		for (int i = 0; i < workerElements.getLength(); ++i) {
-			Element worker = (Element) workerElements.item(0);
+			Element worker = (Element) workerElements.item(i);
 			Worker w = new Worker(worker);
 			workers.put(w.id, w);
 		}
@@ -60,7 +60,6 @@ public class InputParser {
 		NodeList taskElements = tasksElement.getElementsByTagName("Task");
 		for (int i = 0; i < taskElements.getLength(); ++i) {
 			Element task = (Element) taskElements.item(i);
-			this.Print(task);
 			Task t = new Task(task);
 			tasks.put(t.id, t);
 		}

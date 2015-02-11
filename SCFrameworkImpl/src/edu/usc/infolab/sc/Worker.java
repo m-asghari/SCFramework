@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
+import edu.usc.infolab.sc.Main.Log;
+
 public class Worker extends SpatialEntity{
 	public Boolean active;
 	public ArrayList<Task> assignedTasks;
@@ -27,6 +29,19 @@ public class Worker extends SpatialEntity{
 		assignedTasks = new ArrayList<Task>();
 		travledDistance = 0.0;
 		active = false;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("Worker %d:\n", this.id));
+		sb.append(super.toString());
+		sb.append("Assigned Tasks:");
+		for (Task t : assignedTasks)
+			sb.append(String.format("t%d, ",t.id));
+		sb.append(String.format("\nMax: %d\n", maxNumberOfTasks));
+		sb.append(String.format("Traveled: %.2f\n", travledDistance));
+		return sb.toString();
 	}
 	
 	public void UpdateLocation() {
@@ -79,7 +94,7 @@ public class Worker extends SpatialEntity{
 			for (int i = 0; i < p.size(); ++i) {
 				Task current = p.get(i);
 				int nextTime = Math.max(current.releaseFrame, time + (int)loc.distance(current.location));
-				if (nextTime < current.retractFrame && nextTime < this.retractFrame) {
+				if (nextTime <= current.retractFrame && nextTime <= this.retractFrame) {
 					loc = current.location;
 					time = nextTime;
 				}
@@ -100,24 +115,33 @@ public class Worker extends SpatialEntity{
 	
 	public void FindPTSs(PTS prefix, ArrayList<Task> tasks) {
 		this.ptsSet = this.GetPTSs(prefix, tasks);
+		Log.Add(String.format("Visited Nodes: %d", this.nodeCount));
+		Log.Add(String.format("Found PTSs: %d", this.ptsSet.Size()));
 	}
 	
+	private int nodeCount = 0;
 	private PTSs GetPTSs(PTS prefix, ArrayList<Task> tasks) {
+		//Log.Add("prefix: %s", prefix.toString());
 		PTSs retPTSs = new PTSs();
 		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
 		for (Task t : tasks) {
+			nodeCount++;
 			tasks_c.remove(t);
 			if (!this.Overlap(t)) continue;
 			PTS pts = new PTS(prefix.list);
 			pts.AddTask(t);
+			//Log.Add("New PTS: %s", pts.toString());
 			if (IsPTS(pts)) {
+				//Log.Add("New PTS is a PTS");
 				retPTSs.AddSubset(pts);
+				//Log.Add("retPTS: %s", retPTSs.toString());
 				if (pts.size() < this.maxNumberOfTasks && tasks_c.size() > 0) {
 					PTSs newPTSs = this.GetPTSs(pts, tasks_c);
 					retPTSs.addAll(newPTSs);
 				}
 			}
 		}
+		//Log.Add("Final retPTSs for prefix %s is %s", prefix.toString(), retPTSs.toString());
 		return retPTSs;
 	}
 

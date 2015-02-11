@@ -34,5 +34,14 @@ public class PTSs {
 			this.AddSubset(pts);
 		}
 	}
-
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("PTSs:\n");
+		for (PTS pts : list)
+			sb.append(pts.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
 }

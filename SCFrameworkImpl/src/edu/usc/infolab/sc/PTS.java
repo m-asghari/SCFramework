@@ -35,4 +35,15 @@ public class PTS {
 	public int size() {
 		return list.size();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Tasks: ");
+		for (Task t : list) {
+			sb.append(String.format("%d, ", t.id));
+		}
+		sb.append(String.format("Value: %d\n", value));
+		return sb.toString();
+	}
 }

@@ -23,7 +23,7 @@
 		<ReleaseTime mode="InterArrival">
 			<Distribution name="Exponential" prob="1">
 				<Settings>
-					<mean value="5"/>
+					<mean value="4"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>

@@ -52,12 +52,18 @@ public class Graph {
 				return true;
 			return false;
 		}
-	}
-	
-	private void AddNewNode(Node n){
-		int index = 0;
-		while (nodes.get(index).degree() < n.degree()) index++;
-		nodes.add(index, n);
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("Node%d:\n", index));
+			sb.append(pts.toString());
+			sb.append(String.format("Worker: %d\n", workerId));
+			sb.append(String.format("ptsIndex: %d\n", ptsIndex));
+			sb.append("Adjacent Nodes: ");
+			for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
+			return sb.toString();
+		}
 	}
 	
 	public Graph(ArrayList<Worker> workers) {
@@ -106,6 +112,24 @@ public class Graph {
 		
 		int last = nodes.size() - 1;
 		maxCliqueSizes.put(last, nodes.get(last).pts.value);
+	}
+	
+	private void AddNewNode(Node n){
+		int index = 0;
+		while (nodes.get(index).degree() < n.degree()) index++;
+		nodes.add(index, n);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int l = 0; l < layers.size(); l++) {
+			sb.append(String.format("Layer %d:\n", l));
+			for (Node n : layers.get(l)) sb.append(n.toString());
+			sb.append("\n");
+		}
+		sb.append("\n");
+		return sb.toString();
 	}
 	
 	public ArrayList<Node> GetMaxClique(ArrayList<Node> fixedSet, ArrayList<Node> workingSet, int lb) {
