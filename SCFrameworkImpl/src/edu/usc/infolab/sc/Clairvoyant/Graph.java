@@ -16,6 +16,7 @@ public class Graph {
 	
 	public class Node {
 		public int index;
+		public int value;
 		public PTS pts;
 		public int workerId;
 		public int ptsIndex;
@@ -24,13 +25,25 @@ public class Graph {
 		
 		public Node() {
 			this.index = -1;
+			adjList = new ArrayList<Node>();
+		}
+		
+		public Node(int index, int value) {
+			this.index = index;
+			this.value = value;
+			this.workerId = -1;
+			this.ptsIndex = -1;
+			this.pts = new PTS();
+			adjList = new ArrayList<Node>();
 		}
 		
 		public Node(int w, int index, PTS pts) {
 			this.workerId = w;
 			this.ptsIndex = index;
 			this.pts = new PTS(pts);
+			this.value = pts.value;
 			this.index = -1;
+			adjList = new ArrayList<Node>();
 		}
 		
 		public void AddNeighbor(Node n) {
@@ -48,7 +61,8 @@ public class Graph {
 		@Override
 		public boolean equals(Object obj) {
 			Node n = (Node)obj;
-			if (this.workerId == n.workerId && this.ptsIndex == n.ptsIndex)
+			//if (this.workerId == n.workerId && this.ptsIndex == n.ptsIndex)
+			if (this.index == n.index)
 				return true;
 			return false;
 		}
@@ -62,8 +76,15 @@ public class Graph {
 			sb.append(String.format("ptsIndex: %d\n", ptsIndex));
 			sb.append("Adjacent Nodes: ");
 			for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
+			sb.append(String.format("\nValue: %d\n", value));
 			return sb.toString();
 		}
+	}
+	
+	public Graph() {
+		layers = new ArrayList<ArrayList<Node>>();
+		nodes = new ArrayList<Node>();
+		maxCliqueSizes = new HashMap<Integer, Integer>();
 	}
 	
 	public Graph(ArrayList<Worker> workers) {
@@ -111,7 +132,7 @@ public class Graph {
 		}
 		
 		int last = nodes.size() - 1;
-		maxCliqueSizes.put(last, nodes.get(last).pts.value);
+		maxCliqueSizes.put(last, nodes.get(last).value);
 	}
 	
 	private void AddNewNode(Node n){
@@ -132,33 +153,68 @@ public class Graph {
 		return sb.toString();
 	}
 	
+	public ArrayList<Graph.Node> FindMaxClique() {
+		// Initializing the clique search process
+		int n = this.nodes.size() - 1;
+		int currentMaxValue = this.nodes.get(n).value;
+		ArrayList<Node> currentMax = new ArrayList<Node>();
+		currentMax.add(this.nodes.get(n));
+		this.maxCliqueSizes.put(n, currentMaxValue);
+		
+		for (int k = n - 1; k >= 0; k--) {
+			Node currentNode = this.nodes.get(k);
+			ArrayList<Node> fixedSet = new ArrayList<Node>();
+			fixedSet.add(currentNode);
+			
+			ArrayList<Node> workingSet = new ArrayList<Node>();
+			for (int l = k + 1; l < this.nodes.size(); ++l) {
+				if (currentNode.Neighbors().contains(this.nodes.get(l)))
+					workingSet.add(this.nodes.get(l));	
+			}
+			
+			ArrayList<Graph.Node> clique = this.GetMaxClique(fixedSet, workingSet, currentMaxValue);
+			if (clique != null) {
+				int cliqueValue = 0;
+				for (Node node : clique) cliqueValue += node.value;
+				if (cliqueValue > this.maxCliqueSizes.get(k+1)) {
+					currentMax = new ArrayList<Graph.Node>(clique);
+					this.maxCliqueSizes.put(k, cliqueValue);
+				}
+				else {
+					this.maxCliqueSizes.put(k, this.maxCliqueSizes.get(k+1));
+				}
+			}
+		}
+		return currentMax;
+	}
+	
 	public ArrayList<Node> GetMaxClique(ArrayList<Node> fixedSet, ArrayList<Node> workingSet, int lb) {
-		ArrayList<Node> maxClique = null;
+		ArrayList<Node> maxClique = new ArrayList<Node>(fixedSet);
 		int currentMaxSize = lb;
 		
 		int fixedValue = 0;
-		for (Node n : fixedSet) fixedValue += n.pts.value;
+		for (Node n : fixedSet) fixedValue += n.value;
 		
 		for (int i = 0; i < workingSet.size(); ++i) {
 			Node fixed = workingSet.get(i);
 			int upperBound = fixedValue + maxCliqueSizes.get(fixed.index);
 			if (upperBound <= currentMaxSize) continue;
-			ArrayList<Node> newFixedSet = new ArrayList<Graph.Node>(fixedSet);
+			ArrayList<Node> newFixedSet = new ArrayList<Node>(fixedSet);
 			newFixedSet.add(fixed);
 			
-			ArrayList<Node> newWorkingSet = new ArrayList<Graph.Node>();
+			ArrayList<Node> newWorkingSet = new ArrayList<Node>();
 			int newWorkingValue = 0;
 			for (int j = i + 1; j < workingSet.size(); ++j) {
 				if (fixed.Neighbors().contains(workingSet.get(j))) {
 					newWorkingSet.add(workingSet.get(j));
-					newWorkingValue += workingSet.get(j).pts.value;
+					newWorkingValue += workingSet.get(j).value;
 				}
 			}
-			if (fixedValue + fixed.pts.value + newWorkingValue <= currentMaxSize) continue;
+			if (fixedValue + fixed.value + newWorkingValue <= currentMaxSize) continue;
 			ArrayList<Node> clique = GetMaxClique(newFixedSet, newWorkingSet, currentMaxSize);
 			if (clique != null) {
 				int cliqueSize = 0;
-				for (Node n : clique) cliqueSize += n.pts.value;
+				for (Node n : clique) cliqueSize += n.value;
 				if (cliqueSize > currentMaxSize) {
 					currentMaxSize = cliqueSize;
 					maxClique = new ArrayList<Graph.Node>(clique);

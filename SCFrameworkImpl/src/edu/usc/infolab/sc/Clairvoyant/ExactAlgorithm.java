@@ -31,7 +31,10 @@ public class ExactAlgorithm {
 	
 	public void Run() {
 		FindPTSs();
-		ArrayList<Graph.Node> maxClique = FindMaxClique();
+		
+		Graph PTS_Graph = new Graph(new ArrayList<Worker>(_workers.values()));
+		
+		ArrayList<Graph.Node> maxClique = PTS_Graph.FindMaxClique();
 		
 		for (Graph.Node n : maxClique) {
 			Worker w = _workers.get(n.workerId);
@@ -47,7 +50,7 @@ public class ExactAlgorithm {
 		
 		// Initializing the clique search process
 		int n = PTS_Graph.nodes.size() - 1;
-		int currentMaxValue = PTS_Graph.nodes.get(n).pts.value;
+		int currentMaxValue = PTS_Graph.nodes.get(n).value;
 		ArrayList<Graph.Node> currentMax = new ArrayList<Graph.Node>();
 		currentMax.add(PTS_Graph.nodes.get(n));
 		PTS_Graph.maxCliqueSizes.put(n, currentMaxValue);
@@ -66,7 +69,7 @@ public class ExactAlgorithm {
 			ArrayList<Graph.Node> clique = PTS_Graph.GetMaxClique(fixedSet, workingSet, currentMaxValue);
 			if (clique != null) {
 				int cliqueValue = 0;
-				for (Graph.Node node : clique) cliqueValue += node.pts.value;
+				for (Graph.Node node : clique) cliqueValue += node.value;
 				if (cliqueValue > PTS_Graph.maxCliqueSizes.get(k+1)) {
 					currentMax = new ArrayList<Graph.Node>(clique);
 					PTS_Graph.maxCliqueSizes.put(k, cliqueValue);

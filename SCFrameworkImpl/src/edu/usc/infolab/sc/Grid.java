@@ -1,12 +1,12 @@
 package edu.usc.infolab.sc;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Random;
 
 import org.w3c.dom.Element;
 
 public class Grid {
+	
 	double minx;
 	double miny;
 	double maxx;
@@ -15,7 +15,11 @@ public class Grid {
 	double length;
 	int rowCount;
 	int colCount;
-	public ArrayList<Double> cellProb;
+	//public ArrayList<Double> cellProb;
+	//public ArrayList<Integer> cellCount;
+	//public int totalCount;
+	//CountDistribution dist;
+	//private int size;
 	
 	public Grid(Element e) {
 		minx = Double.parseDouble(e.getAttribute("minx"));
@@ -26,7 +30,12 @@ public class Grid {
 		length = Double.parseDouble(e.getAttribute("l"));
 		rowCount = (int)((maxy - miny)/width);
 		colCount = (int)((maxx - minx)/length);
-		cellProb = new ArrayList<Double>();
+		//size = rowCount * colCount;
+		//dist = new CountDistribution(this.size());
+	}
+	
+	public int size() {
+		return rowCount * colCount;
 	}
 	
 	public Grid(Point2D.Double min, Point2D.Double max, double w, double l) {
@@ -38,7 +47,7 @@ public class Grid {
 		length = l;
 		rowCount = (int)((maxy - miny)/width);
 		colCount = (int)((maxx - minx)/length);
-		cellProb = new ArrayList<Double>();
+		//dist = new CountDistribution(this.size());
 	}
 	
 	public boolean In(SpatialEntity se) {

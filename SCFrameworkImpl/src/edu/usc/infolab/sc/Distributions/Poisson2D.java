@@ -1,6 +1,7 @@
 package edu.usc.infolab.sc.Distributions;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.w3c.dom.Element;
@@ -9,6 +10,7 @@ import edu.usc.infolab.sc.Grid;
 
 public class Poisson2D extends Distribution<Point2D.Double> {
 	Grid grid;
+	ArrayList<Double> cellProb;
 	Double intensity;
 	Random rand;
 	
@@ -34,14 +36,14 @@ public class Poisson2D extends Distribution<Point2D.Double> {
 	public void Initialize() {
 		Poisson p = new Poisson(new PoissonConfig(this.intensity));
 		Double sum = 0.0;
-		for (int cell = 0; cell < grid.cellProb.size(); ++cell) {
+		for (int cell = 0; cell < grid.size(); ++cell) {
 			double prob = p.Next()*1.0;
-			grid.cellProb.add(cell, prob);
+			cellProb.add(cell, prob);
 			sum += prob;			
 		}
-		for (int cell = 0; cell < grid.cellProb.size(); ++cell) {
-			double old = grid.cellProb.get(cell);
-			grid.cellProb.set(cell, old/sum);
+		for (int cell = 0; cell < cellProb.size(); ++cell) {
+			double old = cellProb.get(cell);
+			cellProb.set(cell, old/sum);
 		}
 	}
 	
@@ -50,7 +52,7 @@ public class Poisson2D extends Distribution<Point2D.Double> {
 		Double p = rand.nextDouble();
 		int cell = 0;
 		double cdf = 0.0;
-		while ((cdf += grid.cellProb.get(cell++)) < p );
+		while ((cdf += cellProb.get(cell++)) < p );
 		return grid.RandomPoint(cell);
 	}
 	

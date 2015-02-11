@@ -1,8 +1,10 @@
 package edu.usc.infolab.sc.AssignmentAlgorithms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
+import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
@@ -15,9 +17,14 @@ public abstract class TaskAssignmentAlgorithm {
 	ArrayList<Task> tasks;
 	ArrayList<Task> upcomingTasks;
 	ArrayList<Worker> upcomingWorkers;
+	protected Grid grid;
 	
-	public TaskAssignmentAlgorithm() {
+	public TaskAssignmentAlgorithm(ArrayList<Task> tasks, ArrayList<Worker> workers) {
 		currentFrame = 0;
+		this.upcomingTasks = new ArrayList<Task>(tasks);
+		Collections.sort(upcomingTasks);
+		this.upcomingWorkers = new ArrayList<Worker>(workers);
+		Collections.sort(upcomingWorkers);
 	}
 	
 	public void AdvanceTime() {
