@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 import edu.usc.infolab.sc.Main.Log;
 
 public class Worker extends SpatialEntity{
+	public static Integer idCntr = 0;
 	public Boolean active;
 	public ArrayList<Task> assignedTasks;
 	public Integer maxNumberOfTasks;
@@ -16,11 +17,13 @@ public class Worker extends SpatialEntity{
 		
 	public Worker() {
 		Initialize();
+		this.id = idCntr++;
 	}
 	
 	public Worker(Element e) {
 		super(e);
 		Initialize();
+		this.id = idCntr++;
 		this.maxNumberOfTasks = Integer.parseInt(e.getAttribute("max"));
 	}
 	
@@ -113,19 +116,22 @@ public class Worker extends SpatialEntity{
 		return this.ptsSet;
 	}
 	
-	public void FindPTSs(PTS prefix, ArrayList<Task> tasks) {
-		this.ptsSet = this.GetPTSs(prefix, tasks);
+	public PTSs FindPTSs(PTS prefix, ArrayList<Task> tasks) {
+		PTSs result = this.GetPTSs(prefix, tasks);
+		this.ptsSet = result;
 		Log.Add(String.format("Visited Nodes: %d", this.nodeCount));
 		Log.Add(String.format("Found PTSs: %d", this.ptsSet.Size()));
+		return result;
 	}
 	
 	private int nodeCount = 0;
+	
 	private PTSs GetPTSs(PTS prefix, ArrayList<Task> tasks) {
 		//Log.Add("prefix: %s", prefix.toString());
 		PTSs retPTSs = new PTSs();
 		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
 		for (Task t : tasks) {
-			nodeCount++;
+			this.nodeCount++;
 			tasks_c.remove(t);
 			if (!this.Overlap(t)) continue;
 			PTS pts = new PTS(prefix.list);

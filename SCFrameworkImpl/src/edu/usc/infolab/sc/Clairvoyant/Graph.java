@@ -7,6 +7,7 @@ import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.PTSs;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Main.Log;
 
 public class Graph {
 	
@@ -75,7 +76,7 @@ public class Graph {
 			sb.append(String.format("Worker: %d\n", workerId));
 			sb.append(String.format("ptsIndex: %d\n", ptsIndex));
 			sb.append("Adjacent Nodes: ");
-			for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
+			//for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
 			sb.append(String.format("\nValue: %d\n", value));
 			return sb.toString();
 		}
@@ -136,6 +137,10 @@ public class Graph {
 	}
 	
 	private void AddNewNode(Node n){
+		if (nodes.size() == 0) {
+			nodes.add(n);
+			return;
+		}
 		int index = 0;
 		while (nodes.get(index).degree() < n.degree()) index++;
 		nodes.add(index, n);
@@ -184,6 +189,7 @@ public class Graph {
 					this.maxCliqueSizes.put(k, this.maxCliqueSizes.get(k+1));
 				}
 			}
+			Log.Add("Found MaxClique for node %d", currentNode.index);
 		}
 		return currentMax;
 	}

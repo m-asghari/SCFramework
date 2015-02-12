@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import org.w3c.dom.Element;
 
 public abstract class SpatialEntity implements Comparable<SpatialEntity>{
-	public static Integer idCntr = 0;
 	public Integer id;
 	public Point2D.Double location;
 	public Integer releaseFrame;
@@ -14,7 +13,6 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 	public SpatialEntity() {}
 	
 	public SpatialEntity(Element e) {
-		this.id = idCntr++;
 		Double x = Double.parseDouble(e.getAttribute("x"));
 		Double y = Double.parseDouble(e.getAttribute("y"));
 		this.location = new Point2D.Double(x, y);

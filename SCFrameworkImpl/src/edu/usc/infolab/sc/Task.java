@@ -5,16 +5,19 @@ import java.util.ArrayList;
 import org.w3c.dom.Element;
 
 public class Task extends SpatialEntity{
+	public static Integer idCntr = 0;
 	ArrayList<Worker> assignedWorkers;
 	public Integer value;
 	
 	public Task() {
 		Initialize();
+		this.id = idCntr++;
 	}
 	
 	public Task(Element e) {
 		super(e);
 		Initialize();
+		this.id = idCntr++;
 		this.value = Integer.parseInt(e.getAttribute("value"));
 	}
 	

@@ -11,7 +11,7 @@ public class Main {
 	public static void main(String[] args) {
 		Log.Initialize();
 		
-		InputParser ip = new InputParser("W50T250_1.xml");
+		InputParser ip = new InputParser("W10T50_4.xml");
 		//Grid grid = ip.GetGrid();
 		HashMap<Integer, Task> tasks = ip.GetTasks();
 		HashMap<Integer,Worker> workers = ip.GetWorkers();

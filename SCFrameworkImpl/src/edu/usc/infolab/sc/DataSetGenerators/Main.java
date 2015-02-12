@@ -70,7 +70,7 @@ public class Main {
 			oTasks.appendChild(task);
 		}
 		
-		IO.SaveXML(output, "SampleOutput2.xml");
+		IO.SaveXML(output, "W10T50_4.xml");
 	}
 
 }

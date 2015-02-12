@@ -1,22 +1,13 @@
 <DataSpecification>
-	<Grid minx="0" miny="0" maxx="20" maxy="10" w="1" l="1"/>
-	<Workers size="50">
+	<Grid minx="0" miny="0" maxx="40" maxy="30" w="1" l="1"/>
+	<Workers size="20">
 		<Location>
-			<Distribution name="BivariateNormal" prob="-1">
-				<Settings>
-					<mean1 value="3" />
-					<sd1 value="1" />
-					<mean2 value="4" />
-					<sd2 value="1.5" />
-					<covar value="" />
-				</Settings>
-			</Distribution>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
-					<minx value="3" />
-					<miny value="1" />
-					<maxx value="22" />
-					<maxy value="15" />
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
 				</Settings>
 			</Distribution>
 		</Location>
@@ -31,7 +22,7 @@
 			<Distribution name="Uniform" prob="1">
 				<Settings>
 					<min value="10"/>
-					<max value="40"/>
+					<max value="30"/>
 				</Settings>
 			</Distribution>
 		</Duration>
@@ -44,23 +35,23 @@
 			</Distribution>
 		</MaxTasks>
 	</Workers>
-	<Tasks size="250">
+	<Tasks size="100">
 		<Location>
-			<Distribution name="BivariateNormal" prob="-1">
+			<Distribution name="BivariateNormal" prob="0.1">
 				<Settings>
-					<mean1 value="3" />
+					<mean1 value="23" />
 					<sd1 value="1" />
-					<mean2 value="4" />
+					<mean2 value="14" />
 					<sd2 value="1.5" />
 					<covar value="" />
 				</Settings>
 			</Distribution>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
-					<minx value="3" />
-					<miny value="1" />
-					<maxx value="22" />
-					<maxy value="15" />
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
 				</Settings>
 			</Distribution>
 		</Location>
@@ -80,9 +71,10 @@
 			</Distribution>
 		</Duration>
 		<Value>
-			<Distribution name="Constant" prob="1">
+			<Distribution name="Uniform" prob="1">
 				<Settings>
-					<mean value="1"/>
+					<min value="1"/>
+					<max value="10"/>
 				</Settings>
 			</Distribution>
 		</Value>

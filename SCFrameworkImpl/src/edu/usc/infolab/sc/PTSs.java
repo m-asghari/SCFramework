@@ -25,6 +25,10 @@ public class PTSs {
 		return list.get(index);
 	}
 	
+	public ArrayList<PTS> GetList() {
+		return list;
+	}
+	
 	public int Size() {
 		return list.size();
 	}

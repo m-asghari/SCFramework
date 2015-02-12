@@ -23,7 +23,7 @@ public class ExactAlgorithm {
 		ArrayList<Worker> workers = new ArrayList<Worker>(_workers.values());
 		Collections.sort(workers);
 		for (Worker w : workers) {
-			Log.Add(String.format("Starting FindPTSs for worker %d", w.id));
+			//Log.Add(String.format("Starting FindPTSs for worker %d", w.id));
 			w.FindPTSs(new PTS(), tasks);
 			Log.Add(String.format("Finished FindPTSs for worker %d", w.id));			
 		}
@@ -33,10 +33,11 @@ public class ExactAlgorithm {
 		FindPTSs();
 		
 		Graph PTS_Graph = new Graph(new ArrayList<Worker>(_workers.values()));
-		
+		Log.Add("Finished Building Graph");
 		ArrayList<Graph.Node> maxClique = PTS_Graph.FindMaxClique();
 		
 		for (Graph.Node n : maxClique) {
+			Log.Add(n.toString());
 			Worker w = _workers.get(n.workerId);
 			for (Task t : n.pts.list) {
 				w.AddTask(t);
