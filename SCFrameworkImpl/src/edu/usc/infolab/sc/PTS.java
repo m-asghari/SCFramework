@@ -2,7 +2,7 @@ package edu.usc.infolab.sc;
 
 import java.util.ArrayList;
 
-public class PTS {
+public class PTS implements Comparable<PTS>{
 	public ArrayList<Task> list;
 	public Integer value;
 	
@@ -36,6 +36,14 @@ public class PTS {
 		return list.size();
 	}
 	
+	public boolean Contains(ArrayList<Task> tasks) {
+		for (Task t : list) {
+			if (tasks.contains(t))
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -45,5 +53,10 @@ public class PTS {
 		}
 		sb.append(String.format("Value: %d\n", value));
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(PTS pts) {
+		return this.value.compareTo(pts.value);
 	}
 }

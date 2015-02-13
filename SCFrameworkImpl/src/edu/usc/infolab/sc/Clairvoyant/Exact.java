@@ -1,32 +1,16 @@
 package edu.usc.infolab.sc.Clairvoyant;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
-import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Main.Log;
 
-public class ExactAlgorithm {
-	HashMap<Integer, Task> _tasks;
-	HashMap<Integer, Worker> _workers;
+public class Exact extends ClairvoyantAlgorithm{
 	
-	public ExactAlgorithm(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {
-		_tasks = tasks;
-		_workers = workers;
-	}
-	
-	public void FindPTSs() {
-		ArrayList<Task> tasks = new ArrayList<Task>(_tasks.values());
-		ArrayList<Worker> workers = new ArrayList<Worker>(_workers.values());
-		Collections.sort(workers);
-		for (Worker w : workers) {
-			//Log.Add(String.format("Starting FindPTSs for worker %d", w.id));
-			w.FindPTSs(new PTS(), tasks);
-			Log.Add(String.format("Finished FindPTSs for worker %d", w.id));			
-		}
+	public Exact(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {
+		super(tasks, workers);
 	}
 	
 	public void Run() {
@@ -34,6 +18,7 @@ public class ExactAlgorithm {
 		
 		Graph PTS_Graph = new Graph(new ArrayList<Worker>(_workers.values()));
 		Log.Add("Finished Building Graph");
+		
 		ArrayList<Graph.Node> maxClique = PTS_Graph.FindMaxClique();
 		
 		for (Graph.Node n : maxClique) {
@@ -46,7 +31,7 @@ public class ExactAlgorithm {
 		}
 	}
 	
-	public ArrayList<Graph.Node> FindMaxClique() {
+	/*public ArrayList<Graph.Node> FindMaxClique() {
 		Graph PTS_Graph = new Graph(new ArrayList<Worker>(_workers.values()));
 		
 		// Initializing the clique search process
@@ -82,5 +67,5 @@ public class ExactAlgorithm {
 		}
 		
 		return currentMax;
-	}
+	}*/
 }

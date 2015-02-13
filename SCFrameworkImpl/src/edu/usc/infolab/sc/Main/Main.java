@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Clairvoyant.ExactAlgorithm;
+import edu.usc.infolab.sc.Clairvoyant.BestPTSFirst;
+import edu.usc.infolab.sc.Clairvoyant.Exact;
 
 public class Main {
 
@@ -15,8 +16,10 @@ public class Main {
 		//Grid grid = ip.GetGrid();
 		HashMap<Integer, Task> tasks = ip.GetTasks();
 		HashMap<Integer,Worker> workers = ip.GetWorkers();
-		ExactAlgorithm exactAlgo = new ExactAlgorithm(tasks, workers);
-		exactAlgo.Run();
+		//Exact exactAlgo = new Exact(tasks, workers);
+		//exactAlgo.Run();
+		BestPTSFirst bpfAlgo = new BestPTSFirst(tasks, workers);
+		bpfAlgo.Run();
 		
 		Log.Finalize();
 	}
