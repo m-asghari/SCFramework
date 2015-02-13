@@ -9,14 +9,17 @@ import edu.usc.infolab.sc.Clairvoyant.ExactAlgorithm;
 public class Main {
 
 	public static void main(String[] args) {
-		Log.Initialize();
+		String input = "W10T50_7";
+		Log.Initialize(input);
 		
-		InputParser ip = new InputParser("W10T50_4.xml");
+		InputParser ip = new InputParser(String.format("%s.xml", input));
 		//Grid grid = ip.GetGrid();
 		HashMap<Integer, Task> tasks = ip.GetTasks();
 		HashMap<Integer,Worker> workers = ip.GetWorkers();
 		ExactAlgorithm exactAlgo = new ExactAlgorithm(tasks, workers);
 		exactAlgo.Run();
+		
+		Result.GenerateReport();
 		
 		Log.Finalize();
 	}

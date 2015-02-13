@@ -19,6 +19,7 @@ public class Task extends SpatialEntity{
 		Initialize();
 		this.id = idCntr++;
 		this.value = Integer.parseInt(e.getAttribute("value"));
+		//this.value = 1;
 	}
 	
 	private void Initialize() {

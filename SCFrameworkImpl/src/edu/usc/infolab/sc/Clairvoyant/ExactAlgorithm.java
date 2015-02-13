@@ -8,6 +8,7 @@ import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Main.Result;
 
 public class ExactAlgorithm {
 	HashMap<Integer, Task> _tasks;
@@ -40,6 +41,8 @@ public class ExactAlgorithm {
 			Log.Add(n.toString());
 			Worker w = _workers.get(n.workerId);
 			for (Task t : n.pts.list) {
+				Result.AssignedTasks++;
+				Result.GainedValue += t.value;
 				w.AddTask(t);
 				t.AssignTo(w);
 			}
