@@ -16,6 +16,16 @@ public final class Log {
 	
 	private Log() {}
 	
+	public static void Initialize(String input) {
+		try {
+			fw = new FileWriter(String.format("logs_%s.log", input));
+			bw = new BufferedWriter(fw);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void Initialize() {
 		try {
 			fw = new FileWriter(logName);

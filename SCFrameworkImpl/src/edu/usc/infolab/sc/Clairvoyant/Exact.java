@@ -6,6 +6,7 @@ import java.util.HashMap;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Main.Result;
 
 public class Exact extends ClairvoyantAlgorithm{
 	
@@ -25,6 +26,8 @@ public class Exact extends ClairvoyantAlgorithm{
 			Log.Add(n.toString());
 			Worker w = _workers.get(n.workerId);
 			for (Task t : n.pts.list) {
+				Result.AssignedTasks++;
+				Result.GainedValue += t.value;
 				w.AddTask(t);
 				t.AssignTo(w);
 			}

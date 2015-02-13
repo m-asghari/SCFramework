@@ -51,7 +51,7 @@ public class PTS implements Comparable<PTS>{
 		for (Task t : list) {
 			sb.append(String.format("%d, ", t.id));
 		}
-		sb.append(String.format("Value: %d\n", value));
+		sb.append(String.format(" - Value: %d\n", value));
 		return sb.toString();
 	}
 
