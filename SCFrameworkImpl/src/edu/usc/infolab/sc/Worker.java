@@ -11,6 +11,7 @@ public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
 	public Boolean active;
 	public ArrayList<Task> assignedTasks;
+	private ArrayList<Task> remainingTasks;
 	public Integer maxNumberOfTasks;
 	Double travledDistance;
 	PTSs ptsSet;
@@ -30,6 +31,7 @@ public class Worker extends SpatialEntity{
 	private void Initialize() {
 		ptsSet = new PTSs();
 		assignedTasks = new ArrayList<Task>();
+		remainingTasks = new ArrayList<Task>();
 		travledDistance = 0.0;
 		active = false;
 	}
@@ -48,7 +50,7 @@ public class Worker extends SpatialEntity{
 	}
 	
 	public void UpdateLocation() {
-		Point2D.Double dest = assignedTasks.get(0).location;
+		Point2D.Double dest = remainingTasks.get(0).location;
 		Double dist = location.distance(dest);
 		if (dist > 1) {
 			MoveToward(dest, 1.0);
@@ -56,10 +58,12 @@ public class Worker extends SpatialEntity{
 		}
 		else if (assignedTasks.size() > 1 ){
 			// TODO(masghari): set assignedTask.get(0) as Done!
+			
 			// TODO(masghari): remove done task from the list!
+			remainingTasks.remove(0);
 			
 			// Start moving toward new task
-			dest = assignedTasks.get(0).location;
+			dest = remainingTasks.get(0).location;
 			MoveToward(dest, 1.0 - dist);
 			travledDistance += 1.0;
 		}
@@ -72,6 +76,10 @@ public class Worker extends SpatialEntity{
 		assignedTasks.add(task);
 	}
 	
+	public void SetSchedule(ArrayList<Task> tasks) {
+		this.remainingTasks = new ArrayList<Task>(tasks);
+	}
+	
 	private void MoveToward(Point2D dest, Double length) {
 		Double dist = location.distance(dest);
 		Double deltaX = length * (dest.getX() - location.getX()) / dist;
@@ -81,9 +89,33 @@ public class Worker extends SpatialEntity{
 		location.setLocation(newX, newY);
 	}
 	
-	public Boolean CanPerform(Task task) {
+	public ArrayList<Task> CanPerform(Task task) {
 		if (assignedTasks.size() == maxNumberOfTasks) {
-			return false;
+			return null;
+		}
+		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
+		tasks.add(task);
+		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
+		for (ArrayList<Task> p : taskPerms) {
+			if (CanComplete(p))
+				return p;
+		}
+		return null;
+	}
+	
+	private Boolean CanComplete(ArrayList<Task> tasks) {
+		Point2D.Double loc = this.location;
+		int time = this.releaseFrame;
+		for (int i = 0; i < tasks.size(); ++i) {
+			Task current = tasks.get(i);
+			int nextTime = Math.max(current.releaseFrame, time + (int)loc.distance(current.location));
+			if (nextTime <= current.retractFrame && nextTime <= this.retractFrame) {
+				loc = current.location;
+				time = nextTime;
+			}
+			else {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -91,23 +123,8 @@ public class Worker extends SpatialEntity{
 	public Boolean IsPTS(PTS pts) {
 		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
 		for (ArrayList<Task> p : taskPerms) {
-			Boolean possible = true;
-			Point2D.Double loc = this.location;
-			int time = this.releaseFrame;
-			for (int i = 0; i < p.size(); ++i) {
-				Task current = p.get(i);
-				int nextTime = Math.max(current.releaseFrame, time + (int)loc.distance(current.location));
-				if (nextTime <= current.retractFrame && nextTime <= this.retractFrame) {
-					loc = current.location;
-					time = nextTime;
-				}
-				else {
-					possible = false;
-					break;
-				}
-			}
-			if (!possible) continue;
-			else return true;
+			if (CanComplete(p))
+				return true;
 		}
 		return false;
 	}
@@ -127,7 +144,6 @@ public class Worker extends SpatialEntity{
 	private int nodeCount = 0;
 	
 	private PTSs GetPTSs(PTS prefix, ArrayList<Task> tasks) {
-		//Log.Add("prefix: %s", prefix.toString());
 		PTSs retPTSs = new PTSs();
 		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
 		for (Task t : tasks) {
@@ -136,18 +152,14 @@ public class Worker extends SpatialEntity{
 			if (!this.Overlap(t)) continue;
 			PTS pts = new PTS(prefix.list);
 			pts.AddTask(t);
-			//Log.Add("New PTS: %s", pts.toString());
 			if (IsPTS(pts)) {
-				//Log.Add("New PTS is a PTS");
 				retPTSs.AddSubset(pts);
-				//Log.Add("retPTS: %s", retPTSs.toString());
 				if (pts.size() < this.maxNumberOfTasks && tasks_c.size() > 0) {
 					PTSs newPTSs = this.GetPTSs(pts, tasks_c);
 					retPTSs.addAll(newPTSs);
 				}
 			}
 		}
-		//Log.Add("Final retPTSs for prefix %s is %s", prefix.toString(), retPTSs.toString());
 		return retPTSs;
 	}
 

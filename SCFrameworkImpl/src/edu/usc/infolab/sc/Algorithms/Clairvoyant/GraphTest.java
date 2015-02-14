@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.Clairvoyant;
+package edu.usc.infolab.sc.Algorithms.Clairvoyant;
 
 import java.util.ArrayList;
 

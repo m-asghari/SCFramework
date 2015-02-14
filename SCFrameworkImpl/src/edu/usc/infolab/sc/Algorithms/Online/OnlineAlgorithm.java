@@ -1,14 +1,16 @@
-package edu.usc.infolab.sc.AssignmentAlgorithms;
+package edu.usc.infolab.sc.Algorithms.Online;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Algorithms.Algorithm;
 
-public abstract class TaskAssignmentAlgorithm {
+public abstract class OnlineAlgorithm extends Algorithm{
 	Integer currentFrame;
 	Integer assignedTasksCntr;
 	Integer finishedTasksCntr;
@@ -19,12 +21,21 @@ public abstract class TaskAssignmentAlgorithm {
 	ArrayList<Worker> upcomingWorkers;
 	protected Grid grid;
 	
-	public TaskAssignmentAlgorithm(ArrayList<Task> tasks, ArrayList<Worker> workers) {
+	public OnlineAlgorithm(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {
+		super(tasks, workers);
 		currentFrame = 0;
-		this.upcomingTasks = new ArrayList<Task>(tasks);
+		this.upcomingTasks = new ArrayList<Task>(tasks.values());
 		Collections.sort(upcomingTasks);
-		this.upcomingWorkers = new ArrayList<Worker>(workers);
+		this.upcomingWorkers = new ArrayList<Worker>(workers.values());
 		Collections.sort(upcomingWorkers);
+	}
+	
+	@Override
+	public void Run() {
+		while (!upcomingTasks.isEmpty()) {
+			AdvanceTime();
+			currentFrame++;
+		}
 	}
 	
 	public void AdvanceTime() {

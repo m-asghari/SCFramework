@@ -1,13 +1,14 @@
-package edu.usc.infolab.sc.AssignmentAlgorithms;
+package edu.usc.infolab.sc.Algorithms.Online;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
-public class NearestNeighbor extends TaskAssignmentAlgorithm {
+public class NearestNeighbor extends OnlineAlgorithm {
 
-	public NearestNeighbor(ArrayList<Task> tasks, ArrayList<Worker> workers) {
+	public NearestNeighbor(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {
 		super(tasks, workers);
 	}
 	
@@ -15,16 +16,19 @@ public class NearestNeighbor extends TaskAssignmentAlgorithm {
 	protected Boolean AssignTask(Task task) {
 		double minDistance = Double.MAX_VALUE;
 		Worker minWorker = null;
+		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker worker : workers) {
-			if (worker.CanPerform(task)) {
+			ArrayList<Task> taskOrder = new ArrayList<Task>();
+			if ((taskOrder = worker.CanPerform(task)) != null) {
 				if (worker.location.distance(task.location) < minDistance) {
 					minWorker = worker;
 					minDistance = worker.location.distance(task.location);
+					bestOrder = new ArrayList<Task>(taskOrder);
 				}
 			}
 		}
 		if (minWorker != null) {
-			minWorker.AddTask(task);
+			minWorker.SetSchedule(bestOrder);
 			task.AssignTo(minWorker);
 			return true;
 		}

@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Clairvoyant.BestPTSFirst;
-import edu.usc.infolab.sc.Clairvoyant.Exact;
+import edu.usc.infolab.sc.Algorithms.Clairvoyant.BestPTSFirst;
 
 public class Main {
 
