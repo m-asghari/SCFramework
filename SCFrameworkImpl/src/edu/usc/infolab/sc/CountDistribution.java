@@ -2,7 +2,7 @@ package edu.usc.infolab.sc;
 
 
 public class CountDistribution {
-	double[] cellCount;
+	public double[] cellCount;
 	int totalCount;
 	
 	public CountDistribution(int size, boolean empty) {
@@ -67,10 +67,25 @@ public class CountDistribution {
 		double sum = 0.0;
 		for (int i = 0; i < P.cellCount.length; ++i) {
 			double p = P.Prob(i);
+			if (p == 0)
+				continue;
 			double q = Q.Prob(i);
 			double log = Math.log(p/q);
 			sum += p * log;
 		}
 		return sum;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Cell Probs: ");
+		for (int i = 0; i < cellCount.length; ++i) {
+			if (cellCount[i] > 1 / cellCount.length) {
+				sb.append(String.format("%d: %.2f, ", i, cellCount[i]/totalCount));
+			}
+		}
+		sb.append("\n");
+		return sb.toString();
 	}
 }

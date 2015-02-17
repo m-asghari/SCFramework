@@ -1,12 +1,10 @@
 package edu.usc.infolab.sc.Algorithms.Clairvoyant;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import edu.usc.infolab.sc.PTS;
-import edu.usc.infolab.sc.Pair;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Main.Log;
@@ -23,13 +21,43 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 
 	@Override
 	public void Run() {
-		FindPTSs();
+		HashMap<Worker, PTS> seletedPTSs = new HashMap<Worker, PTS>();
+		
+		ArrayList<Task> remainingTasks = new ArrayList<Task>(_tasks.values());
+		ArrayList<Worker> remainingWorkers = new ArrayList<>(_workers.values());
+		
+		int it = 0;
+		while (!remainingWorkers.isEmpty()) {
+			Worker bestWorker = null;
+			PTS bestPTS = null;
+			int bestValue = Integer.MIN_VALUE;
+			for (Worker w : remainingWorkers) {
+				PTS pts = w.GetBestPTS(remainingTasks);
+				Log.Add("Found Best PTS for worker %d in iteration %d", w.id, it);
+				if (pts.value > bestValue) {
+					bestPTS = pts;
+					bestWorker = w;
+					bestValue = pts.value;
+				}
+			}
+			if (bestWorker != null) {
+				seletedPTSs.put(bestWorker, bestPTS);
+				remainingWorkers.remove(bestWorker);
+				for (Task t : bestPTS.list)
+					remainingTasks.remove(t);
+			}
+			else {
+				break;
+			}
+			it++;
+		}
+		
+		/*FindPTSs();
 		
 		for (Worker w : _workers.values()) {
 			_allPTSs.put(w, new ArrayList<PTS>(w.GetPTSSet().GetList()));
 		}
 		
-		HashMap<Worker, PTS> seletedPTSs = new HashMap<Worker, PTS>();
 		ArrayList<Task> assignedTasks = new ArrayList<Task>();
 		while (true) {
 			Pair<Worker, PTS> r = FindMaxPTS();
@@ -44,7 +72,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 			Log.Add("Worker: %d, PTS: %s", r.x.id, r.y.toString());
 			
 			UpdateSortedPTSs(r.x, assignedTasks);
-		}
+		}*/
 		
 		for (Entry<Worker, PTS> e : seletedPTSs.entrySet()) {
 			Worker w = e.getKey();
@@ -57,7 +85,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 		}
 	}
 
-	private void UpdateSortedPTSs(Worker w, ArrayList<Task> assignedTasks) {
+	/*private void UpdateSortedPTSs(Worker w, ArrayList<Task> assignedTasks) {
 		_allPTSs.put(w, new ArrayList<PTS>());
 		for (Entry<Worker, ArrayList<PTS>> e : _allPTSs.entrySet()) {
 			ArrayList<PTS> currentList = e.getValue();
@@ -86,7 +114,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 			}
 		}
 		return new Pair<Worker, PTS>(maxWorker, maxPTS);
-	}
+	}*/
 	
 	
 

@@ -5,6 +5,8 @@ import java.util.Random;
 
 import org.w3c.dom.Element;
 
+import edu.usc.infolab.sc.Main.Log;
+
 public class Grid {
 	
 	double minx;
@@ -61,7 +63,10 @@ public class Grid {
 	}
 	
 	public int GetCell(Point2D.Double p) {
-		if (!this.In(p)) return -1;
+		if (!this.In(p)) {
+			Log.Add("x:%.2f, y:%.2f", p.x, p.y);
+			return -1;
+		}
 		int col = (int)((p.getX() - minx)/length);
 		int row = (int)((p.getY() - miny)/width);
 		return (row * colCount) + col;

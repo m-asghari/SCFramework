@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Main.Result;
 
 public class NearestNeighbor extends OnlineAlgorithm {
 
@@ -17,7 +18,7 @@ public class NearestNeighbor extends OnlineAlgorithm {
 		double minDistance = Double.MAX_VALUE;
 		Worker minWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker worker : workers) {
+		for (Worker worker : availableWorkers) {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = worker.CanPerform(task)) != null) {
 				if (worker.location.distance(task.location) < minDistance) {
@@ -29,7 +30,10 @@ public class NearestNeighbor extends OnlineAlgorithm {
 		}
 		if (minWorker != null) {
 			minWorker.SetSchedule(bestOrder);
+			minWorker.AddTask(task);
 			task.AssignTo(minWorker);
+			Result.AssignedTasks++;
+			Result.GainedValue += task.value;
 			return true;
 		}
 		return false;

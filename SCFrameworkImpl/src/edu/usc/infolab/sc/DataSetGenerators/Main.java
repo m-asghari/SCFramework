@@ -16,8 +16,11 @@ public class Main {
 	public static Grid grid;
 
 	public static void main(String[] args) {
-		
-		Document input = IO.ReadXML("SampleInput1.xml");
+		GenerateData("SampleInput2.xml", "T50000_4.xml");
+	}
+	
+	public static void GenerateData(String inputFile, String outputFile) {
+		Document input = IO.ReadXML(inputFile);
 		Element dataSpec = input.getDocumentElement();
 		
 		Document output = IO.GetEmptyDoc();
@@ -29,26 +32,6 @@ public class Main {
 		Node oGrid = gridElement.cloneNode(true);
 		output.adoptNode(oGrid);
 		data.appendChild(oGrid);
-		
-		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
-		int workersSize = Integer.parseInt(iWorkers.getAttribute("size"));
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
-		
-		Element oWorkers = output.createElement("Workers");
-		data.appendChild(oWorkers);
-		
-		ArrayList<Worker> workers = new ArrayList<Worker>();
-		for (int i = 0; i < workersSize; i++) {
-			workers.add(wg.NextWorker());
-		}
-		
-		Collections.sort(workers);
-		
-		for (Worker w : workers) {
-			Element worker = output.createElement("Worker");
-			worker = w.Fill(worker);
-			oWorkers.appendChild(worker);
-		}
 		
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		int tasksSize = Integer.parseInt(iTasks.getAttribute("size"));
@@ -64,13 +47,38 @@ public class Main {
 		
 		Collections.sort(tasks);
 		
+		int endTime = 0;
 		for (Task t : tasks) {
 			Element task = output.createElement("Task");
 			task = t.Fill(task);
+			endTime = t.releaseFrame;
 			oTasks.appendChild(task);
 		}
 		
-		IO.SaveXML(output, "W10T50_7.xml");
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		
+		Element oWorkers = output.createElement("Workers");
+		data.appendChild(oWorkers);
+		
+		ArrayList<Worker> workers = new ArrayList<Worker>();
+		while (true) {
+			Worker w = wg.NextWorker();
+			if (w.releaseFrame <= endTime)
+				workers.add(w);
+			else
+				break;
+		}
+		
+		Collections.sort(workers);
+		
+		for (Worker w : workers) {
+			Element worker = output.createElement("Worker");
+			worker = w.Fill(worker);
+			oWorkers.appendChild(worker);
+		}
+		
+		IO.SaveXML(output, outputFile);
 	}
 
 }

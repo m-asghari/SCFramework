@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
+import edu.usc.infolab.sc.Main.Main;
 import edu.usc.infolab.sc.Main.Log;
 
 public class Worker extends SpatialEntity{
@@ -50,6 +51,7 @@ public class Worker extends SpatialEntity{
 	}
 	
 	public void UpdateLocation() {
+		if (remainingTasks.isEmpty()) return;
 		Point2D.Double dest = remainingTasks.get(0).location;
 		Double dist = location.distance(dest);
 		if (dist > 1) {
@@ -61,6 +63,7 @@ public class Worker extends SpatialEntity{
 			
 			// TODO(masghari): remove done task from the list!
 			remainingTasks.remove(0);
+			if (remainingTasks.isEmpty()) return;
 			
 			// Start moving toward new task
 			dest = remainingTasks.get(0).location;
@@ -82,10 +85,18 @@ public class Worker extends SpatialEntity{
 	
 	private void MoveToward(Point2D dest, Double length) {
 		Double dist = location.distance(dest);
+		if (dist < length)
+			length = dist;
 		Double deltaX = length * (dest.getX() - location.getX()) / dist;
 		Double newX = location.getX() + deltaX;
 		Double deltaY = length * (dest.getY() - location.getY()) / dist;
 		Double newY = location.getY() + deltaY;
+		Point2D.Double p = new Point2D.Double(newX, newY);
+		if (!Main.grid.In(p)) {
+			Log.Add("dest->x:%.2f, y:%.2f", dest.getX(), dest.getY());
+			Log.Add("loc->x:%.2f, y:%.2f", this.location.x, this.location.y);
+			Log.Add("deltaX:%.2f, deltaY:%.2f", deltaX, deltaY);
+		}
 		location.setLocation(newX, newY);
 	}
 	
@@ -120,6 +131,12 @@ public class Worker extends SpatialEntity{
 		return true;
 	}
 	
+	private Boolean CanComplete(Task task) {
+		ArrayList<Task> taskArr = new ArrayList<Task>();
+		taskArr.add(task);
+		return CanComplete(taskArr);
+	}
+	
 	public Boolean IsPTS(PTS pts) {
 		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
 		for (ArrayList<Task> p : taskPerms) {
@@ -139,6 +156,59 @@ public class Worker extends SpatialEntity{
 		Log.Add(String.format("Visited Nodes: %d", this.nodeCount));
 		Log.Add(String.format("Found PTSs: %d", this.ptsSet.Size()));
 		return result;
+	}
+	
+	public PTS GetGoodPTS(ArrayList<Task> tasks) {
+		PTS retPTS = new PTS();
+		for (Task t : tasks) {
+			PTS pts = new PTS(retPTS);
+			pts.AddTask(t);
+			if (IsPTS(pts)) {
+				retPTS.AddTask(t);
+				if (retPTS.size() == this.maxNumberOfTasks)
+					break;
+			}
+		}
+		return retPTS;
+	}
+	
+	public PTS GetBestPTS(ArrayList<Task> tasks) {
+		ArrayList<Task> possibleTasks = new ArrayList<>();
+		int posValue = 0;
+		for (Task t : tasks) {
+			if (this.CanComplete(t)) {
+				possibleTasks.add(t);
+				posValue += t.value;
+			}
+		}
+		return GetBestPTS(new PTS(), possibleTasks, posValue, Integer.MIN_VALUE);
+	}
+	
+	private PTS GetBestPTS(PTS prefix, ArrayList<Task> remaining, int rValue, int bestValue) {
+		PTS retPTS = null;
+		
+		ArrayList<Task> remaining_c = new ArrayList<>(remaining);
+		for (Task t : remaining) {
+			remaining_c.remove(t);
+			rValue -= t.value;
+			PTS pts = new PTS(prefix);
+			pts.AddTask(t);
+			if (IsPTS(pts)) {
+				if (pts.value > bestValue) {
+					bestValue = pts.value;
+					retPTS = new PTS(pts);
+				}
+				if (pts.size() < this.maxNumberOfTasks && remaining_c.size() > 0 
+					&& pts.value + rValue > bestValue) {
+					PTS newPTS = this.GetBestPTS(pts, remaining_c, rValue, bestValue);
+					if (newPTS != null && newPTS.value > bestValue) {
+						bestValue = newPTS.value;
+						retPTS = new PTS(newPTS);
+					}
+				}
+			}
+		}
+		return retPTS;
 	}
 	
 	private int nodeCount = 0;
