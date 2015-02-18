@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Data>
+  <Grid l="1" maxx="40" maxy="30" minx="0" miny="0" w="1"/>
+  <Tasks>
+    <Task release="2" retract="17" value="8" x="0.3100476005634434" y="11.08481491370575"/>
+    <Task release="2" retract="18" value="4" x="38.49139505680289" y="6.381411403202282"/>
+    <Task release="2" retract="25" value="2" x="4.693589700297407" y="19.616434752995396"/>
+    <Task release="3" retract="29" value="1" x="33.856514849930164" y="13.448015774928027"/>
+    <Task release="4" retract="16" value="1" x="11.14990126417048" y="21.283175554661074"/>
+    <Task release="4" retract="21" value="7" x="11.135903967585467" y="3.1377037524177083"/>
+    <Task release="4" retract="31" value="8" x="1.7916273794368953" y="24.047936428418385"/>
+    <Task release="5" retract="23" value="5" x="15.977426711154061" y="14.953101495272975"/>
+    <Task release="5" retract="16" value="3" x="33.81906951184489" y="5.236090010378343"/>
+    <Task release="5" retract="27" value="5" x="7.317714096999128" y="13.035546128591957"/>
+    <Task release="6" retract="19" value="7" x="16.15822999592183" y="0.9839973298321547"/>
+    <Task release="6" retract="19" value="6" x="30.4440398014524" y="20.22818385864562"/>
+    <Task release="6" retract="17" value="9" x="28.47082855607267" y="7.4437222599208575"/>
+    <Task release="6" retract="30" value="6" x="36.45658230760604" y="26.13149986798286"/>
+    <Task release="6" retract="35" value="3" x="18.125194378647738" y="11.7921991569018"/>
+    <Task release="7" retract="29" value="2" x="26.626597408739308" y="16.290914417487752"/>
+    <Task release="7" retract="33" value="1" x="34.038366783762115" y="27.258184816538787"/>
+    <Task release="8" retract="35" value="6" x="22.885944703411788" y="12.620608309727217"/>
+    <Task release="9" retract="24" value="9" x="32.327331049736685" y="12.232654153984369"/>
+    <Task release="9" retract="29" value="7" x="23.9019889274084" y="14.844097135569"/>
+    <Task release="9" retract="36" value="1" x="4.9751761652664594" y="21.533673752281974"/>
+    <Task release="9" retract="26" value="4" x="9.121252727149063" y="4.1376542243095695"/>
+    <Task release="10" retract="20" value="6" x="14.43472670638779" y="11.752836452541242"/>
+    <Task release="10" retract="22" value="7" x="21.119345592151127" y="24.282528400837123"/>
+    <Task release="12" retract="24" value="6" x="4.253764168498764" y="20.058733333483936"/>
+    <Task release="12" retract="41" value="7" x="26.27629523496662" y="16.10007895590622"/>
+    <Task release="13" retract="41" value="3" x="20.278892222379135" y="21.819512503103535"/>
+    <Task release="15" retract="35" value="5" x="32.699887977982684" y="5.183054683645336"/>
+    <Task release="16" retract="42" value="5" x="36.127322203560745" y="19.64332124329214"/>
+    <Task release="16" retract="30" value="6" x="7.898206595277063" y="4.350120388447714"/>
+    <Task release="16" retract="40" value="8" x="0.6518373480777084" y="20.760322127293477"/>
+    <Task release="16" retract="28" value="4" x="8.68212980622101" y="11.551753874739525"/>
+    <Task release="18" retract="37" value="9" x="14.144995203174183" y="21.30839745510165"/>
+    <Task release="18" retract="42" value="1" x="3.912301974494623" y="16.52510693841084"/>
+    <Task release="18" retract="34" value="6" x="10.889963143434223" y="25.23424381841975"/>
+    <Task release="18" retract="28" value="4" x="17.701952590211953" y="17.253941553336205"/>
+    <Task release="18" retract="47" value="3" x="32.302306869808014" y="5.31591920566422"/>
+    <Task release="18" retract="35" value="4" x="9.538120213607705" y="2.790741618204966"/>
+    <Task release="19" retract="41" value="6" x="33.942454121284285" y="2.0558065188035477"/>
+    <Task release="19" retract="46" value="4" x="13.152955222889592" y="4.782521607648727"/>
+    <Task release="22" retract="40" value="9" x="19.258341795312088" y="24.23927491893316"/>
+    <Task release="24" retract="39" value="9" x="9.389081453328057" y="5.949893048166917"/>
+    <Task release="25" retract="46" value="8" x="20.765798257277027" y="6.53834925858391"/>
+    <Task release="25" retract="50" value="6" x="22.052555910872293" y="24.01683320643847"/>
+    <Task release="25" retract="54" value="6" x="7.533373287653671" y="4.662753033480658"/>
+    <Task release="25" retract="45" value="8" x="10.660426836877477" y="0.3091257986913578"/>
+    <Task release="26" retract="43" value="5" x="23.233135475307012" y="13.118275904451654"/>
+    <Task release="26" retract="43" value="7" x="6.169543682294885" y="1.784433926213178"/>
+    <Task release="27" retract="50" value="5" x="13.2849200951346" y="1.9929521009476792"/>
+    <Task release="27" retract="42" value="8" x="39.87170012835368" y="8.585937127102056"/>
+  </Tasks>
+  <Workers>
+    <Worker max="5" release="11" retract="59" x="7.628185195135009" y="12.123717257990606"/>
+    <Worker max="3" release="14" retract="48" x="39.99750011321015" y="17.295045940822988"/>
+    <Worker max="5" release="18" retract="31" x="9.222179456925321" y="28.443356861540085"/>
+    <Worker max="3" release="21" retract="33" x="19.03354845363934" y="20.205888851463254"/>
+    <Worker max="3" release="25" retract="60" x="21.505306707435462" y="24.14783854789555"/>
+  </Workers>
+</Data>

@@ -1,5 +1,6 @@
 package edu.usc.infolab.sc.Algorithms.Online;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ public class BestDistribution extends OnlineAlgorithm {
 			upcomingWorkers.remove(0);
 		}
 		
-		distW = new CountDistribution(grid.size(), true);
+		distW = new CountDistribution(grid, true);
 		for (Worker w : availableWorkers) {
 			distW.Inc(grid.GetCell(w.location));
 		}
@@ -37,6 +38,7 @@ public class BestDistribution extends OnlineAlgorithm {
 		// Check to see if any task arrives in current frame
 		while (!upcomingTasks.isEmpty() &&
 				upcomingTasks.get(0).releaseFrame <= currentFrame) {
+			//distT.Inc(grid.GetCell(upcomingTasks.get(0).location));
 			if (AssignTask(upcomingTasks.get(0))) {
 				//tasks.add(upcomingTasks.get(0));
 				assignedTasksCntr++;
@@ -57,7 +59,8 @@ public class BestDistribution extends OnlineAlgorithm {
 		}
 	}
 	
-	@Override
+	
+	/*@Override
 	protected Boolean AssignTask(Task task) {
 		double minDistance = Double.MAX_VALUE;
 		Worker minWorker = null;
@@ -82,12 +85,51 @@ public class BestDistribution extends OnlineAlgorithm {
 			return true;
 		}
 		return false;
+	}*/
+	
+	@Override
+	protected Boolean AssignTask(Task task) {
+		double maxInfluence = 0;
+		Worker bestWorker = null;
+		ArrayList<Task> bestOrder = new ArrayList<Task>();
+		for (Worker w : availableWorkers) {
+			ArrayList<Task> taskOrder = new ArrayList<Task>();
+			if ((taskOrder = w.CanPerform(task)) != null) {
+				double inf = MoveInfluence(w.location, task.location);
+				if (inf > maxInfluence) {
+					bestWorker = w;
+					maxInfluence = inf;
+					bestOrder = new ArrayList<>(taskOrder);
+				}
+			}
+		}
+		if (bestWorker != null) {
+			bestWorker.SetSchedule(bestOrder);
+			task.AssignTo(bestWorker);
+			bestWorker.AddTask(task);
+			Result.AssignedTasks++;
+			Result.GainedValue += task.value;
+			return true;
+		}
+		return false;
 	}
 	
 	public double Diff(Worker w, Task t) {
-		CountDistribution distW_c = new CountDistribution(distW.cellCount);
+		CountDistribution distW_c = new CountDistribution(grid, distW.cellCount);
 		distW_c.Dec(grid.GetCell(w.location));
 		distW_c.Inc(grid.GetCell(t.location));
 		return CountDistribution.JSD(distT, distW_c);
+		//return CountDistribution.SKLD(distT, distW_c);
+	}
+	
+	public double MoveInfluence(Point2D.Double src, Point2D.Double dst) 
+	{
+		double srcInf = distT.GetPointInfluence(src);
+		double dstInf = distT.GetPointInfluence(dst);
+		int srcCnt = (int)distW.cellCount[grid.GetCell(src)];
+		int dstCnt = (int)distW.cellCount[grid.GetCell(dst)];
+		double srcDelta = (srcCnt > 1) ? ((double)srcCnt / (srcCnt - 1)) - 1 : 2;
+		double dstDelta = (dstCnt > 0) ? ((double)(dstCnt + 1) / dstCnt) - 1 : 2;
+		return (dstDelta * dstInf) - (srcDelta * srcInf);
 	}
 }

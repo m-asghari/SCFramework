@@ -1,19 +1,24 @@
 package edu.usc.infolab.sc;
 
+import java.awt.geom.Point2D;
+
 
 public class CountDistribution {
 	public double[] cellCount;
 	int totalCount;
+	Grid grid;
 	
-	public CountDistribution(int size, boolean empty) {
-		cellCount = new double[size];
-		for (int i = 0; i < size; ++i) {
-			cellCount[i] = (empty) ? 0.0 : 1.0/size;
+	public CountDistribution(Grid g, boolean empty) {
+		grid = g;
+		cellCount = new double[grid.size()];
+		for (int i = 0; i < grid.size(); ++i) {
+			cellCount[i] = (empty) ? 0.0 : 1.0/grid.size();
 		}
 		totalCount = (empty) ? 0 : 1;
 	}
 	
-	public CountDistribution(double[] counts) {
+	public CountDistribution(Grid g, double[] counts) {
+		grid = g;
 		cellCount = new double[counts.length];
 		totalCount = 0;
 		for(int i = 0; i < counts.length; ++i) {
@@ -38,8 +43,18 @@ public class CountDistribution {
 		}
 	}
 	
+	public double GetPointInfluence(Point2D.Double p) {
+		double sum = 0;
+		for (int i = 0; i < cellCount.length; ++i) {
+			double dist = p.distance(grid.GetCellMidPoint(i));
+			double distInf = (dist < 1) ? grid.maxDistance / dist : 2 * grid.maxDistance;
+			sum += distInf * Prob(i);
+		}
+		return sum;
+	}
+	
 	public CountDistribution Normalize() {
-		CountDistribution normal = new CountDistribution(cellCount.length, true);
+		CountDistribution normal = new CountDistribution(grid, true);
 		for (int i = 0; i < this.cellCount.length; ++i) {
 			normal.cellCount[i] = this.cellCount[i] / this.totalCount;
 		}
@@ -48,7 +63,7 @@ public class CountDistribution {
 	}
 	
 	public static CountDistribution Mean(CountDistribution A, CountDistribution B) {
-		CountDistribution retDist = new CountDistribution(A.cellCount.length, true);
+		CountDistribution retDist = new CountDistribution(A.grid, true);
 		CountDistribution A_n = A.Normalize();
 		CountDistribution B_n = B.Normalize();
 		for (int i = 0; i < retDist.cellCount.length; ++i) {
@@ -72,6 +87,22 @@ public class CountDistribution {
 			double q = Q.Prob(i);
 			double log = Math.log(p/q);
 			sum += p * log;
+		}
+		return sum;
+	}
+	
+	public static double SKLD(CountDistribution P, CountDistribution Q) {
+		double sum = 0;
+		for (int i = 0; i < P.cellCount.length; ++i) {
+			double p = P.Prob(i);
+			if (p == 0)
+				continue;
+			for (int j = 0; j < Q.cellCount.length; ++j) {
+				double q = Q.Prob(j);
+				double dist = P.grid.GetCellMidPoint(i).distance(Q.grid.GetCellMidPoint(j));
+				double cellDist = (dist == 0) ? 2 * P.grid.maxDistance : P.grid.maxDistance / dist;
+				sum += cellDist * Math.abs(p - q);
+			}			
 		}
 		return sum;
 	}

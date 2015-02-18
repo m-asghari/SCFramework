@@ -17,6 +17,7 @@ public class Grid {
 	double length;
 	int rowCount;
 	int colCount;
+	double maxDistance;
 	//public ArrayList<Double> cellProb;
 	//public ArrayList<Integer> cellCount;
 	//public int totalCount;
@@ -32,6 +33,7 @@ public class Grid {
 		length = Double.parseDouble(e.getAttribute("l"));
 		rowCount = (int)((maxy - miny)/width);
 		colCount = (int)((maxx - minx)/length);
+		maxDistance = this.GetCellMidPoint(0).distance(this.GetCellMidPoint(this.size() - 1));
 		//size = rowCount * colCount;
 		//dist = new CountDistribution(this.size());
 	}
@@ -49,7 +51,9 @@ public class Grid {
 		length = l;
 		rowCount = (int)((maxy - miny)/width);
 		colCount = (int)((maxx - minx)/length);
+		maxDistance = this.GetCellMidPoint(0).distance(this.GetCellMidPoint(this.size() - 1));
 		//dist = new CountDistribution(this.size());
+		
 	}
 	
 	public boolean In(SpatialEntity se) {
@@ -70,6 +74,14 @@ public class Grid {
 		int col = (int)((p.getX() - minx)/length);
 		int row = (int)((p.getY() - miny)/width);
 		return (row * colCount) + col;
+	}
+	
+	public Point2D.Double GetCellMidPoint(int cell) {
+		int row = cell / colCount;
+		int col = cell % colCount;
+		double x = (row * length) + (length / 2);
+		double y = (col * width) + (width / 2);
+		return new Point2D.Double(x, y);
 	}
 	
 	public Point2D.Double RandomPoint(int cellNum) {

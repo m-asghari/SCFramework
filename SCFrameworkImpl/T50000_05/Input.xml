@@ -1,0 +1,109 @@
+<DataSpecification>
+	<Grid minx="0" miny="0" maxx="40" maxy="30" w="1" l="1"/>
+	<Tasks size="50000">
+		<Location>
+			<Distribution name="BivariateNormal" prob="0.1">
+				<Settings>
+					<mean1 value="23" />
+					<sd1 value="1" />
+					<mean2 value="14" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="BivariateNormal" prob="0.1">
+				<Settings>
+					<mean1 value="33" />
+					<sd1 value="1" />
+					<mean2 value="5" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="BivariateNormal" prob="0.1">
+				<Settings>
+					<mean1 value="10" />
+					<sd1 value="1" />
+					<mean2 value="3" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="BivariateNormal" prob="0.1">
+				<Settings>
+					<mean1 value="20" />
+					<sd1 value="1" />
+					<mean2 value="25" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="Uniform2D" prob="-1">
+				<Settings>
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
+				</Settings>
+			</Distribution>
+		</Location>
+		<ReleaseTime mode="InterArrival">
+			<Distribution name="Exponential" prob="1">
+				<Settings>
+					<mean value="1"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="10"/>
+					<max value="30"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<Value>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="1"/>
+					<max value="10"/>
+				</Settings>
+			</Distribution>
+		</Value>
+	</Tasks>
+	<Workers>
+		<Location>
+			<Distribution name="Uniform2D" prob="-1">
+				<Settings>
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
+				</Settings>
+			</Distribution>
+		</Location>
+		<ReleaseTime mode="InterArrival">
+			<Distribution name="Exponential" prob="1">
+				<Settings>
+					<mean value="5"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="20"/>
+					<max value="70"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<MaxTasks>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="3"/>
+					<max value="6"/>
+				</Settings>
+			</Distribution>
+		</MaxTasks>
+	</Workers>
+</DataSpecification>

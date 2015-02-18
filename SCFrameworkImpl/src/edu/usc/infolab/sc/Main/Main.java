@@ -6,14 +6,14 @@ import edu.usc.infolab.sc.CountDistribution;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
+import edu.usc.infolab.sc.Algorithms.Online.Greedy;
 
 public class Main {
 	
 	public static Grid grid;
 
 	public static void main(String[] args) {
-		String input = "T50000_3";
+		String input = "SampleOutput";
 		Log.Initialize(input);
 		
 		InputParser ip = new InputParser(String.format("%s.xml", input));
@@ -21,13 +21,22 @@ public class Main {
 		HashMap<Integer, Task> tasks = ip.GetTasks();
 		HashMap<Integer,Worker> workers = ip.GetWorkers();
 		
+		double[] taskCount = new double[grid.size()];
+		for (int i = 0; i < taskCount.length; ++i) {
+			taskCount[i] = 0;
+		}
+		for (Task t : tasks.values()) {
+			taskCount[grid.GetCell(t.location)]++;
+		}
+		CountDistribution distT = new CountDistribution(grid, taskCount);
+		
 		
 		//BestPTSFirst algo = new BestPTSFirst(tasks, workers);
 		//GoodPTSFirst algo = new GoodPTSFirst(tasks, workers);
 		
-		//Greedy algo = new Greedy(tasks, workers);
+		Greedy algo = new Greedy(tasks, workers);
 		//NearestNeighbor algo = new NearestNeighbor(tasks, workers);
-		BestDistribution algo = new BestDistribution(tasks, workers, new Object[]{grid, new CountDistribution(grid.size(), false)});
+		//BestDistribution algo = new BestDistribution(tasks, workers, new Object[]{grid, distT});
 		algo.Run();
 		
 		
