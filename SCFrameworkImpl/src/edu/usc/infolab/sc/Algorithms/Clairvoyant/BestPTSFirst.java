@@ -8,7 +8,6 @@ import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Main.Log;
-import edu.usc.infolab.sc.Main.Result;
 
 public class BestPTSFirst extends ClairvoyantAlgorithm{
 	HashMap<Worker, ArrayList<PTS>> _allPTSs;
@@ -33,7 +32,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 			int bestValue = Integer.MIN_VALUE;
 			for (Worker w : remainingWorkers) {
 				PTS pts = w.GetBestPTS(remainingTasks);
-				Log.Add("Found Best PTS for worker %d in iteration %d", w.id, it);
+				Log.Add(2, "Found Best PTS for worker %d in iteration %d", w.id, it);
 				if (pts.value > bestValue) {
 					bestPTS = pts;
 					bestWorker = w;
@@ -77,11 +76,13 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 		for (Entry<Worker, PTS> e : seletedPTSs.entrySet()) {
 			Worker w = e.getKey();
 			for (Task t : e.getValue().list) {
-				w.assignedTasks.add(t);
+				w.AddTask(t);
+				w.SetSchedule(w.CanPerform(t, 0));
 				t.AssignTo(w);
-				Result.AssignedTasks++;
-				Result.GainedValue += t.value;
+				//Result.AssignedTasks++;
+				//Result.GainedValue += t.value;
 			}
+			w.travledDistance = w.GetCompleteTime(w.GetSchedule(), 0);
 		}
 	}
 

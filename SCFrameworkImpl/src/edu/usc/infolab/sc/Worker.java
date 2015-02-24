@@ -10,12 +10,12 @@ import edu.usc.infolab.sc.Main.Log;
 
 public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
-	public Boolean active;
-	public ArrayList<Task> assignedTasks;
+	//private Boolean active;
+	private ArrayList<Task> assignedTasks;
 	private ArrayList<Task> remainingTasks;
 	public Integer maxNumberOfTasks;
-	Double travledDistance;
-	PTSs ptsSet;
+	public Double travledDistance;
+	private PTSs ptsSet;
 		
 	public Worker() {
 		Initialize();
@@ -34,7 +34,34 @@ public class Worker extends SpatialEntity{
 		assignedTasks = new ArrayList<Task>();
 		remainingTasks = new ArrayList<Task>();
 		travledDistance = 0.0;
-		active = false;
+		//active = false;
+	}
+	
+	public ArrayList<Task> GetAssignedTasks() {
+		return this.assignedTasks;
+	}
+	
+	public void AddTask(Task task) {
+		assignedTasks.add(task);
+	}
+	
+	public ArrayList<Task> GetSchedule() {
+		return this.remainingTasks;
+	}
+	
+	public void SetSchedule(ArrayList<Task> tasks) {
+		this.remainingTasks = new ArrayList<Task>(tasks);
+	}
+	
+
+	public PTSs GetPTSSet() {
+		return this.ptsSet;
+	}
+	
+	public Element Fill(Element w) {
+		w = super.Fill(w);
+		w.setAttribute("max", Integer.toString(maxNumberOfTasks));
+		return w;
 	}
 	
 	@Override
@@ -50,37 +77,83 @@ public class Worker extends SpatialEntity{
 		return sb.toString();
 	}
 	
-	public void UpdateLocation() {
+	public ArrayList<Task> CanPerform(Task task, int currentFrame) {
+		ArrayList<Task> bestOrder = new ArrayList<Task>();
+		Double bestTime = Double.MAX_VALUE;
+		if (assignedTasks.size() == maxNumberOfTasks) {
+			return null;
+		}
+		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
+		tasks.add(task);
+		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
+		for (ArrayList<Task> p : taskPerms) {
+			Double time = Double.MAX_VALUE;
+			if ((time = CanComplete(p, currentFrame)) < bestTime) {
+				bestOrder = new ArrayList<Task>(p);
+				bestTime = time;
+			}
+		}
+		return (bestOrder.size() > 0) ? bestOrder : null;
+	}
+	
+	public Double GetCompleteTime(ArrayList<Task> tasks, int currentFrame) {
+		return CanComplete(tasks, currentFrame);
+	}
+	
+	private Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
+		Point2D.Double loc = this.location;
+		double time = Math.max(this.releaseFrame, currentFrame);
+		for (int i = 0; i < tasks.size(); ++i) {
+			Task current = tasks.get(i);
+			double nextTime = Math.max((double)current.releaseFrame, time + loc.distance(current.location));
+			if (nextTime <= (double)current.retractFrame && nextTime <= (double)this.retractFrame) {
+				loc = current.location;
+				time = nextTime;
+			}
+			else {
+				return Double.MAX_VALUE;
+			}
+		}
+		return time;
+	}
+	
+	private Boolean CanComplete(Task task, int currentFrame) {
+		ArrayList<Task> taskArr = new ArrayList<Task>();
+		taskArr.add(task);
+		return (CanComplete(taskArr, currentFrame) != Double.MAX_VALUE);
+	}
+	
+	public Boolean IsPTS(PTS pts, int currentFrame) {
+		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
+		for (ArrayList<Task> p : taskPerms) {
+			if (CanComplete(p, currentFrame) != Double.MAX_VALUE)
+				return true;
+		}
+		return false;
+	}
+	
+	//Methods for Online Algorithms
+	public void UpdateLocation(double length) {
 		if (remainingTasks.isEmpty()) return;
 		Point2D.Double dest = remainingTasks.get(0).location;
 		Double dist = location.distance(dest);
-		if (dist > 1) {
-			MoveToward(dest, 1.0);
-			travledDistance += 1.0;
+		if (dist > length) {
+			MoveToward(dest, length);
+			travledDistance += length;
 		}
-		else if (assignedTasks.size() > 1 ){
+		else {
 			// TODO(masghari): set assignedTask.get(0) as Done!
 			
 			// TODO(masghari): remove done task from the list!
+			this.location = dest;
 			remainingTasks.remove(0);
-			if (remainingTasks.isEmpty()) return;
+			travledDistance += dist;
 			
 			// Start moving toward new task
-			dest = remainingTasks.get(0).location;
-			MoveToward(dest, 1.0 - dist);
-			travledDistance += 1.0;
+			if (remainingTasks.size() > 0 ) {
+				UpdateLocation(length - dist);
+			}
 		}
-		else {
-			travledDistance += dist;
-		}
-	}
-	
-	public void AddTask(Task task) {
-		assignedTasks.add(task);
-	}
-	
-	public void SetSchedule(ArrayList<Task> tasks) {
-		this.remainingTasks = new ArrayList<Task>(tasks);
 	}
 	
 	private void MoveToward(Point2D dest, Double length) {
@@ -93,68 +166,19 @@ public class Worker extends SpatialEntity{
 		Double newY = location.getY() + deltaY;
 		Point2D.Double p = new Point2D.Double(newX, newY);
 		if (!Main.grid.In(p)) {
-			Log.Add("dest->x:%.2f, y:%.2f", dest.getX(), dest.getY());
-			Log.Add("loc->x:%.2f, y:%.2f", this.location.x, this.location.y);
-			Log.Add("deltaX:%.2f, deltaY:%.2f", deltaX, deltaY);
+			Log.Add(2, "dest->x:%.2f, y:%.2f", dest.getX(), dest.getY());
+			Log.Add(2, "loc->x:%.2f, y:%.2f", this.location.x, this.location.y);
+			Log.Add(2, "deltaX:%.2f, deltaY:%.2f", deltaX, deltaY);
 		}
 		location.setLocation(newX, newY);
 	}
 	
-	public ArrayList<Task> CanPerform(Task task) {
-		if (assignedTasks.size() == maxNumberOfTasks) {
-			return null;
-		}
-		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
-		tasks.add(task);
-		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
-		for (ArrayList<Task> p : taskPerms) {
-			if (CanComplete(p))
-				return p;
-		}
-		return null;
-	}
-	
-	private Boolean CanComplete(ArrayList<Task> tasks) {
-		Point2D.Double loc = this.location;
-		int time = this.releaseFrame;
-		for (int i = 0; i < tasks.size(); ++i) {
-			Task current = tasks.get(i);
-			int nextTime = Math.max(current.releaseFrame, time + (int)loc.distance(current.location));
-			if (nextTime <= current.retractFrame && nextTime <= this.retractFrame) {
-				loc = current.location;
-				time = nextTime;
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private Boolean CanComplete(Task task) {
-		ArrayList<Task> taskArr = new ArrayList<Task>();
-		taskArr.add(task);
-		return CanComplete(taskArr);
-	}
-	
-	public Boolean IsPTS(PTS pts) {
-		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
-		for (ArrayList<Task> p : taskPerms) {
-			if (CanComplete(p))
-				return true;
-		}
-		return false;
-	}
-	
-	public PTSs GetPTSSet() {
-		return this.ptsSet;
-	}
-	
+	// Methods for Offline Algorithms
 	public PTSs FindPTSs(PTS prefix, ArrayList<Task> tasks) {
 		PTSs result = this.GetPTSs(prefix, tasks);
 		this.ptsSet = result;
-		Log.Add(String.format("Visited Nodes: %d", this.nodeCount));
-		Log.Add(String.format("Found PTSs: %d", this.ptsSet.Size()));
+		Log.Add(2, "Visited Nodes: %d", this.nodeCount);
+		Log.Add(2, "Found PTSs: %d", this.ptsSet.Size());
 		return result;
 	}
 	
@@ -163,7 +187,7 @@ public class Worker extends SpatialEntity{
 		for (Task t : tasks) {
 			PTS pts = new PTS(retPTS);
 			pts.AddTask(t);
-			if (IsPTS(pts)) {
+			if (IsPTS(pts, 0)) {
 				retPTS.AddTask(t);
 				if (retPTS.size() == this.maxNumberOfTasks)
 					break;
@@ -176,7 +200,7 @@ public class Worker extends SpatialEntity{
 		ArrayList<Task> possibleTasks = new ArrayList<>();
 		int posValue = 0;
 		for (Task t : tasks) {
-			if (this.CanComplete(t)) {
+			if (this.CanComplete(t, 0)) {
 				possibleTasks.add(t);
 				posValue += t.value;
 			}
@@ -193,7 +217,7 @@ public class Worker extends SpatialEntity{
 			rValue -= t.value;
 			PTS pts = new PTS(prefix);
 			pts.AddTask(t);
-			if (IsPTS(pts)) {
+			if (IsPTS(pts, 0)) {
 				if (pts.value > bestValue) {
 					bestValue = pts.value;
 					retPTS = new PTS(pts);
@@ -222,7 +246,7 @@ public class Worker extends SpatialEntity{
 			if (!this.Overlap(t)) continue;
 			PTS pts = new PTS(prefix.list);
 			pts.AddTask(t);
-			if (IsPTS(pts)) {
+			if (IsPTS(pts, 0)) {
 				retPTSs.AddSubset(pts);
 				if (pts.size() < this.maxNumberOfTasks && tasks_c.size() > 0) {
 					PTSs newPTSs = this.GetPTSs(pts, tasks_c);
@@ -231,11 +255,5 @@ public class Worker extends SpatialEntity{
 			}
 		}
 		return retPTSs;
-	}
-
-	public Element Fill(Element w) {
-		w = super.Fill(w);
-		w.setAttribute("max", Integer.toString(maxNumberOfTasks));
-		return w;
 	}
 }

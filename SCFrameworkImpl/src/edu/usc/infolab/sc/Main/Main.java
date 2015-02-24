@@ -1,5 +1,6 @@
 package edu.usc.infolab.sc.Main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.usc.infolab.sc.CountDistribution;
@@ -14,7 +15,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		String input = "SampleOutput";
-		Log.Initialize(input);
+		Log.Initialize(1, input);
 		
 		InputParser ip = new InputParser(String.format("%s.xml", input));
 		grid = ip.GetGrid();
@@ -29,18 +30,18 @@ public class Main {
 			taskCount[grid.GetCell(t.location)]++;
 		}
 		CountDistribution distT = new CountDistribution(grid, taskCount);
-		
+		//Log.Add(distT.toString());
 		
 		//BestPTSFirst algo = new BestPTSFirst(tasks, workers);
 		//GoodPTSFirst algo = new GoodPTSFirst(tasks, workers);
 		
 		Greedy algo = new Greedy(tasks, workers);
 		//NearestNeighbor algo = new NearestNeighbor(tasks, workers);
+		//BestInsertion algo = new BestInsertion(tasks, workers);
 		//BestDistribution algo = new BestDistribution(tasks, workers, new Object[]{grid, distT});
 		algo.Run();
 		
-		
-		Result.GenerateReport();
+		Result.GenerateReport(new ArrayList<Worker>(workers.values()));
 		
 		Log.Finalize();
 	}

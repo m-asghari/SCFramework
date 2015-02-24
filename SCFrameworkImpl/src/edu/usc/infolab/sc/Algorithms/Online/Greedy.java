@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Main.Result;
+import edu.usc.infolab.sc.Main.Log;
 
 public class Greedy extends OnlineAlgorithm {
 
@@ -15,16 +15,19 @@ public class Greedy extends OnlineAlgorithm {
 	
 	@Override
 	protected Boolean AssignTask(Task task) {
+		Log.Add(2, "Task %d:", task.id);
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker worker : availableWorkers) {
-			if ((bestOrder = worker.CanPerform(task)) != null )  {
+			if ((bestOrder = worker.CanPerform(task, currentFrame)) != null )  {
+				Log.Add(2, "\tWorker %d will perform the task", worker.id);
 				task.AssignTo(worker);
 				worker.AddTask(task);
 				worker.SetSchedule(bestOrder);
-				Result.AssignedTasks++;
-				Result.GainedValue += task.value;
+				//Result.AssignedTasks++;
+				//Result.GainedValue += task.value;
 				return true;
 			}
+			Log.Add(2, "\tWorker %d cannot perform the task", worker.id);
 		}
 		return false;
 	}

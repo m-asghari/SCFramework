@@ -14,9 +14,12 @@ public final class Log {
 	private static FileWriter fw;
 	private static BufferedWriter bw;
 	
+	private static int logLevel;
+	
 	private Log() {}
 	
-	public static void Initialize(String input) {
+	public static void Initialize(int level, String input) {
+		logLevel = level;
 		try {
 			fw = new FileWriter(String.format("logs_%s.log", input));
 			bw = new BufferedWriter(fw);
@@ -26,7 +29,8 @@ public final class Log {
 		}
 	}
 	
-	public static void Initialize() {
+	public static void Initialize(int level) {
+		logLevel = level;
 		try {
 			fw = new FileWriter(logName);
 			bw = new BufferedWriter(fw);
@@ -47,11 +51,12 @@ public final class Log {
 		}
 	}
 	
-	public static void Add(String format, Object... args) {
-		Log.Add(String.format(format, args));
+	public static void Add(int level, String format, Object... args) {
+		Log.Add(level, String.format(format, args));
 	}
 		
-	public static void Add(String log) {
+	public static void Add(int level, String log) {
+		if (level > logLevel) return;
 		try {
 			String time = sdf.format(Calendar.getInstance().getTime());
 			String fullClassName = Thread.currentThread().getStackTrace()[3].getClassName();

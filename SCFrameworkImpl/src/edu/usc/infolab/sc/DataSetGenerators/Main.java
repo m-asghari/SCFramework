@@ -16,7 +16,7 @@ public class Main {
 	public static Grid grid;
 
 	public static void main(String[] args) {
-		GenerateData("UniformInput.xml", "SampleOutput.xml");
+		GenerateData("SampleInput.xml", "SampleOutput.xml");
 	}
 	
 	public static void GenerateData(String inputFile, String outputFile) {

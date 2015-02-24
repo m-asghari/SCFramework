@@ -68,7 +68,7 @@ public class Grid {
 	
 	public int GetCell(Point2D.Double p) {
 		if (!this.In(p)) {
-			Log.Add("x:%.2f, y:%.2f", p.x, p.y);
+			Log.Add(2, "x:%.2f, y:%.2f", p.x, p.y);
 			return -1;
 		}
 		int col = (int)((p.getX() - minx)/length);
@@ -79,8 +79,8 @@ public class Grid {
 	public Point2D.Double GetCellMidPoint(int cell) {
 		int row = cell / colCount;
 		int col = cell % colCount;
-		double x = (row * length) + (length / 2);
-		double y = (col * width) + (width / 2);
+		double x = (col * width) + (width / 2);
+		double y = (row * length) + (length / 2);
 		return new Point2D.Double(x, y);
 	}
 	

@@ -189,7 +189,7 @@ public class Graph {
 					this.maxCliqueSizes.put(k, this.maxCliqueSizes.get(k+1));
 				}
 			}
-			Log.Add("Found MaxClique for node %d", currentNode.index);
+			Log.Add(1, "Found MaxClique for node %d", currentNode.index);
 		}
 		return currentMax;
 	}

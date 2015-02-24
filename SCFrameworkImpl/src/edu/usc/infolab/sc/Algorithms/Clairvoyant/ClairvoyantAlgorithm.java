@@ -22,7 +22,7 @@ public abstract class ClairvoyantAlgorithm extends Algorithm {
 		for (Worker w : workers) {
 			//Log.Add(String.format("Starting FindPTSs for worker %d", w.id));
 			w.FindPTSs(new PTS(), tasks);
-			Log.Add(String.format("Finished FindPTSs for worker %d", w.id));			
+			Log.Add(2, "Finished FindPTSs for worker %d", w.id);			
 		}
 	}
 	

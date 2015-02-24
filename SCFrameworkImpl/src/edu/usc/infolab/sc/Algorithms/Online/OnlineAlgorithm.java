@@ -12,6 +12,26 @@ import edu.usc.infolab.sc.Algorithms.Algorithm;
 import edu.usc.infolab.sc.Main.Log;
 
 public abstract class OnlineAlgorithm extends Algorithm{
+	protected class FrameStat {
+		public int frameNum;
+		public int availableWorkers;
+		
+		public FrameStat(Object...args) {
+			this.frameNum = (int)args[0];
+			this.availableWorkers = (int)args[1];
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("Frame %d:\n", this.frameNum));
+			sb.append(String.format("\tAvailable Workers: %d\n", this.availableWorkers));
+			return sb.toString();
+		}
+	}
+	
+	private ArrayList<FrameStat> _frameStat;
+	
 	Integer currentFrame;
 	Integer assignedTasksCntr;
 	Integer finishedTasksCntr;
@@ -31,6 +51,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		Collections.sort(upcomingWorkers);
 		availableWorkers = new ArrayList<Worker>();
 		assignedTasksCntr = 0;
+		_frameStat = new ArrayList<FrameStat>();
 	}
 	
 	@Override
@@ -38,11 +59,13 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		while (!upcomingTasks.isEmpty()) {
 			AdvanceTime();
 			currentFrame++;
-			Log.Add("Current Time Frame: %d", currentFrame);
+			Log.Add(1, "Current Time Frame: %d", currentFrame);
 		}
+		PrintStat();
 	}
 	
 	public void AdvanceTime() {
+		GetFrameStat();
 		// Check to see if any worker becomes available in current frame
 		while (!upcomingWorkers.isEmpty() && 
 				upcomingWorkers.get(0).releaseFrame <= currentFrame) {
@@ -64,15 +87,28 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			Worker worker = it.next();
 			
 			// What the worker has to do in current frame
-			worker.UpdateLocation();
+			worker.UpdateLocation(1);
 			
-			// Check to see if any worker should be retracted in current frame
-			if (worker.retractFrame == currentFrame) {
+			if (worker.retractFrame.equals(currentFrame)) {
 				it.remove();
 			}
 		}
 	}
 	
+	private void GetFrameStat() {
+		Object[] frameStatParams = new Object[] {
+				currentFrame,
+				availableWorkers.size()
+		};
+		_frameStat.add(new FrameStat(frameStatParams));
+	}
+	
+	private void PrintStat() {
+		for (FrameStat fs : _frameStat) {
+			Log.Add(2, fs.toString());
+		}
+	}
+
 	protected abstract Boolean AssignTask(Task task);
 	
 }
