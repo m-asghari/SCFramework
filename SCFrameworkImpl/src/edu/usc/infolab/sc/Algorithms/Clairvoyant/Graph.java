@@ -62,7 +62,6 @@ public class Graph {
 		@Override
 		public boolean equals(Object obj) {
 			Node n = (Node)obj;
-			//if (this.workerId == n.workerId && this.ptsIndex == n.ptsIndex)
 			if (this.index == n.index)
 				return true;
 			return false;
@@ -72,11 +71,12 @@ public class Graph {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(String.format("Node%d:\n", index));
-			sb.append(pts.toString());
-			sb.append(String.format("Worker: %d\n", workerId));
+			sb.append("PTS:");
+			for (Task t : pts.list)	sb.append(String.format("t%d, ", t.id));
+			sb.append(String.format("\nWorker: %d\n", workerId));
 			sb.append(String.format("ptsIndex: %d\n", ptsIndex));
 			sb.append("Adjacent Nodes: ");
-			//for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
+			for (Node n : adjList) sb.append(String.format("Node%d, ", n.index));
 			sb.append(String.format("\nValue: %d\n", value));
 			return sb.toString();
 		}
@@ -189,7 +189,7 @@ public class Graph {
 					this.maxCliqueSizes.put(k, this.maxCliqueSizes.get(k+1));
 				}
 			}
-			Log.Add(1, "Found MaxClique for node %d", currentNode.index);
+			Log.Add(2, "Found MaxClique for node %d", currentNode.index);
 		}
 		return currentMax;
 	}

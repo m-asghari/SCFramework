@@ -16,6 +16,14 @@ public final class Log {
 	
 	private static int logLevel;
 	
+	// Log levels:
+	//		0 - Final Report
+	//		1 - High Level Completions (Frame, ...)
+	//		2 - Low Level Completions (Assignments, ...)
+	//		3 - Frame Stats
+	//		4 - Selection Results
+	//		5 - Selection Details
+	
 	private Log() {}
 	
 	public static void Initialize(int level, String input) {

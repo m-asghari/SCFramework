@@ -16,25 +16,26 @@ public class NearestNeighbor extends OnlineAlgorithm {
 	
 	@Override
 	protected Worker AssignTask(Task task) {
-		Log.Add(2, "Task %d:", task.id);
+		Log.Add(5, "Task %d:", task.id);
 		double minDistance = Double.MAX_VALUE;
 		Worker minWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker worker : availableWorkers) {
+			Log.Add(5, "Worker: %s", worker.toString());
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = worker.FastCanPerform(task, currentFrame)) != null) {
-				Log.Add(2, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, worker.id, worker.location.distance(task.location));
+				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, worker.id, worker.location.distance(task.location));
 				if (worker.location.distance(task.location) < minDistance) {
 					minWorker = worker;
 					minDistance = worker.location.distance(task.location);
 					bestOrder = new ArrayList<Task>(taskOrder);
 				}
 			} else {
-				Log.Add(2, "\ttaskOrder for Worker %d is null", worker.id);
+				Log.Add(5, "\ttaskOrder for Worker %d is null", worker.id);
 			}
 		}
 		if (minWorker != null) {
-			Log.Add(2, "\ttask %d assigned to Worker %d", task.id, minWorker.id);
+			Log.Add(5, "\ttask %d assigned to Worker %d", task.id, minWorker.id);
 			minWorker.SetSchedule(bestOrder);
 			minWorker.AddTask(task);
 			task.AssignTo(minWorker);

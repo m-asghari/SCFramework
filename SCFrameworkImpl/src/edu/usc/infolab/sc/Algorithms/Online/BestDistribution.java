@@ -3,7 +3,6 @@ package edu.usc.infolab.sc.Algorithms.Online;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import edu.usc.infolab.sc.CountDistribution;
 import edu.usc.infolab.sc.Grid;
@@ -21,76 +20,17 @@ public class BestDistribution extends OnlineAlgorithm {
 	}
 	
 	@Override
-	public void AdvanceTime() {
-		// Check to see if any worker becomes available in current
-		while (!upcomingWorkers.isEmpty() && 
-				upcomingWorkers.get(0).releaseFrame <= currentFrame) {
-			availableWorkers.add(upcomingWorkers.get(0));
-			upcomingWorkers.remove(0);
-		}
-		
+	protected void UpdateWorkerDistribution() {
 		distW = new CountDistribution(grid, true);
 		for (Worker w : availableWorkers) {
 			distW.Inc(grid.GetCell(w.location));
 		}
-				
-		// Check to see if any task arrives in current frame
-		while (!upcomingTasks.isEmpty() &&
-				upcomingTasks.get(0).releaseFrame <= currentFrame) {
-			//distT.Inc(grid.GetCell(upcomingTasks.get(0).location));
-			Worker w = null;
-			if ((w = AssignTask(upcomingTasks.get(0))) != null) {
-				//tasks.add(upcomingTasks.get(0));
-				//SaveFrameToImage(w, upcomingTasks.get(0), 10);
-			}
-			upcomingTasks.remove(0);
-		}
-				
-		for (Iterator<Worker> it = availableWorkers.iterator(); it.hasNext();) {
-			Worker worker = it.next();
-			
-			// What the worker has to do in current frame
-			worker.UpdateLocation(1);
-			
-			// Check to see if any worker should be retracted in current frame
-			if (worker.retractFrame == currentFrame) {
-				it.remove();
-			}
-		}
 	}
-	
-	
-	/*@Override
-	protected Boolean AssignTask(Task task) {
-		double minDistance = Double.MAX_VALUE;
-		Worker minWorker = null;
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker w : availableWorkers) {
-			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task)) != null) {
-				double dist = Diff(w, task);
-				if (dist < minDistance) {
-					minWorker = w;
-					minDistance = dist;
-					bestOrder = new ArrayList<Task>(taskOrder);
-				}
-			}
-		}
-		if (minWorker != null) {
-			minWorker.SetSchedule(bestOrder);
-			task.AssignTo(minWorker);
-			minWorker.AddTask(task);
-			Result.AssignedTasks++;
-			Result.GainedValue += task.value;
-			return true;
-		}
-		return false;
-	}*/
 	
 	@Override
 	protected Worker AssignTask(Task task) {
-		Log.Add(2, "Task %d:", task.id);
-		Log.Add(2, distT.toString());
+		Log.Add(5, "Task %d:", task.id);
+		Log.Add(5, distT.toString());
 		double maxInfluence = Double.MIN_VALUE;
 		Worker bestWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
@@ -98,7 +38,7 @@ public class BestDistribution extends OnlineAlgorithm {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = w.FastCanPerform(task, currentFrame)) != null) {
 				double inf = MoveInfluence(w.location, task.location);
-				Log.Add(2, "\tmaxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
+				Log.Add(5, "\tmaxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
 				if (inf >= maxInfluence) {
 					bestWorker = w;
 					maxInfluence = inf;
@@ -107,7 +47,7 @@ public class BestDistribution extends OnlineAlgorithm {
 			}
 		}
 		if (bestWorker != null) {
-			Log.Add(2, "Assigned task %d to worker %d", task.id, bestWorker.id);
+			Log.Add(5, "Assigned task %d to worker %d", task.id, bestWorker.id);
 			bestWorker.SetSchedule(bestOrder);
 			task.AssignTo(bestWorker);
 			bestWorker.AddTask(task);
@@ -130,13 +70,13 @@ public class BestDistribution extends OnlineAlgorithm {
 		if (grid.GetCell(src) == grid.GetCell(dst)) return 0;
 		double srcInf = distT.GetPointInfluence(src);
 		double dstInf = distT.GetPointInfluence(dst);
-		Log.Add(2, "\t\tSrcInf = %.2f, DstInf = %.2f", srcInf, dstInf);
+		Log.Add(5, "\t\tSrcInf = %.2f, DstInf = %.2f", srcInf, dstInf);
 		int srcCnt = (int)distW.cellCount[grid.GetCell(src)];
 		int dstCnt = (int)distW.cellCount[grid.GetCell(dst)];
-		Log.Add(2, "\t\tSrcCnt = %d, DstCnt = %d", srcCnt, dstCnt);
+		Log.Add(5, "\t\tSrcCnt = %d, DstCnt = %d", srcCnt, dstCnt);
 		double srcDelta = (srcCnt > 1) ? ((double)srcCnt / (srcCnt - 1)) - 1 : 2;
 		double dstDelta = (dstCnt > 0) ? ((double)(dstCnt + 1) / dstCnt) - 1 : 2;
-		Log.Add(2, "\t\tSrcDelta = %.2f, DstDelta = %.2f", srcDelta, dstDelta);
+		Log.Add(5, "\t\tSrcDelta = %.2f, DstDelta = %.2f", srcDelta, dstDelta);
 		return (dstDelta * dstInf) - (srcDelta * srcInf);
 	}
 }

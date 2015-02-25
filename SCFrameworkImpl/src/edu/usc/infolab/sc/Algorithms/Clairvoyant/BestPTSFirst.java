@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Main.Log;
 
 public class BestPTSFirst extends ClairvoyantAlgorithm{
 	HashMap<Worker, ArrayList<PTS>> _allPTSs;
@@ -25,14 +24,12 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 		ArrayList<Task> remainingTasks = new ArrayList<Task>(_tasks.values());
 		ArrayList<Worker> remainingWorkers = new ArrayList<>(_workers.values());
 		
-		int it = 0;
 		while (!remainingWorkers.isEmpty()) {
 			Worker bestWorker = null;
 			PTS bestPTS = null;
 			int bestValue = Integer.MIN_VALUE;
 			for (Worker w : remainingWorkers) {
 				PTS pts = w.GetBestPTS(remainingTasks);
-				Log.Add(2, "Found Best PTS for worker %d in iteration %d", w.id, it);
 				if (pts.value > bestValue) {
 					bestPTS = pts;
 					bestWorker = w;
@@ -48,7 +45,6 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 			else {
 				break;
 			}
-			it++;
 		}
 		
 		/*FindPTSs();

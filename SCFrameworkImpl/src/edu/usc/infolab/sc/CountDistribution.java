@@ -2,8 +2,6 @@ package edu.usc.infolab.sc;
 
 import java.awt.geom.Point2D;
 
-import edu.usc.infolab.sc.Main.Log;
-
 
 public class CountDistribution {
 	public double[] cellCount;
@@ -47,13 +45,9 @@ public class CountDistribution {
 	
 	public double GetPointInfluence(Point2D.Double p) {
 		double sum = 0;
-		Log.Add(2, "Point: %s", p.toString());
 		for (int i = 0; i < cellCount.length; ++i) {
 			double dist = p.distance(grid.GetCellMidPoint(i));
 			double distInf = (dist >= 1) ? grid.maxDistance / dist : 2 * grid.maxDistance;
-			if (Prob(i) > 0) {
-				Log.Add(2, "Cell: %d, dist: %.2f, distInf: %2f, Prob(%d); %.2f, mult: %.2f", i, dist, distInf, i, Prob(i), Prob(i)*distInf);
-			}
 			sum += distInf * Prob(i);
 		}
 		return sum;

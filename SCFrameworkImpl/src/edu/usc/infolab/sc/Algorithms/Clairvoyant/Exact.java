@@ -22,7 +22,7 @@ public class Exact extends ClairvoyantAlgorithm{
 		ArrayList<Graph.Node> maxClique = PTS_Graph.FindMaxClique();
 		
 		for (Graph.Node n : maxClique) {
-			Log.Add(1, n.toString());
+			Log.Add(0, n.toString());
 			Worker w = _workers.get(n.workerId);
 			for (Task t : n.pts.list) {
 				w.AddTask(t);

@@ -16,12 +16,12 @@ public class Greedy extends OnlineAlgorithm {
 	
 	@Override
 	protected Worker AssignTask(Task task) {
-		Log.Add(3, "Task %d:", task.id);
+		Log.Add(5, "Task %d:", task.id);
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker worker : availableWorkers) {
-			Log.Add(2, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
+			Log.Add(5, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
 			if ((bestOrder = worker.FastCanPerform(task, currentFrame)) != null )  {
-				Log.Add(3, "\tWorker %d will perform the task", worker.id);
+				Log.Add(5, "\tWorker %d will perform the task", worker.id);
 				task.AssignTo(worker);
 				worker.AddTask(task);
 				worker.SetSchedule(bestOrder);
@@ -29,7 +29,7 @@ public class Greedy extends OnlineAlgorithm {
 				//Result.GainedValue += task.value;
 				return worker;
 			}
-			Log.Add(3, "\tWorker %d cannot perform the task", worker.id);
+			Log.Add(5, "\tWorker %d cannot perform the task", worker.id);
 		}
 		return null;
 	}

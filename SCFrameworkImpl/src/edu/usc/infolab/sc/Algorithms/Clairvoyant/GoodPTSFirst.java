@@ -34,7 +34,7 @@ public class GoodPTSFirst extends ClairvoyantAlgorithm {
 			for (Worker w : remainingWorkers) {
 				PTS pts = w.GetGoodPTS(remainingTasks);
 				Log.Add(2, "Found Good PTS for worker %d in iteration %d", w.id, it);
-				Log.Add(2, pts.toString());
+				Log.Add(4, pts.toString());
 				if (pts.value > bestValue) {
 					bestPTS = pts;
 					bestWorker = w;

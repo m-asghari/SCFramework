@@ -16,16 +16,16 @@ public class BestInsertion extends OnlineAlgorithm {
 	
 	@Override
 	protected Worker AssignTask(Task task) {
-		Log.Add(2, "Task %d:", task.id);
+		Log.Add(5, "Task %d:", task.id);
 		Double minDiff = Double.MAX_VALUE;
 		Worker bestWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker w : availableWorkers) {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = w.FastCanPerform(task, currentFrame)) != null) {
-				Log.Add(2, "\tWorker %d: currentCompleteTime: %.2f, futureCompleteTime: %.2f", w.id, w.GetCompleteTime(w.GetSchedule(), currentFrame), w.GetCompleteTime(taskOrder, currentFrame));
+				Log.Add(5, "\tWorker %d: currentCompleteTime: %.2f, futureCompleteTime: %.2f", w.id, w.GetCompleteTime(w.GetSchedule(), currentFrame), w.GetCompleteTime(taskOrder, currentFrame));
 				Double diff = w.GetCompleteTime(taskOrder, currentFrame) - w.GetCompleteTime(w.GetSchedule(), currentFrame);
-				Log.Add(2, "\tminDiff: %.2f, diff: %.2f", minDiff, diff);
+				Log.Add(5, "\tminDiff: %.2f, diff: %.2f", minDiff, diff);
 				if (diff < minDiff) {
 					bestWorker = w;
 					minDiff = diff;
@@ -34,7 +34,7 @@ public class BestInsertion extends OnlineAlgorithm {
 			}
 		}
 		if (bestWorker != null) {
-			Log.Add(2, "Task %d assigned to worker %d", task.id, bestWorker.id);
+			Log.Add(5, "Task %d assigned to worker %d", task.id, bestWorker.id);
 			bestWorker.SetSchedule(bestOrder);
 			bestWorker.AddTask(task);
 			task.AssignTo(bestWorker);

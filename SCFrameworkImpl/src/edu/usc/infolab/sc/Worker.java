@@ -5,9 +5,6 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
-import edu.usc.infolab.sc.Main.Main;
-import edu.usc.infolab.sc.Main.Log;
-
 public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
 	//private Boolean active;
@@ -72,6 +69,9 @@ public class Worker extends SpatialEntity{
 		sb.append("Assigned Tasks:");
 		for (Task t : assignedTasks)
 			sb.append(String.format("t%d, ",t.id));
+		sb.append("\nRemaining Tasks:");
+		for (Task t : remainingTasks)
+			sb.append(String.format("t%d, ",  t.id));
 		sb.append(String.format("\nMax: %d\n", maxNumberOfTasks));
 		sb.append(String.format("Traveled: %.2f\n", travledDistance));
 		return sb.toString();
@@ -202,12 +202,6 @@ public class Worker extends SpatialEntity{
 		Double newX = location.getX() + deltaX;
 		Double deltaY = length * (dest.getY() - location.getY()) / dist;
 		Double newY = location.getY() + deltaY;
-		Point2D.Double p = new Point2D.Double(newX, newY);
-		if (!Main.grid.In(p)) {
-			Log.Add(2, "dest->x:%.2f, y:%.2f", dest.getX(), dest.getY());
-			Log.Add(2, "loc->x:%.2f, y:%.2f", this.location.x, this.location.y);
-			Log.Add(2, "deltaX:%.2f, deltaY:%.2f", deltaX, deltaY);
-		}
 		location.setLocation(newX, newY);
 	}
 	
@@ -215,8 +209,6 @@ public class Worker extends SpatialEntity{
 	public PTSs FindPTSs(PTS prefix, ArrayList<Task> tasks) {
 		PTSs result = this.GetPTSs(prefix, tasks);
 		this.ptsSet = result;
-		Log.Add(2, "Visited Nodes: %d", this.nodeCount);
-		Log.Add(2, "Found PTSs: %d", this.ptsSet.Size());
 		return result;
 	}
 	
@@ -273,13 +265,10 @@ public class Worker extends SpatialEntity{
 		return retPTS;
 	}
 	
-	private int nodeCount = 0;
-	
 	private PTSs GetPTSs(PTS prefix, ArrayList<Task> tasks) {
 		PTSs retPTSs = new PTSs();
 		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
 		for (Task t : tasks) {
-			this.nodeCount++;
 			tasks_c.remove(t);
 			if (!this.Overlap(t)) continue;
 			PTS pts = new PTS(prefix.list);

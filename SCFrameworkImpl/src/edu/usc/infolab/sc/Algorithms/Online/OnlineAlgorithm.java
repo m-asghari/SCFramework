@@ -82,6 +82,8 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			upcomingWorkers.remove(0);
 		}
 		
+		UpdateWorkerDistribution();
+		
 		// Check to see if any task arrives in current frame
 		while (!upcomingTasks.isEmpty() &&
 				upcomingTasks.get(0).releaseFrame <= currentFrame) {
@@ -112,6 +114,8 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 		SaveFrameToImage(assignments, 10);
 	}
+	
+	protected void UpdateWorkerDistribution() {}
 	
 	private void SaveFrameToImage(HashMap<Task, Worker> assignments, int scale) {
 		BufferedImage bufferedImage = new BufferedImage(grid.GetLength()*scale,grid.GetWidth()*scale,BufferedImage.TYPE_INT_RGB);
@@ -148,7 +152,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	
 	protected void PrintStat() {
 		for (FrameStat fs : _frameStat) {
-			Log.Add(2, fs.toString());
+			Log.Add(3, fs.toString());
 		}
 	}
 
