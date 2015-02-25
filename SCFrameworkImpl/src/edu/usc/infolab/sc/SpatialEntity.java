@@ -1,5 +1,6 @@
 package edu.usc.infolab.sc;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import org.w3c.dom.Element;
@@ -37,6 +38,10 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 				this.retractFrame < se.releaseFrame) 
 			return false;
 		return true;
+	}
+	
+	public void Draw(Graphics2D g, int scale) {
+		g.fillOval((int)(location.x*scale), (int)(location.y*scale), 6, 6);		
 	}
 	
 	@Override

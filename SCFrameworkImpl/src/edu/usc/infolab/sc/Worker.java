@@ -77,12 +77,25 @@ public class Worker extends SpatialEntity{
 		return sb.toString();
 	}
 	
+	public ArrayList<Task> FastCanPerform(Task task, int currentFrame) {
+		if (assignedTasks.size() == maxNumberOfTasks) {
+			return null;
+		}
+		if (remainingTasks.size() >= 10)
+			System.out.println("here");
+		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
+		tasks.add(task);
+		return CanPerform(new ArrayList<Task>(), tasks, currentFrame, null, Double.MAX_VALUE).First;
+	}
+	
 	public ArrayList<Task> CanPerform(Task task, int currentFrame) {
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		Double bestTime = Double.MAX_VALUE;
 		if (assignedTasks.size() == maxNumberOfTasks) {
 			return null;
 		}
+		if (remainingTasks.size() >= 10)
+			System.out.println("here");
 		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
 		tasks.add(task);
 		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
@@ -98,6 +111,28 @@ public class Worker extends SpatialEntity{
 	
 	public Double GetCompleteTime(ArrayList<Task> tasks, int currentFrame) {
 		return CanComplete(tasks, currentFrame);
+	}
+	
+	private Pair<ArrayList<Task>, Double> CanPerform(ArrayList<Task> fixed, ArrayList<Task> remaining, int currentFrame,
+			ArrayList<Task> bestOrder, Double bestTime) {
+		for (Task t : remaining) {
+			ArrayList<Task> newFixed = new ArrayList<Task>(fixed);
+			newFixed.add(t);
+			Double time = CanComplete(fixed, currentFrame);
+			if (time.compareTo(bestTime) < 0) {
+				if (remaining.size() == 1) {
+					return new Pair<ArrayList<Task>, Double>(newFixed, time);
+				}
+				ArrayList<Task> newRemaining = new ArrayList<Task>(remaining);
+				newRemaining.remove(t);
+				Pair<ArrayList<Task>, Double> result = CanPerform(newFixed, newRemaining, currentFrame, bestOrder, bestTime);
+				if (result.Second.compareTo(bestTime) < 0) {
+					bestOrder = new ArrayList<>(result.First);
+					bestTime = result.Second;
+				}
+			}
+		}
+		return new Pair<ArrayList<Task>, Double>(bestOrder, bestTime);
 	}
 	
 	private Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
@@ -133,8 +168,9 @@ public class Worker extends SpatialEntity{
 	}
 	
 	//Methods for Online Algorithms
-	public void UpdateLocation(double length) {
-		if (remainingTasks.isEmpty()) return;
+	public ArrayList<Task> UpdateLocation(double length) {
+		ArrayList<Task> finished = new ArrayList<Task>();
+		if (remainingTasks.isEmpty()) return finished;
 		Point2D.Double dest = remainingTasks.get(0).location;
 		Double dist = location.distance(dest);
 		if (dist > length) {
@@ -143,6 +179,7 @@ public class Worker extends SpatialEntity{
 		}
 		else {
 			// TODO(masghari): set assignedTask.get(0) as Done!
+			finished.add(remainingTasks.get(0));
 			
 			// TODO(masghari): remove done task from the list!
 			this.location = dest;
@@ -151,9 +188,10 @@ public class Worker extends SpatialEntity{
 			
 			// Start moving toward new task
 			if (remainingTasks.size() > 0 ) {
-				UpdateLocation(length - dist);
+				finished.addAll(UpdateLocation(length - dist));
 			}
 		}
+		return finished;
 	}
 	
 	private void MoveToward(Point2D dest, Double length) {

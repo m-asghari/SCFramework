@@ -7,14 +7,14 @@ import edu.usc.infolab.sc.CountDistribution;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Algorithms.Online.Greedy;
+import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
 
 public class Main {
 	
 	public static Grid grid;
 
 	public static void main(String[] args) {
-		String input = "SampleOutput";
+		String input = "DebugInput";
 		Log.Initialize(1, input);
 		
 		InputParser ip = new InputParser(String.format("%s.xml", input));
@@ -35,10 +35,10 @@ public class Main {
 		//BestPTSFirst algo = new BestPTSFirst(tasks, workers);
 		//GoodPTSFirst algo = new GoodPTSFirst(tasks, workers);
 		
-		Greedy algo = new Greedy(tasks, workers);
-		//NearestNeighbor algo = new NearestNeighbor(tasks, workers);
-		//BestInsertion algo = new BestInsertion(tasks, workers);
-		//BestDistribution algo = new BestDistribution(tasks, workers, new Object[]{grid, distT});
+		//Greedy algo = new Greedy(tasks, workers, grid);
+		NearestNeighbor algo = new NearestNeighbor(tasks, workers, grid);
+		//BestInsertion algo = new BestInsertion(tasks, workers, grid);
+		//BestDistribution algo = new BestDistribution(tasks, workers, new Object[]{distT});
 		algo.Run();
 		
 		Result.GenerateReport(new ArrayList<Worker>(workers.values()));

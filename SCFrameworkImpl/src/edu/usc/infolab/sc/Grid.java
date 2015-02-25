@@ -1,5 +1,6 @@
 package edu.usc.infolab.sc;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
@@ -24,6 +25,18 @@ public class Grid {
 	//CountDistribution dist;
 	//private int size;
 	
+	private Grid(Grid g) {
+		this.minx = g.minx;
+		this.miny = g.miny;
+		this.maxx = g.maxx;
+		this.maxy = g.maxy;
+		this.width = g.width;
+		this.length = g.length;
+		this.rowCount = g.rowCount;
+		this.colCount = g.colCount;
+		this.maxDistance = g.maxDistance;
+	}
+	
 	public Grid(Element e) {
 		minx = Double.parseDouble(e.getAttribute("minx"));
 		miny = Double.parseDouble(e.getAttribute("miny"));
@@ -38,10 +51,6 @@ public class Grid {
 		//dist = new CountDistribution(this.size());
 	}
 	
-	public int size() {
-		return rowCount * colCount;
-	}
-	
 	public Grid(Point2D.Double min, Point2D.Double max, double w, double l) {
 		minx = min.getX();
 		miny = min.getY();
@@ -54,6 +63,18 @@ public class Grid {
 		maxDistance = this.GetCellMidPoint(0).distance(this.GetCellMidPoint(this.size() - 1));
 		//dist = new CountDistribution(this.size());
 		
+	}
+	
+	public int size() {
+		return rowCount * colCount;
+	}
+	
+	public int GetLength() {
+		return (int)(maxx - minx);
+	}
+	
+	public int GetWidth() {
+		return (int)(maxy - miny);
 	}
 	
 	public boolean In(SpatialEntity se) {
@@ -91,5 +112,19 @@ public class Grid {
 		double newX = (rand.nextDouble() * length) + startX;
 		double newY = (rand.nextDouble() * width) + startY;
 		return new Point2D.Double(newX, newY);
+	}
+	
+	public void Draw(Graphics2D g, int scale) {
+		for (double i = minx + length; i < maxx; i+=length) {
+			g.drawLine((int)(i * scale) , (int)(miny * scale), (int)(i * scale), (int)(maxy * scale));
+		}
+		for (double j = miny + width; j < maxy; j+= width) {
+			g.drawLine((int)(minx * scale), (int)(j * scale), (int)(maxx * scale), (int)(j * scale));
+		}
+	}
+	
+	@Override
+	public Grid clone() {
+		return new Grid(this);
 	}
 }

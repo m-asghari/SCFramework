@@ -15,10 +15,9 @@ public class BestDistribution extends OnlineAlgorithm {
 	private CountDistribution distW;
 	private CountDistribution distT;
 	
-	public BestDistribution(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Object...args) {
-		super(tasks, workers);
-		this.grid = (Grid)args[0];
-		this.distT = (CountDistribution)args[1];
+	public BestDistribution(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid, Object...args) {
+		super(tasks, workers, grid);
+		this.distT = (CountDistribution)args[0];
 	}
 	
 	@Override
@@ -39,9 +38,10 @@ public class BestDistribution extends OnlineAlgorithm {
 		while (!upcomingTasks.isEmpty() &&
 				upcomingTasks.get(0).releaseFrame <= currentFrame) {
 			//distT.Inc(grid.GetCell(upcomingTasks.get(0).location));
-			if (AssignTask(upcomingTasks.get(0))) {
+			Worker w = null;
+			if ((w = AssignTask(upcomingTasks.get(0))) != null) {
 				//tasks.add(upcomingTasks.get(0));
-				assignedTasksCntr++;
+				//SaveFrameToImage(w, upcomingTasks.get(0), 10);
 			}
 			upcomingTasks.remove(0);
 		}
@@ -88,15 +88,15 @@ public class BestDistribution extends OnlineAlgorithm {
 	}*/
 	
 	@Override
-	protected Boolean AssignTask(Task task) {
+	protected Worker AssignTask(Task task) {
 		Log.Add(2, "Task %d:", task.id);
 		Log.Add(2, distT.toString());
-		double maxInfluence = 0;
+		double maxInfluence = Double.MIN_VALUE;
 		Worker bestWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker w : availableWorkers) {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
+			if ((taskOrder = w.FastCanPerform(task, currentFrame)) != null) {
 				double inf = MoveInfluence(w.location, task.location);
 				Log.Add(2, "\tmaxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
 				if (inf >= maxInfluence) {
@@ -113,9 +113,8 @@ public class BestDistribution extends OnlineAlgorithm {
 			bestWorker.AddTask(task);
 			//Result.AssignedTasks++;
 			//Result.GainedValue += task.value;
-			return true;
 		}
-		return false;
+		return bestWorker;
 	}
 	
 	public double Diff(Worker w, Task t) {

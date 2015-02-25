@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Data>
+  <Grid l="5" maxx="40" maxy="30" minx="0" miny="0" w="5"/>
+  <Tasks>
+    <Task release="0" retract="15" value="9" x="34.20073027381505" y="26.431917320935863"/>
+    <Task release="1" retract="17" value="6" x="33.58893334706723" y="23.198455659425733"/>
+    <Task release="1" retract="26" value="8" x="2.517246446646203" y="2.402443985475656"/>
+    <Task release="1" retract="12" value="2" x="2.8969833620903067" y="6.697182919097795"/>
+    <Task release="1" retract="12" value="9" x="4.103137545076493" y="4.734736023871775"/>
+    <Task release="1" retract="12" value="1" x="1.6884177907084355" y="3.6139526291559925"/>
+    <Task release="2" retract="18" value="2" x="26.186657230504547" y="1.5600636850854865"/>
+    <Task release="6" retract="25" value="1" x="32.828943524110265" y="25.22050721705722"/>
+    <Task release="6" retract="28" value="1" x="34.34021553444262" y="22.4070220942117"/>
+    <Task release="6" retract="25" value="6" x="10.668380795453324" y="12.538373341972445"/>
+    <Task release="8" retract="33" value="2" x="32.891307344048386" y="21.82361779949331"/>
+    <Task release="9" retract="21" value="1" x="2.00176216580331" y="6.660365144244659"/>
+    <Task release="10" retract="38" value="3" x="34.16998956252404" y="22.210354987052824"/>
+    <Task release="10" retract="24" value="2" x="2.112793162893719" y="4.3720609294429575"/>
+    <Task release="10" retract="39" value="2" x="2.176845429303652" y="4.513377246087308"/>
+    <Task release="13" retract="30" value="7" x="33.214474268016836" y="23.689189438859277"/>
+    <Task release="13" retract="36" value="2" x="1.3518374675969997" y="4.006158007759565"/>
+    <Task release="13" retract="32" value="9" x="33.399149113768274" y="20.738498954861786"/>
+    <Task release="13" retract="34" value="9" x="33.34929376606941" y="24.864398663528785"/>
+    <Task release="14" retract="43" value="3" x="1.3132965992177632" y="4.8439191461081705"/>
+  </Tasks>
+  <Workers>
+    <Worker max="9" release="6" retract="82" x="9.140820766825414" y="2.2715470040990526"/>
+    <Worker max="10" release="8" retract="86" x="26.069683864736884" y="4.063236762196297"/>
+    <Worker max="9" release="8" retract="101" x="18.55122730917106" y="28.21397668125553"/>
+    <Worker max="9" release="9" retract="95" x="33.72131397044853" y="27.73728509832621"/>
+    <Worker max="11" release="12" retract="82" x="7.355030613405651" y="23.064134965128165"/>
+  </Workers>
+</Data>

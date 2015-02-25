@@ -1,11 +1,11 @@
 package edu.usc.infolab.sc;
 
 public class Pair<X, Y> {
-	public final X x;
-	public final Y y;
+	public final X First;
+	public final Y Second;
 	
-	public Pair(X x, Y y) {
-		this.x = x;
-		this.y = y;
+	public Pair(X First, Y Second) {
+		this.First = First;
+		this.Second = Second;
 	}
 }

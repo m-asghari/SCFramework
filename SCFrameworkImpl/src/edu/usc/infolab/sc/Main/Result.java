@@ -61,5 +61,6 @@ public final class Result {
 		Log.Add(0, "Avg Traveled Distance (Per Task): %.2f", avgTraveledDistancePerTask);
 		Log.Add(0, "Max Traveled Distance: %.2f", maxTraveledDistance);
 		Log.Add(0, "Max Traveled Distance (Per Task): %.2f", maxTraveledDistancePerTask);
+		Log.Add(0, "%d, %d, %.2f, %.2f", AssignedTasks, GainedValue, totalTraveledDistance, avgTraveledDistancePerTask);
 	}
 }
