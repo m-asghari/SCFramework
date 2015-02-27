@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
+import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Algorithm;
 import edu.usc.infolab.sc.Main.Log;
@@ -39,6 +40,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}
 	
 	private ArrayList<FrameStat> _frameStat;
+	private File _frameImgDir;
 	
 	Integer currentFrame;
 	ArrayList<Worker> availableWorkers;
@@ -60,6 +62,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		unassignedTasks = new ArrayList<Task>();
 		this.grid = grid.clone();
 		_frameStat = new ArrayList<FrameStat>();
+		_frameImgDir = Utils.CreateEmptyDirectory("FrameImages");
 	}
 	
 	@Override
@@ -135,7 +138,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			g.drawLine((int)(e.getKey().location.x * scale), (int)(e.getKey().location.y * scale), (int)(e.getValue().location.x * scale), (int)(e.getValue().location.y * scale));
 		}
 		try {
-			ImageIO.write(bufferedImage, "JPG", new File(String.format("FrameImages/frame%05d.jpg", currentFrame)));
+			ImageIO.write(bufferedImage, "JPG", new File(_frameImgDir, String.format("frame%05d.jpg", currentFrame)));
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();

@@ -1,5 +1,5 @@
 <DataSpecification>
-	<Grid minx="0" miny="0" maxx="40" maxy="30" w="1" l="1"/>
+	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
 	<Tasks size="20">
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.45">
@@ -53,7 +53,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers>
+	<Workers available="5">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -64,10 +64,10 @@
 				</Settings>
 			</Distribution>
 		</Location>
-		<ReleaseTime mode="InterArrival">
+		<ReleaseTime>
 			<Distribution name="Normal" prob="1">
 				<Settings>
-					<mean value="4"/>
+					<mean value="3"/>
 					<sd value="2"/>
 				</Settings>
 			</Distribution>

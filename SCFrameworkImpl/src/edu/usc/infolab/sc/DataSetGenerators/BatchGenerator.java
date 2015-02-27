@@ -2,6 +2,8 @@ package edu.usc.infolab.sc.DataSetGenerators;
 
 import java.io.File;
 
+import edu.usc.infolab.sc.Utils;
+
 
 public class BatchGenerator {
 
@@ -10,11 +12,8 @@ public class BatchGenerator {
 		String outputPattern = "T50000_1";
 		int numberOfOutputs = 100;
 		
-		File currentDir = new File(".");
-		File dir = new File(currentDir, outputPattern);
-		if (dir.exists())
-			Delete(dir);
-		dir.mkdir();
+		
+		File dir = Utils.CreateEmptyDirectory(outputPattern);
 		
 		for (int i = 0; i < numberOfOutputs; ++i) {
 			File file = new File(dir, String.format("%s_%02d.xml", outputPattern, i));
@@ -22,14 +21,6 @@ public class BatchGenerator {
 			Main.GenerateData(inputFile, outputFile);
 		}
 
-	}
-	
-	private static void Delete(File f) {
-		if (f.isDirectory()) {
-			for (File c : f.listFiles())
-				Delete(c);
-		}
-		f.delete();
 	}
 
 }

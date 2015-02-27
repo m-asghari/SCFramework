@@ -16,7 +16,7 @@ public class Main {
 	public static Grid grid;
 
 	public static void main(String[] args) {
-		GenerateData("SkewedTasks.xml", "SampleOutput.xml");
+		GenerateData("UniformInput.xml", "SampleOutput.xml");
 	}
 	
 	public static void GenerateData(String inputFile, String outputFile) {
@@ -61,13 +61,35 @@ public class Main {
 		Element oWorkers = output.createElement("Workers");
 		data.appendChild(oWorkers);
 		
+		int availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		
 		ArrayList<Worker> workers = new ArrayList<Worker>();
-		while (true) {
+		int[] workerPerFrame = new int[endTime];
+		for (int f = 0; f < endTime; ++f) {
+			workerPerFrame[f] = 0;
+		}
+		
+		for (int i = 0; i < availableWorkers; ++i) {
 			Worker w = wg.NextWorker();
-			if (w.releaseFrame <= endTime)
+			w.releaseFrame = 0;
+			for (int f = w.releaseFrame; f <= w.retractFrame && f < endTime; ++f) {
+				workerPerFrame[f]++;
+			}
+			workers.add(w);
+		}
+		
+		int frame = 0;
+		while (frame < endTime) {
+			while (frame < endTime && workerPerFrame[frame++] >= availableWorkers);
+			Worker w = wg.NextWorker();
+			w.releaseFrame += frame;
+			if (w.releaseFrame < endTime) {
+				for (int f = w.releaseFrame; f <= w.retractFrame && f < endTime; ++f) {
+					workerPerFrame[f]++;
+				}
 				workers.add(w);
-			else
-				break;
+				frame = w.releaseFrame;
+			}
 		}
 		
 		Collections.sort(workers);

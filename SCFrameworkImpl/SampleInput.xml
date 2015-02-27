@@ -1,5 +1,5 @@
 <DataSpecification>
-	<Grid minx="0" miny="0" maxx="40" maxy="30" w="1" l="1"/>
+	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
 	<Tasks size="500">
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.1">
@@ -50,7 +50,7 @@
 		<ReleaseTime mode="InterArrival">
 			<Distribution name="Exponential" prob="1">
 				<Settings>
-					<mean value="1"/>
+					<mean value="0.7"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
@@ -71,7 +71,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers>
+	<Workers available="5">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -85,15 +85,15 @@
 		<ReleaseTime mode="InterArrival">
 			<Distribution name="Exponential" prob="1">
 				<Settings>
-					<mean value="5"/>
+					<mean value="2"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
 		<Duration>
 			<Distribution name="Uniform" prob="1">
 				<Settings>
-					<min value="20"/>
-					<max value="70"/>
+					<min value="10"/>
+					<max value="100"/>
 				</Settings>
 			</Distribution>
 		</Duration>
@@ -101,7 +101,7 @@
 			<Distribution name="Uniform" prob="1">
 				<Settings>
 					<min value="3"/>
-					<max value="6"/>
+					<max value="10"/>
 				</Settings>
 			</Distribution>
 		</MaxTasks>

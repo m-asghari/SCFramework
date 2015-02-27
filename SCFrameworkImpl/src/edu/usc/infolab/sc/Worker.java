@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
+import edu.usc.infolab.sc.Main.Log;
+
 public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
 	//private Boolean active;
@@ -81,11 +83,13 @@ public class Worker extends SpatialEntity{
 		if (assignedTasks.size() == maxNumberOfTasks) {
 			return null;
 		}
-		if (remainingTasks.size() >= 10)
-			System.out.println("here");
 		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
 		tasks.add(task);
-		return CanPerform(new ArrayList<Task>(), tasks, currentFrame, null, Double.MAX_VALUE).First;
+		Pair<ArrayList<Task>, Double> bestResult = CanPerform(new ArrayList<Task>(), tasks, currentFrame, null, Double.MAX_VALUE);
+		if (bestResult.First != null && bestResult.First.size() == tasks.size())
+			return bestResult.First;
+		else
+			return null;
 	}
 	
 	public ArrayList<Task> CanPerform(Task task, int currentFrame) {
@@ -94,8 +98,6 @@ public class Worker extends SpatialEntity{
 		if (assignedTasks.size() == maxNumberOfTasks) {
 			return null;
 		}
-		if (remainingTasks.size() >= 10)
-			System.out.println("here");
 		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
 		tasks.add(task);
 		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
@@ -118,13 +120,16 @@ public class Worker extends SpatialEntity{
 		for (Task t : remaining) {
 			ArrayList<Task> newFixed = new ArrayList<Task>(fixed);
 			newFixed.add(t);
-			Double time = CanComplete(fixed, currentFrame);
+			Double time = CanComplete(newFixed, currentFrame);
 			if (time.compareTo(bestTime) < 0) {
-				if (remaining.size() == 1) {
+				/*if (remaining.size() == 1) {
 					return new Pair<ArrayList<Task>, Double>(newFixed, time);
-				}
+				}*/
 				ArrayList<Task> newRemaining = new ArrayList<Task>(remaining);
 				newRemaining.remove(t);
+				if (newRemaining.size() == 0) {
+					return new Pair<ArrayList<Task>, Double>(newFixed, time);
+				}
 				Pair<ArrayList<Task>, Double> result = CanPerform(newFixed, newRemaining, currentFrame, bestOrder, bestTime);
 				if (result.Second.compareTo(bestTime) < 0) {
 					bestOrder = new ArrayList<>(result.First);
@@ -136,19 +141,28 @@ public class Worker extends SpatialEntity{
 	}
 	
 	private Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
+		StringBuilder sb = new StringBuilder();
+		for (Task t : tasks) sb.append(String.format("t%d, ", t.id));
+		Log.Add(6, "Worker: %d, currentFrame: %d, inputTasks: %s", this.id, currentFrame, sb.toString());
 		Point2D.Double loc = this.location;
 		double time = Math.max(this.releaseFrame, currentFrame);
+		Log.Add(6,  "initLoc: x=%.2f y=%.2f, initTime: %.2f", loc.x, loc.y, time);
 		for (int i = 0; i < tasks.size(); ++i) {
 			Task current = tasks.get(i);
+			Log.Add(6, "currentTask: t%d, distance: %.2f", current.id, loc.distance(current.location));
 			double nextTime = Math.max((double)current.releaseFrame, time + loc.distance(current.location));
+			Log.Add(6, "nextTime: %.2f", nextTime);
 			if (nextTime <= (double)current.retractFrame && nextTime <= (double)this.retractFrame) {
 				loc = current.location;
 				time = nextTime;
+				Log.Add(6,  "Loc: x=%.2f y=%.2f, Time: %.2f", loc.x, loc.y, time);
 			}
 			else {
+				Log.Add(6, "return: %.2f", Double.MAX_VALUE);
 				return Double.MAX_VALUE;
 			}
 		}
+		Log.Add(6, "return: %.2f", time);
 		return time;
 	}
 	

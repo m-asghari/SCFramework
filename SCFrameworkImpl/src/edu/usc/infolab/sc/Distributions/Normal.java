@@ -19,7 +19,8 @@ public class Normal extends Distribution<Double> {
 	
 	@Override
 	public Double Sample() {
-		return dist.sample();
+		Double sample = dist.sample();
+		return (sample > 0) ? sample : 0;
 	}
 	
 	public static Class<?> GetConfigClass() {

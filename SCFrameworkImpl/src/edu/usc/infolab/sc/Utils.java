@@ -1,5 +1,6 @@
 package edu.usc.infolab.sc;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Utils {
@@ -28,5 +29,22 @@ public class Utils {
 			p = new ArrayList<ArrayList<Task>>(current);
 		}
 		return p;
+	}
+	
+	public static File CreateEmptyDirectory(String dirName) {
+		File currentDir = new File(".");
+		File dir = new File(currentDir, dirName);
+		if (dir.exists())
+			Delete(dir);
+		dir.mkdir();
+		return dir;
+	}
+	
+	private static void Delete(File f) {
+		if (f.isDirectory()) {
+			for (File c : f.listFiles())
+				Delete(c);
+		}
+		f.delete();
 	}
 }
