@@ -43,6 +43,10 @@ public class CountDistribution {
 		}
 	}
 	
+	public double GetMaxInfluence() {
+		return 2 * grid.maxDistance;
+	}
+	
 	public double GetPointInfluence(Point2D.Double p) {
 		double sum = 0;
 		for (int i = 0; i < cellCount.length; ++i) {

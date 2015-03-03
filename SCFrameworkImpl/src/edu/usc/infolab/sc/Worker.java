@@ -15,6 +15,15 @@ public class Worker extends SpatialEntity{
 	public Integer maxNumberOfTasks;
 	public Double travledDistance;
 	private PTSs ptsSet;
+	
+	private Worker(Worker w) {
+		super(w);
+		this.assignedTasks = new ArrayList<Task>(w.assignedTasks);
+		this.remainingTasks = new ArrayList<Task>(w.remainingTasks);
+		this.maxNumberOfTasks = w.maxNumberOfTasks;
+		this.travledDistance = w.travledDistance;
+		this.ptsSet = w.ptsSet.clone();
+	}
 		
 	public Worker() {
 		Initialize();
@@ -77,6 +86,11 @@ public class Worker extends SpatialEntity{
 		sb.append(String.format("\nMax: %d\n", maxNumberOfTasks));
 		sb.append(String.format("Traveled: %.2f\n", travledDistance));
 		return sb.toString();
+	}
+	
+	@Override
+	public Worker clone(){
+		return new Worker(this);
 	}
 	
 	public ArrayList<Task> FastCanPerform(Task task, int currentFrame) {

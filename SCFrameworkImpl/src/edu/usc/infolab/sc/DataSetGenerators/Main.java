@@ -83,6 +83,7 @@ public class Main {
 			while (frame < endTime && workerPerFrame[frame++] >= availableWorkers);
 			Worker w = wg.NextWorker();
 			w.releaseFrame += frame;
+			w.retractFrame += w.releaseFrame;
 			if (w.releaseFrame < endTime) {
 				for (int f = w.releaseFrame; f <= w.retractFrame && f < endTime; ++f) {
 					workerPerFrame[f]++;

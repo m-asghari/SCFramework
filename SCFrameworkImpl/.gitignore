@@ -1,4 +1,7 @@
 *.log
 /bin
 /src/*.java
+/FrameImages
+*/input*.xml
+
 

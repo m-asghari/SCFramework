@@ -13,7 +13,7 @@ public class PTSs {
 		list = new ArrayList<PTS>(l);
 	}
 	
-	public PTSs(PTSs p) {
+	private PTSs(PTSs p) {
 		list = new ArrayList<PTS>(p.list);
 	}
 	
@@ -47,5 +47,10 @@ public class PTSs {
 			sb.append(pts.toString());
 		sb.append("\n");
 		return sb.toString();
+	}
+	
+	@Override
+	public PTSs clone(){		
+		return new PTSs(this);
 	}
 }

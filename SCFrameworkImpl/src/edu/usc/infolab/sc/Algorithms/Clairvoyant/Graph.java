@@ -93,7 +93,7 @@ public class Graph {
 		maxCliqueSizes = new HashMap<Integer, Integer>();
 		layers = new ArrayList<ArrayList<Node>>();
 		for (Worker w : workers) {
-			PTSs p = new PTSs(w.GetPTSSet());
+			PTSs p = w.GetPTSSet().clone();
 			ArrayList<Node> layer = new ArrayList<Node>();
 			for (int i = 0; i < p.Size(); ++i) {
 				Node newNode = new Node(w.id, i, p.GetSubset(i));

@@ -9,6 +9,12 @@ public class Task extends SpatialEntity{
 	ArrayList<Worker> assignedWorkers;
 	public Integer value;
 	
+	private Task(Task t) {
+		super(t);
+		this.assignedWorkers = new ArrayList<Worker>(t.assignedWorkers);
+		this.value = t.value;
+	}
+	
 	public Task() {
 		Initialize();
 		this.id = idCntr++;
@@ -51,5 +57,10 @@ public class Task extends SpatialEntity{
 			sb.append(String.format("w%d, ", w.id));
 		sb.append(String.format("\nValue: %d\n", value));
 		return sb.toString();
+	}
+	
+	@Override
+	public Task clone(){
+		return new Task(this);
 	}
 }

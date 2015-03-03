@@ -31,52 +31,53 @@ public class BestDistribution extends OnlineAlgorithm {
 	protected Worker AssignTask(Task task) {
 		Log.Add(5, "Task %d:", task.id);
 		Log.Add(5, distT.toString());
-		double maxInfluence = Double.MIN_VALUE;
+		Double maxInfluence = -2.0 * distT.GetMaxInfluence();
 		Worker bestWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker w : availableWorkers) {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = w.FastCanPerform(task, currentFrame)) != null) {
 				double inf = MoveInfluence(w.location, task.location);
-				Log.Add(5, "\tmaxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
+				Log.Add(5, "maxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
 				if (inf >= maxInfluence) {
 					bestWorker = w;
 					maxInfluence = inf;
 					bestOrder = new ArrayList<>(taskOrder);
 				}
 			}
+			else {
+				Log.Add(5, "Worker %d cannot perform task %d", w.id, task.id);
+			}
 		}
 		if (bestWorker != null) {
-			Log.Add(5, "Assigned task %d to worker %d", task.id, bestWorker.id);
+			Double diff = bestWorker.GetCompleteTime(bestOrder, currentFrame) - bestWorker.GetCompleteTime(bestWorker.GetSchedule(), currentFrame);
+			Log.Add(5, "Assigned task %d to worker %d -> diff: %.2f", task.id, bestWorker.id, diff);
 			bestWorker.SetSchedule(bestOrder);
 			task.AssignTo(bestWorker);
 			bestWorker.AddTask(task);
-			//Result.AssignedTasks++;
-			//Result.GainedValue += task.value;
 		}
 		return bestWorker;
 	}
 	
-	public double Diff(Worker w, Task t) {
+	/*private double Diff(Worker w, Task t) {
 		CountDistribution distW_c = new CountDistribution(grid, distW.cellCount);
 		distW_c.Dec(grid.GetCell(w.location));
 		distW_c.Inc(grid.GetCell(t.location));
 		return CountDistribution.JSD(distT, distW_c);
-		//return CountDistribution.SKLD(distT, distW_c);
-	}
+	}*/
 	
-	public double MoveInfluence(Point2D.Double src, Point2D.Double dst) 
+	private double MoveInfluence(Point2D.Double src, Point2D.Double dst) 
 	{
 		if (grid.GetCell(src) == grid.GetCell(dst)) return 0;
 		double srcInf = distT.GetPointInfluence(src);
 		double dstInf = distT.GetPointInfluence(dst);
-		Log.Add(5, "\t\tSrcInf = %.2f, DstInf = %.2f", srcInf, dstInf);
+		Log.Add(5, "\tSrcInf = %.2f, DstInf = %.2f", srcInf, dstInf);
 		int srcCnt = (int)distW.cellCount[grid.GetCell(src)];
 		int dstCnt = (int)distW.cellCount[grid.GetCell(dst)];
-		Log.Add(5, "\t\tSrcCnt = %d, DstCnt = %d", srcCnt, dstCnt);
+		Log.Add(5, "\tSrcCnt = %d, DstCnt = %d", srcCnt, dstCnt);
 		double srcDelta = (srcCnt > 1) ? ((double)srcCnt / (srcCnt - 1)) - 1 : 2;
 		double dstDelta = (dstCnt > 0) ? ((double)(dstCnt + 1) / dstCnt) - 1 : 2;
-		Log.Add(5, "\t\tSrcDelta = %.2f, DstDelta = %.2f", srcDelta, dstDelta);
+		Log.Add(5, "\tSrcDelta = %.2f, DstDelta = %.2f", srcDelta, dstDelta);
 		return (dstDelta * dstInf) - (srcDelta * srcInf);
 	}
 }

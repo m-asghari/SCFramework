@@ -13,6 +13,13 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 	
 	public SpatialEntity() {}
 	
+	protected SpatialEntity(SpatialEntity se) {
+		this.id = se.id;
+		this.location = se.location;
+		this.releaseFrame = se.releaseFrame;
+		this.retractFrame = se.retractFrame;
+	}
+	
 	public SpatialEntity(Element e) {
 		Double x = Double.parseDouble(e.getAttribute("x"));
 		Double y = Double.parseDouble(e.getAttribute("y"));
@@ -62,5 +69,5 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 		sb.append(String.format("Release: %d\n", releaseFrame));
 		sb.append(String.format("Retract: %d\n", retractFrame));
 		return sb.toString();
-	}
+	}	
 }

@@ -29,7 +29,7 @@ public final class Log {
 	public static void Initialize(int level, String input) {
 		logLevel = level;
 		try {
-			fw = new FileWriter(String.format("logs_%s.log", input));
+			fw = new FileWriter(String.format("%s.log", input));
 			bw = new BufferedWriter(fw);
 		}
 		catch (IOException e) {

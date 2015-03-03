@@ -68,9 +68,9 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	@Override
 	public void Run() {
 		while (!upcomingTasks.isEmpty() || !presentTasks.isEmpty()) {
+			Log.Add(1, "Current Time Frame: %d", currentFrame);
 			AdvanceTime();
 			currentFrame++;
-			Log.Add(1, "Current Time Frame: %d", currentFrame);
 		}
 		PrintStat();
 	}
@@ -115,7 +115,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 				it.remove();
 			}
 		}
-		SaveFrameToImage(assignments, 10);
+		//SaveFrameToImage(assignments, 10);
 	}
 	
 	protected void UpdateWorkerDistribution() {}

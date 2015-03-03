@@ -1,6 +1,6 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
-	<Tasks size="50">
+	<Tasks size="5000">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -35,7 +35,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers available="5">
+	<Workers available="10">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -49,8 +49,8 @@
 		<ReleaseTime>
 			<Distribution name="Normal" prob="1">
 				<Settings>
-					<mean value="3"/>
-					<sd value="2"/>
+					<mean value="0"/>
+					<sd value="5"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
