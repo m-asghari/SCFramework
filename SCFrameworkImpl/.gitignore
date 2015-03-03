@@ -2,6 +2,6 @@
 /bin
 /src/*.java
 /FrameImages
-*/input*.xml
+Results/*/input*.xml
 
 
