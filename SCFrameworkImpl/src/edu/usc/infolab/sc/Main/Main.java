@@ -25,9 +25,9 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_500";
+		String input = "UniformTasks_5000";
 		
-		Main.Initialize(1, input);
+		Main.Initialize(0, input);
 		
 		for (int test = 0; test < 50; test++) {
 			String testInput = GenerateNewInput(test, input);
@@ -49,24 +49,28 @@ public class Main {
 			HashMap<Integer, Worker> workers;
 			
 			
+			System.out.println(String.format("Starting Greedy for test %d", test));
 			tasks = GetTasksCopy();
 			workers = GetWorkersCopy();
 			Greedy grAlgo = new Greedy(tasks, workers, grid.clone());
 			grAlgo.Run();
 			String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
 			
+			System.out.println(String.format("Starting NearestNeighbor for test %d", test));
 			tasks = GetTasksCopy();
 			workers = GetWorkersCopy();
 			NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
 			nnAlgo.Run();
 			String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
 			
+			System.out.println(String.format("Starting BestInsertion for test %d", test));
 			tasks = GetTasksCopy();
 			workers = GetWorkersCopy();
 			BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
 			biAlgo.Run();
 			String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
 			
+			System.out.println(String.format("Starting BestDistribution for test %d", test));
 			tasks = GetTasksCopy();
 			workers = GetWorkersCopy();
 			BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});

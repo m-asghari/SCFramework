@@ -3,5 +3,7 @@
 /src/*.java
 /FrameImages
 Results/*/input*.xml
+Results/*/*/input*.xml
+Results/*/*/*/input*.xml
 
 
