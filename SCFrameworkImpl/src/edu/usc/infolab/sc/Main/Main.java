@@ -48,7 +48,6 @@ public class Main {
 			HashMap<Integer, Task> tasks;
 			HashMap<Integer, Worker> workers;
 			
-			
 			System.out.println(String.format("Starting Greedy for test %d", test));
 			tasks = GetTasksCopy();
 			workers = GetWorkersCopy();
