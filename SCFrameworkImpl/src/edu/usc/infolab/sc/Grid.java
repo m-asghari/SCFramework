@@ -75,6 +75,16 @@ public class Grid {
 		return (int)(maxy - miny);
 	}
 	
+	public Element Fill(Element g) {
+		g.setAttribute("maxx", Double.toString(this.maxx));
+		g.setAttribute("minx", Double.toString(this.minx));
+		g.setAttribute("miny", Double.toString(this.miny));
+		g.setAttribute("maxy", Double.toString(this.maxy));
+		g.setAttribute("l", Double.toString(this.length));
+		g.setAttribute("w", Double.toString(this.width));
+		return g;
+	}
+	
 	public boolean In(SpatialEntity se) {
 		return this.In(se.location);
 	}
