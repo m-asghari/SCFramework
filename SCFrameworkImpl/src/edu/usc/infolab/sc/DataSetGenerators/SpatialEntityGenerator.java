@@ -27,7 +27,7 @@ public abstract class SpatialEntityGenerator {
 		return duration.Sample().intValue();
 	}
 	
-	public Integer NextRelease() {
-		return releaseTime.Sample().intValue();
+	public Double NextRelease() {
+		return releaseTime.Sample();
 	}
 }

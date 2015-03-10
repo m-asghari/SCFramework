@@ -5,34 +5,20 @@ import java.util.Collections;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import edu.usc.infolab.sc.Grid;
+import edu.usc.infolab.sc.SpatialEntity;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
 public class Main {
 	
-	private static enum ReleaseMode {
+	public static enum ReleaseMode {
 		Independent, InterArrival, Available
 	};
 	
 	public static void main(String[] args) {
 		GenerateData("UniformInput.xml", "SampleOutput.xml");
-	}
-	
-	public static TaskGenerator GetTaskGenerator(String inputFile) {
-		Document input = IO.ReadXML(inputFile);
-		Element dataSpec = input.getDocumentElement();
-		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
-		return new TaskGenerator(iTasks);
-	}
-
-	public static WorkerGenerator GetWorkerGenerator(String inputFile) {
-		Document input = IO.ReadXML(inputFile);
-		Element dataSpec = input.getDocumentElement();
-		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
-		return new WorkerGenerator(iWorkers);
 	}
 	
 	public static ArrayList<Task> GenerateInterArrivalTasks(TaskGenerator tg, int size) {
@@ -44,13 +30,13 @@ public class Main {
 		initTask.value = tg.NextValue();
 		tasks.add(initTask);
 		
-		int lastTime = 0;
+		Double lastTime = 0.0;
 		for (int i = 1; i < size; i++) {
 			Task t = new Task();
 			t.location = tg.NextLocation();
 			lastTime += tg.NextRelease();
-			t.releaseFrame = lastTime;
-			t.retractFrame = lastTime + tg.NextDuration();
+			t.releaseFrame = lastTime.intValue();
+			t.retractFrame = lastTime.intValue() + tg.NextDuration();
 			t.value = tg.NextValue();
 			tasks.add(t);
 		}
@@ -64,7 +50,7 @@ public class Main {
 		for (int i = 0; i < size; i++) {
 			Task t = new Task();
 			t.location = tg.NextLocation();
-			t.releaseFrame = tg.NextRelease();
+			t.releaseFrame = tg.NextRelease().intValue();
 			t.retractFrame = t.releaseFrame + tg.NextDuration();
 			t.value = tg.NextValue();
 			tasks.add(t);
@@ -82,37 +68,20 @@ public class Main {
 		initWorker.maxNumberOfTasks = wg.NextNumOfTasks();
 		workers.add(initWorker);
 		
-		int lastTime = 0;
+		Double lastTime = 0.0;
 		while (lastTime <= cutOffTime) {
 			Worker w = new Worker();
 			w.location = wg.NextLocation();
 			lastTime += wg.NextRelease();
-			w.releaseFrame = lastTime;
-			w.retractFrame = lastTime + wg.NextDuration();
+			w.releaseFrame = lastTime.intValue();
+			w.retractFrame = lastTime.intValue() + wg.NextDuration();
 			w.maxNumberOfTasks = wg.NextNumOfTasks();
 			workers.add(w);
 		}
 		
 		return workers;
 	}
-	
-	public static ArrayList<Worker> GenerateWorkers(WorkerGenerator wg, int cutOffTime) {
-		ArrayList<Worker> workers = new ArrayList<Worker>();
-		
-		int lastTime = 0;
-		while (lastTime <= cutOffTime) {
-			Worker w = new Worker();
-			w.location = wg.NextLocation();
-			lastTime = wg.NextRelease();
-			w.releaseFrame = lastTime;
-			w.retractFrame = lastTime + wg.NextDuration();
-			w.maxNumberOfTasks = wg.NextNumOfTasks();
-			workers.add(w);
-		}
-		
-		return workers;
-	}
-	
+
 	public static ArrayList<Worker> GenerateWorkers(WorkerGenerator wg, int cutOffTime, int availableWorkers) {
 		ArrayList<Worker> workers = new ArrayList<Worker>();
 		
@@ -127,7 +96,7 @@ public class Main {
 			w.releaseFrame = 0;
 			w.retractFrame = wg.NextDuration();
 			w.maxNumberOfTasks = wg.NextNumOfTasks();
-			for (int t = w.releaseFrame; t <= w.retractFrame; t++) {
+			for (int t = w.releaseFrame; t <= w.retractFrame && t < cutOffTime; t++) {
 				numOfWorkers[t]++;
 			}
 			workers.add(w);
@@ -138,10 +107,10 @@ public class Main {
 			if (numOfWorkers[t] < availableWorkers) {
 				Worker w = new Worker();
 				w.location = wg.NextLocation();
-				w.releaseFrame = t + wg.NextRelease();
+				w.releaseFrame = t + wg.NextRelease().intValue();
 				w.retractFrame = w.releaseFrame + wg.NextDuration();
 				w.maxNumberOfTasks = wg.NextNumOfTasks();
-				for (int r = w.releaseFrame; r <= w.retractFrame; r++) {
+				for (int r = w.releaseFrame; r <= w.retractFrame && r < cutOffTime; r++) {
 					numOfWorkers[r]++;
 				}
 				workers.add(w);
@@ -198,30 +167,87 @@ public class Main {
 		}
 		else return ReleaseMode.Independent;		
 	}
+	
+	private static Integer GetCutOffTime(ArrayList<? extends SpatialEntity> list) {
+		Integer cutOffTime = 0;
+		for (SpatialEntity se : list) {
+			if (se.releaseFrame > cutOffTime)
+				cutOffTime = se.releaseFrame;
+		}
+		return  cutOffTime;
+	}
 
 	public static void GenerateData(String inputFile, String outputFile) {
 		Document input = IO.ReadXML(inputFile);
 		Element dataSpec = input.getDocumentElement();
 		
-		Document output = IO.GetEmptyDoc();
-		Element data = output.createElement("Data");
-		output.appendChild(data);
-		
 		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
-		Node oGrid = gridElement.cloneNode(true);
-		output.adoptNode(oGrid);
-		data.appendChild(oGrid);
+		Grid grid = new Grid(gridElement);
 		
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		int tasksSize = Integer.parseInt(iTasks.getAttribute("size"));
-		ReleaseMode taskReleaseMode = GetReleaseMode(iTasks); 
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
 		TaskGenerator tg = new TaskGenerator(iTasks);
 		
-		Element oTasks = output.createElement("Tasks");
-		data.appendChild(oTasks);
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		int availableWorkers = 0;
+		if (workersReleaseMode == ReleaseMode.Available) {
+			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		}
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize) {
+		Document input = IO.ReadXML(inputFile);
+		Element dataSpec = input.getDocumentElement();
+		
+		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
+		Grid grid = new Grid(gridElement);
+		
+		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
+		TaskGenerator tg = new TaskGenerator(iTasks);
+		
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		int availableWorkers = 0;
+		if (workersReleaseMode == ReleaseMode.Available) {
+			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		}
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers) {
+		Document input = IO.ReadXML(inputFile);
+		Element dataSpec = input.getDocumentElement();
+		
+		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
+		Grid grid = new Grid(gridElement);
+		
+		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
+		TaskGenerator tg = new TaskGenerator(iTasks);
+		
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = ReleaseMode.Available;
+		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
+	private static void GenerateData(
+			Grid grid,
+			TaskGenerator tg, ReleaseMode tasksReleaseMode, int tasksSize,
+			WorkerGenerator wg, ReleaseMode workersReleaseMode, int availableWorkers,
+			String outputFile) {
 		
 		ArrayList<Task> tasks = new ArrayList<Task>();
-		switch (taskReleaseMode) {
+		switch (tasksReleaseMode) {
 		case Independent:
 			tasks = GenerateTasks(tg, tasksSize);
 			break;
@@ -231,47 +257,20 @@ public class Main {
 			break;
 		}
 		
-		Collections.sort(tasks);
-		
-		int cutOffTime = 0;
-		for (Task t : tasks) {
-			Element task = output.createElement("Task");
-			task = t.Fill(task);
-			cutOffTime = t.releaseFrame;
-			oTasks.appendChild(task);
-		}
-		
-		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
-		ReleaseMode workerRleaseMode = GetReleaseMode(iWorkers);
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
-		
-		Element oWorkers = output.createElement("Workers");
-		data.appendChild(oWorkers);
+		int cutOffTime = GetCutOffTime(tasks);
 		
 		ArrayList<Worker> workers = new ArrayList<Worker>();
-		switch (workerRleaseMode) {
-		case Independent:
-			workers = GenerateWorkers(wg, cutOffTime);
-			break;
+		switch (workersReleaseMode) {
 		case InterArrival:
 			workers = GenerateInterArrivalWorkers(wg, cutOffTime);
 			break;
 		case Available:
-			int availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
 			workers = GenerateWorkers(wg, cutOffTime, availableWorkers);
 			break;
 		default:
 			break;
 		}
 		
-		Collections.sort(workers);
-		
-		for (Worker w : workers) {
-			Element worker = output.createElement("Worker");
-			worker = w.Fill(worker);
-			oWorkers.appendChild(worker);
-		}
-		
-		IO.SaveXML(output, outputFile);
+		SaveData(grid, tasks, workers, outputFile);
 	}
 }

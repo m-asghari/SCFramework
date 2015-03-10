@@ -25,61 +25,80 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_5000";
+		String input = "UniformTasks";
+		Initialize(-1, input);
 		
-		Main.Initialize(0, input);
+		ChangeNumberOfTasks(input);
 		
-		for (int test = 0; test < 50; test++) {
+		Finalize();
+	}
+	
+	private static void ChangeNumberOfTasks(String input) {
+		int size = 10;
+		while (size < 50000) {
+			for (int test = 0; test < 20; test++) {
+				String testInput = GenerateNewInput(test, input, size);
+				System.out.println(String.format("Starting test %d for size %d", test, size));
+				String algoResults = RunAllAlgorithms(testInput);
+				Result.Add("%d,%s", size, algoResults);
+			}
+			
+			int d = (int) Math.log10(size);
+			size += Math.pow(10, d);
+		}						
+	}
+	
+	private static void RunMultipleTests(String input, int testSize) {
+		for (int test = 0; test < testSize; test++) {
 			String testInput = GenerateNewInput(test, input);
-			InputParser ip = new InputParser(testInput);
-			grid = ip.GetGrid();
-			_tasks = ip.GetTasks();
-			_workers = ip.GetWorkers();
-			
-			double[] taskCount = new double[grid.size()];
-			for (int i = 0; i < taskCount.length; ++i) {
-				taskCount[i] = 0;
-			}
-			for (Task t : _tasks.values()) {
-				taskCount[grid.GetCell(t.location)]++;
-			}
-			CountDistribution distT = new CountDistribution(grid, taskCount);
-			
-			HashMap<Integer, Task> tasks;
-			HashMap<Integer, Worker> workers;
-			
-			System.out.println(String.format("Starting Greedy for test %d", test));
-			tasks = GetTasksCopy();
-			workers = GetWorkersCopy();
-			Greedy grAlgo = new Greedy(tasks, workers, grid.clone());
-			grAlgo.Run();
-			String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
-			
-			System.out.println(String.format("Starting NearestNeighbor for test %d", test));
-			tasks = GetTasksCopy();
-			workers = GetWorkersCopy();
-			NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
-			nnAlgo.Run();
-			String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
-			
-			System.out.println(String.format("Starting BestInsertion for test %d", test));
-			tasks = GetTasksCopy();
-			workers = GetWorkersCopy();
-			BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
-			biAlgo.Run();
-			String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
-			
-			System.out.println(String.format("Starting BestDistribution for test %d", test));
-			tasks = GetTasksCopy();
-			workers = GetWorkersCopy();
-			BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
-			bdAlgo.Run();
-			String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
-			
-			Result.Add("%s,%s,%s,%s", grResutls, nnResutls, biResutls, bdResutls);			
+			String algoResults = RunAllAlgorithms(testInput);
+			Result.Add(algoResults);			
 		}
+	}
+	
+	private static String RunAllAlgorithms(String input) {
+		InputParser ip = new InputParser(input);
+		grid = ip.GetGrid();
+		_tasks = ip.GetTasks();
+		_workers = ip.GetWorkers();
 		
-		Main.Finalize();
+		double[] taskCount = new double[grid.size()];
+		for (int i = 0; i < taskCount.length; ++i) {
+			taskCount[i] = 0;
+		}
+		for (Task t : _tasks.values()) {
+			taskCount[grid.GetCell(t.location)]++;
+		}
+		CountDistribution distT = new CountDistribution(grid, taskCount);
+		
+		HashMap<Integer, Task> tasks;
+		HashMap<Integer, Worker> workers;
+		
+		tasks = GetTasksCopy();
+		workers = GetWorkersCopy();
+		Greedy grAlgo = new Greedy(tasks, workers, grid.clone());
+		grAlgo.Run();
+		String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		
+		tasks = GetTasksCopy();
+		workers = GetWorkersCopy();
+		NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
+		nnAlgo.Run();
+		String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		
+		tasks = GetTasksCopy();
+		workers = GetWorkersCopy();
+		BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
+		biAlgo.Run();
+		String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		
+		tasks = GetTasksCopy();
+		workers = GetWorkersCopy();
+		BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
+		bdAlgo.Run();
+		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		
+		return String.format("%s,%s,%s,%s", grResutls, nnResutls, biResutls, bdResutls);
 	}
 	
 	private static HashMap<Integer, Task> GetTasksCopy() {
@@ -101,6 +120,12 @@ public class Main {
 	private static String GenerateNewInput(int test, String input) {
 		File inputFile = new File(input, String.format("input%03d.xml", test));
 		edu.usc.infolab.sc.DataSetGenerators.Main.GenerateData(String.format("%s.xml", input), inputFile.getPath());
+		return inputFile.getPath();
+	}
+	
+	private static String GenerateNewInput(int test, String input, int tasksSize) {
+		File inputFile = new File(input, String.format("input%03d_t%05d.xml", test, tasksSize));
+		edu.usc.infolab.sc.DataSetGenerators.Main.GenerateData(String.format("%s.xml", input), inputFile.getPath(), tasksSize);
 		return inputFile.getPath();
 	}
 	
