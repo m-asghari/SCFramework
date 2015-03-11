@@ -4,6 +4,8 @@ import java.awt.geom.Point2D;
 
 import org.w3c.dom.Element;
 
+import edu.usc.infolab.sc.Distributions.Distribution;
+
 public abstract class SpatialEntityGenerator {
 	
 	protected RandomGenerator<Point2D.Double> location;
@@ -17,6 +19,14 @@ public abstract class SpatialEntityGenerator {
 		releaseTime = new RandomGenerator<Double>(releaseTimeElement);
 		duration = new RandomGenerator<Double>(
 				(Element) e.getElementsByTagName("Duration").item(0));
+	}
+	
+	public void SetReleaseTimeDist(Distribution<Double> dist) {
+		this.releaseTime = new RandomGenerator<Double>(dist);
+	}
+	
+	public void SetDurationDist(Distribution<Double> dist) {
+		this.duration = new RandomGenerator<Double>(dist);
 	}
 	
 	public Point2D.Double NextLocation() {

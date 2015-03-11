@@ -16,7 +16,15 @@ public class RandomGenerator<T> {
 	public RandomGenerator(){};
 	
 	public RandomGenerator(Element e) {
-		dists = this.Parse(e);
+		this.dists = this.Parse(e);
+	}
+	
+	public RandomGenerator(Distribution<T> dist) {
+		this.dists.add(new DistProbPair<Distribution<T>>(dist, 1.0));
+	}
+	
+	public RandomGenerator(ArrayList<DistProbPair<Distribution<T>>> dists) {
+		this.dists = new ArrayList<DistProbPair<Distribution<T>>>(dists);
 	}
 
 	private Distribution<T> GetDist(Double rand) {
@@ -72,6 +80,5 @@ public class RandomGenerator<T> {
 			}
 		}
 		return dists;
-
 	}
 }

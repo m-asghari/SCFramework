@@ -18,7 +18,7 @@ public class BatchGenerator {
 		for (int i = 0; i < numberOfOutputs; ++i) {
 			File file = new File(dir, String.format("%s_%02d.xml", outputPattern, i));
 			String outputFile = file.getPath();
-			Main.GenerateData(inputFile, outputFile);
+			DataGenerator.GenerateData(inputFile, outputFile);
 		}
 
 	}

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.distribution.ExponentialDistribution;
 
 import edu.usc.infolab.sc.CountDistribution;
 import edu.usc.infolab.sc.Grid;
@@ -17,6 +18,11 @@ import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
 import edu.usc.infolab.sc.Algorithms.Online.Greedy;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
+import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
+import edu.usc.infolab.sc.Distributions.Exponential;
+import edu.usc.infolab.sc.Distributions.ExponentialConfig;
+import edu.usc.infolab.sc.Distributions.Poisson;
+import edu.usc.infolab.sc.Distributions.PoissonConfig;
 
 public class Main {
 	
@@ -31,6 +37,14 @@ public class Main {
 		ChangeNumberOfTasks(input);
 		
 		Finalize();
+	}
+	
+	private static void RunMultipleTests(String input, int testSize) {
+		for (int test = 0; test < testSize; test++) {
+			String testInput = GenerateNewInput(test, input);
+			String algoResults = RunAllAlgorithms(testInput);
+			Result.Add(algoResults);			
+		}
 	}
 	
 	private static void ChangeNumberOfTasks(String input) {
@@ -48,11 +62,39 @@ public class Main {
 		}						
 	}
 	
-	private static void RunMultipleTests(String input, int testSize) {
-		for (int test = 0; test < testSize; test++) {
-			String testInput = GenerateNewInput(test, input);
-			String algoResults = RunAllAlgorithms(testInput);
-			Result.Add(algoResults);			
+	private static void ChangeNumberOfAvailableWorkers(String input) {
+		int availableWorkers = 10;
+		while (availableWorkers <= 100) {
+			for (int test = 0; test < 20; test++) {
+				String testInput = GenerateNewInput(test, input, 1000, availableWorkers);
+				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
+				String algoResults = RunAllAlgorithms(testInput);
+				Result.Add("%d,%s", availableWorkers, algoResults);
+			}
+			
+			availableWorkers = (availableWorkers < 20) ? availableWorkers + 1 : availableWorkers + 10;
+		}						
+	}
+	
+	private static void ChangeRateOfTasks(String input) {
+		double rate = 0.5;
+		while (rate < 5) {
+			for (int test = 0; test < 20; test++) {
+				String testInput = GenerateNewInput(test, input, 1000, 10, rate);
+				System.out.println(String.format("Starting test %d for rate %d", test, rate));
+				String algoResults = RunAllAlgorithms(testInput);
+				Result.Add("%d,%s", rate, algoResults);
+			}
+			
+			if (rate < 1) {
+				rate += 0.05;
+			}
+			else if (rate < 2) {
+				rate += 0.1;
+			}
+			else {
+				rate += 1;
+			}
 		}
 	}
 	
@@ -119,13 +161,26 @@ public class Main {
 
 	private static String GenerateNewInput(int test, String input) {
 		File inputFile = new File(input, String.format("input%03d.xml", test));
-		edu.usc.infolab.sc.DataSetGenerators.Main.GenerateData(String.format("%s.xml", input), inputFile.getPath());
+		DataGenerator.GenerateData(String.format("%s.xml", input), inputFile.getPath());
 		return inputFile.getPath();
 	}
 	
 	private static String GenerateNewInput(int test, String input, int tasksSize) {
-		File inputFile = new File(input, String.format("input%03d_t%05d.xml", test, tasksSize));
-		edu.usc.infolab.sc.DataSetGenerators.Main.GenerateData(String.format("%s.xml", input), inputFile.getPath(), tasksSize);
+		File inputFile = new File(input, String.format("input%03d_%05d.xml", test, tasksSize));
+		DataGenerator.GenerateData(String.format("%s.xml", input), inputFile.getPath(), tasksSize);
+		return inputFile.getPath();
+	}
+	
+	private static String GenerateNewInput(int test, String input, int tasksSize, int availableWorkers) {
+		File inputFile = new File(input, String.format("input%03d_%05d_w%03d.xml", test, tasksSize, availableWorkers));
+		DataGenerator.GenerateData(String.format("%s.xml", input), inputFile.getPath(), tasksSize, availableWorkers);
+		return inputFile.getPath();
+	}
+	
+	private static String GenerateNewInput(int test, String input, int tasksSize, int availableWorkers, double tasksRate) {
+		File inputFile = new File(input, String.format("input%03d_%05d_w%03d_t%s.xml", test, tasksSize, availableWorkers, String.format("%.1f", tasksRate).replace(".", "")));
+		Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
+		DataGenerator.GenerateData(String.format("%s.xml", input), inputFile.getPath(), tasksSize, availableWorkers, tasksReleaseDist);
 		return inputFile.getPath();
 	}
 	

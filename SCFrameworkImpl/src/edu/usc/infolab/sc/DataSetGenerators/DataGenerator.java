@@ -10,8 +10,9 @@ import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.SpatialEntity;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Distributions.Distribution;
 
-public class Main {
+public class DataGenerator {
 	
 	public static enum ReleaseMode {
 		Independent, InterArrival, Available
@@ -232,6 +233,25 @@ public class Main {
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
 		TaskGenerator tg = new TaskGenerator(iTasks);
+		
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = ReleaseMode.Available;
+		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers, Distribution<Double> tasksReleaseDist) {
+		Document input = IO.ReadXML(inputFile);
+		Element dataSpec = input.getDocumentElement();
+		
+		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
+		Grid grid = new Grid(gridElement);
+		
+		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
+		TaskGenerator tg = new TaskGenerator(iTasks);
+		tg.SetReleaseTimeDist(tasksReleaseDist);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		ReleaseMode workersReleaseMode = ReleaseMode.Available;
