@@ -20,10 +20,12 @@ public class RandomGenerator<T> {
 	}
 	
 	public RandomGenerator(Distribution<T> dist) {
+		this.dists = new ArrayList<DistProbPair<Distribution<T>>>();
 		this.dists.add(new DistProbPair<Distribution<T>>(dist, 1.0));
 	}
 	
 	public RandomGenerator(ArrayList<DistProbPair<Distribution<T>>> dists) {
+		this.dists = new ArrayList<DistProbPair<Distribution<T>>>();
 		this.dists = new ArrayList<DistProbPair<Distribution<T>>>(dists);
 	}
 
