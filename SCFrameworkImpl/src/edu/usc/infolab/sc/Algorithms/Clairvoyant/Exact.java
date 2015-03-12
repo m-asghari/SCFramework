@@ -13,7 +13,7 @@ public class Exact extends ClairvoyantAlgorithm{
 		super(tasks, workers);
 	}
 	
-	public void Run() {
+	public int Run() {
 		FindPTSs();
 		
 		Graph PTS_Graph = new Graph(new ArrayList<Worker>(_workers.values()));
@@ -21,6 +21,7 @@ public class Exact extends ClairvoyantAlgorithm{
 		
 		ArrayList<Graph.Node> maxClique = PTS_Graph.FindMaxClique();
 		
+		Double cutOffTime = 0.0;
 		for (Graph.Node n : maxClique) {
 			Log.Add(0, n.toString());
 			Worker w = _workers.get(n.workerId);
@@ -30,6 +31,9 @@ public class Exact extends ClairvoyantAlgorithm{
 				t.AssignTo(w);
 			}
 			w.travledDistance = w.GetCompleteTime(w.GetSchedule(), 0);
+			cutOffTime = (w.travledDistance.compareTo(cutOffTime) > 0) ? w.travledDistance : cutOffTime;
 		}
+		
+		return cutOffTime.intValue();
 	}
 }

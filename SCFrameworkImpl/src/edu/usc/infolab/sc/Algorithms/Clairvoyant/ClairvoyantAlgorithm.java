@@ -26,6 +26,6 @@ public abstract class ClairvoyantAlgorithm extends Algorithm {
 		}
 	}
 	
-	public abstract void Run();
+	public abstract int Run();
 
 }

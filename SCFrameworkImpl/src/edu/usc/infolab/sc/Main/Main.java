@@ -116,30 +116,31 @@ public class Main {
 		
 		HashMap<Integer, Task> tasks;
 		HashMap<Integer, Worker> workers;
+		int endTime = 0;
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		Greedy grAlgo = new Greedy(tasks, workers, grid.clone());
-		grAlgo.Run();
-		String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		endTime = grAlgo.Run();
+		String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
-		nnAlgo.Run();
-		String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		endTime = nnAlgo.Run();
+		String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
-		biAlgo.Run();
-		String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		endTime = biAlgo.Run();
+		String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
-		bdAlgo.Run();
-		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()));
+		endTime = bdAlgo.Run();
+		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
 		return String.format("%s,%s,%s,%s", grResutls, nnResutls, biResutls, bdResutls);
 	}

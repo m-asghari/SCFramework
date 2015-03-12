@@ -86,13 +86,14 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}
 	
 	@Override
-	public void Run() {
+	public int Run() {
 		while (!upcomingTasks.isEmpty() || !presentTasks.isEmpty()) {
 			Log.Add(1, "Current Time Frame: %d", currentFrame);
 			AdvanceTime();
 			currentFrame++;
 		}
 		PrintStat();
+		return currentFrame - 1;
 	}
 	
 	public void AdvanceTime() {

@@ -70,6 +70,11 @@ public class Worker extends SpatialEntity{
 		return this.assignedTasks.size() == this.maxNumberOfTasks;
 	}
 	
+	public double GetUtility(int cutOffTime) {
+		int endTime = Math.min(cutOffTime, this.retractFrame);
+		return (this.travledDistance) / (endTime - this.releaseFrame);
+	}
+	
 	public Element Fill(Element w) {
 		w = super.Fill(w);
 		w.setAttribute("max", Integer.toString(maxNumberOfTasks));

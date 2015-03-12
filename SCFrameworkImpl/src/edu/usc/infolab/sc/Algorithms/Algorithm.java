@@ -14,5 +14,5 @@ public abstract class Algorithm {
 		this._workers = new HashMap<>(workers);
 	}
 	
-	public abstract void Run();
+	public abstract int Run();
 }

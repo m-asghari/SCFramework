@@ -18,7 +18,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 	}
 
 	@Override
-	public void Run() {
+	public int Run() {
 		HashMap<Worker, PTS> seletedPTSs = new HashMap<Worker, PTS>();
 		
 		ArrayList<Task> remainingTasks = new ArrayList<Task>(_tasks.values());
@@ -69,6 +69,7 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 			UpdateSortedPTSs(r.x, assignedTasks);
 		}*/
 		
+		Double cutOffTime = 0.0;
 		for (Entry<Worker, PTS> e : seletedPTSs.entrySet()) {
 			Worker w = e.getKey();
 			for (Task t : e.getValue().list) {
@@ -79,7 +80,10 @@ public class BestPTSFirst extends ClairvoyantAlgorithm{
 				//Result.GainedValue += t.value;
 			}
 			w.travledDistance = w.GetCompleteTime(w.GetSchedule(), 0);
+			cutOffTime = (w.travledDistance.compareTo(cutOffTime) > 0) ? w.travledDistance : cutOffTime;
 		}
+		
+		return cutOffTime.intValue();
 	}
 
 	/*private void UpdateSortedPTSs(Worker w, ArrayList<Task> assignedTasks) {
