@@ -8,7 +8,7 @@ import edu.usc.infolab.sc.PTS;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Algorithm;
-import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Logging.Log;
 
 public abstract class ClairvoyantAlgorithm extends Algorithm {	
 	public ClairvoyantAlgorithm(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {

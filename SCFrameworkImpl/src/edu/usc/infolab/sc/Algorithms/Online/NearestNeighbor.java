@@ -6,7 +6,7 @@ import java.util.HashMap;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Logging.Log;
 
 public class NearestNeighbor extends OnlineAlgorithm {
 

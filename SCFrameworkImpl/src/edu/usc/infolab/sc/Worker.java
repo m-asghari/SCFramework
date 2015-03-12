@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
-import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Logging.Log;
 
 public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
@@ -64,6 +64,10 @@ public class Worker extends SpatialEntity{
 
 	public PTSs GetPTSSet() {
 		return this.ptsSet;
+	}
+	
+	public boolean IsFull() {
+		return this.assignedTasks.size() == this.maxNumberOfTasks;
 	}
 	
 	public Element Fill(Element w) {

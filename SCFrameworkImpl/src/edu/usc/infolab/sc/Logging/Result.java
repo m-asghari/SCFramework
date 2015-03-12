@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.Main;
+package edu.usc.infolab.sc.Logging;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
-public final class Result {
+public final class Result{
 	private static FileWriter fw;
 	private static BufferedWriter bw;
 	
@@ -33,12 +33,12 @@ public final class Result {
 	}
 	
 	public static void Add(String format, Object... args) {
-		Result.Add(String.format(format, args));
+		Add(String.format(format, args));
 	}
-		
-	public static void Add(String result) {
+	
+	public static void Add(String msg) {
 		try {
-			bw.write(result);
+			bw.write(msg);
 			bw.write("\n");
 			bw.flush();
 		}

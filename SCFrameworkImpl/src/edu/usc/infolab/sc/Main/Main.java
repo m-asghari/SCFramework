@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.math3.distribution.ExponentialDistribution;
 
 import edu.usc.infolab.sc.CountDistribution;
 import edu.usc.infolab.sc.Grid;
@@ -21,8 +20,9 @@ import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
 import edu.usc.infolab.sc.Distributions.ExponentialConfig;
-import edu.usc.infolab.sc.Distributions.Poisson;
-import edu.usc.infolab.sc.Distributions.PoissonConfig;
+import edu.usc.infolab.sc.Logging.FrameStats;
+import edu.usc.infolab.sc.Logging.Log;
+import edu.usc.infolab.sc.Logging.Result;
 
 public class Main {
 	
@@ -31,15 +31,15 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks";
+		String input = "UniformTasks_1000_07";
 		Initialize(-1, input);
 		
-		ChangeNumberOfTasks(input);
+		ChangeNumberOfAvailableWorkers(input);
 		
 		Finalize();
 	}
 	
-	private static void RunMultipleTests(String input, int testSize) {
+	protected static void RunMultipleTests(String input, int testSize) {
 		for (int test = 0; test < testSize; test++) {
 			String testInput = GenerateNewInput(test, input);
 			String algoResults = RunAllAlgorithms(testInput);
@@ -47,7 +47,7 @@ public class Main {
 		}
 	}
 	
-	private static void ChangeNumberOfTasks(String input) {
+	protected static void ChangeNumberOfTasks(String input) {
 		int size = 10;
 		while (size < 50000) {
 			for (int test = 0; test < 20; test++) {
@@ -63,20 +63,21 @@ public class Main {
 	}
 	
 	private static void ChangeNumberOfAvailableWorkers(String input) {
-		int availableWorkers = 10;
+		int availableWorkers = 1;
 		while (availableWorkers <= 100) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, 1000, availableWorkers);
 				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
 				String algoResults = RunAllAlgorithms(testInput);
 				Result.Add("%d,%s", availableWorkers, algoResults);
+				FrameStats.Add("%d", 1);
 			}
 			
 			availableWorkers = (availableWorkers < 20) ? availableWorkers + 1 : availableWorkers + 10;
 		}						
 	}
 	
-	private static void ChangeRateOfTasks(String input) {
+	protected static void ChangeRateOfTasks(String input) {
 		double rate = 0.5;
 		while (rate < 5) {
 			for (int test = 0; test < 20; test++) {
@@ -193,6 +194,7 @@ public class Main {
 			File f = new File(dir, input);
 			Log.Initialize(level, f.getPath());
 			Result.Initialize(f.getPath());
+			FrameStats.Initialize(String.format("%s_frameStats", f.getPath()));
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -202,5 +204,6 @@ public class Main {
 	private static void Finalize() {
 		Log.Finalize();
 		Result.Finalize();
+		FrameStats.Finalize();
 	}
 }

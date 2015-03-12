@@ -18,28 +18,48 @@ import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Algorithm;
-import edu.usc.infolab.sc.Main.Log;
+import edu.usc.infolab.sc.Logging.Log;
 
 public abstract class OnlineAlgorithm extends Algorithm{
-	protected class FrameStat {
+	protected class FrameStats {
 		public int frameNum;
+		public int presentWorkers;
 		public int availableWorkers;
+		public int workerAvailabilities;
+		public int releasedTasks;
+		public int assignedTasks;
 		
-		public FrameStat(Object...args) {
+		public FrameStats(int frameNumber) {
+			this.frameNum = frameNumber;
+			this.presentWorkers = 0;
+			this.availableWorkers = 0;
+			this.workerAvailabilities = 0;
+			this.releasedTasks = 0;
+			this.assignedTasks = 0;
+		}
+		
+		public FrameStats(Object...args) {
 			this.frameNum = (int)args[0];
-			this.availableWorkers = (int)args[1];
+			this.presentWorkers = (int)args[1];
 		}
 		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(String.format("Frame %d:\n", this.frameNum));
-			sb.append(String.format("\tAvailable Workers: %d\n", this.availableWorkers));
+			sb.append(String.format("\tAvailable Workers: %d\n", this.presentWorkers));
 			return sb.toString();
+		}
+		
+		public String ShortString() {
+			return String.format("%d,%d,%d,%d,%d,%d",
+					frameNum, presentWorkers, availableWorkers, workerAvailabilities, releasedTasks, assignedTasks);
+			
 		}
 	}
 	
-	private ArrayList<FrameStat> _frameStat;
+	private ArrayList<FrameStats> _framesStats;
+	protected FrameStats _frameStats;
 	private File _frameImgDir;
 	
 	Integer currentFrame;
@@ -61,7 +81,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		presentTasks = new ArrayList<Task>();
 		unassignedTasks = new ArrayList<Task>();
 		this.grid = grid.clone();
-		_frameStat = new ArrayList<FrameStat>();
+		_framesStats = new ArrayList<FrameStats>();
 		_frameImgDir = Utils.CreateEmptyDirectory("FrameImages");
 	}
 	
@@ -76,7 +96,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}
 	
 	public void AdvanceTime() {
-		GetFrameStat();
+		_frameStats = new FrameStats(currentFrame);
 		HashMap<Task, Worker> assignments = new HashMap<Task, Worker>();
 		// Check to see if any worker becomes available in current frame
 		while (!upcomingWorkers.isEmpty() && 
@@ -85,15 +105,28 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			upcomingWorkers.remove(0);
 		}
 		
+		for (Worker w : availableWorkers) {
+			_frameStats.presentWorkers++;
+			int availability = w.maxNumberOfTasks - w.GetAssignedTasks().size();
+			if (availability > 0) {
+				_frameStats.availableWorkers++;
+				_frameStats.workerAvailabilities += availability;
+			}			
+		}
+		
+		//GetFrameStat();
+		
 		UpdateWorkerDistribution();
 		
 		// Check to see if any task arrives in current frame
 		while (!upcomingTasks.isEmpty() &&
 				upcomingTasks.get(0).releaseFrame <= currentFrame) {
+			_frameStats.releasedTasks++;
 			Worker w = null;
 			if ((w = AssignTask(upcomingTasks.get(0))) != null) {
 				assignments.put(upcomingTasks.get(0), w);
 				presentTasks.add(upcomingTasks.get(0));
+				_frameStats.assignedTasks++;
 			}
 			else {
 				unassignedTasks.add(upcomingTasks.get(0));
@@ -115,12 +148,13 @@ public abstract class OnlineAlgorithm extends Algorithm{
 				it.remove();
 			}
 		}
+		_framesStats.add(_frameStats);
 		//SaveFrameToImage(assignments, 10);
 	}
 	
 	protected void UpdateWorkerDistribution() {}
 	
-	private void SaveFrameToImage(HashMap<Task, Worker> assignments, int scale) {
+	protected void SaveFrameToImage(HashMap<Task, Worker> assignments, int scale) {
 		BufferedImage bufferedImage = new BufferedImage(grid.GetLength()*scale,grid.GetWidth()*scale,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
 		
@@ -145,16 +179,22 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}		
 	}
 
-	protected void GetFrameStat() {
+	/*protected void GetFrameStat() {
+		int presentWorkers = 0;
+		for (Worker w : availableWorkers) {
+			if (w.GetAssignedTasks().size() < w.maxNumberOfTasks) presentWorkers++;
+		}
+		//int availability = 0;
+		
 		Object[] frameStatParams = new Object[] {
 				currentFrame,
-				availableWorkers.size()
+				presentWorkers
 		};
-		_frameStat.add(new FrameStat(frameStatParams));
-	}
+		_framesStats.add(new FrameStats(frameStatParams));
+	}*/
 	
 	protected void PrintStat() {
-		for (FrameStat fs : _frameStat) {
+		for (FrameStats fs : _framesStats) {
 			Log.Add(3, fs.toString());
 		}
 	}

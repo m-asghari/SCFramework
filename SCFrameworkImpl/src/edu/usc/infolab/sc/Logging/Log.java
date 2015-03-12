@@ -1,4 +1,4 @@
-package edu.usc.infolab.sc.Main;
+package edu.usc.infolab.sc.Logging;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -7,7 +7,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public final class Log {
+public class Log {
 	private static final boolean print = true;
 	private static final DateFormat sdf = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
 	private static final String logName = String.format("logs_%s.log", new SimpleDateFormat("dd-MMM-yy_HH-mm-ss").format(Calendar.getInstance().getTime())); 
@@ -24,7 +24,7 @@ public final class Log {
 	//		4 - Selection Results
 	//		5 - Selection Details
 	
-	private Log() {}
+	protected Log() {}
 	
 	public static void Initialize(int level, String input) {
 		logLevel = level;
@@ -60,7 +60,7 @@ public final class Log {
 	}
 	
 	public static void Add(int level, String format, Object... args) {
-		Log.Add(level, String.format(format, args));
+		Add(level, String.format(format, args));
 	}
 		
 	public static void Add(int level, String log) {
