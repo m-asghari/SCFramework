@@ -85,10 +85,6 @@ public class Grid {
 		return g;
 	}
 	
-	public boolean In(SpatialEntity se) {
-		return this.In(se.location);
-	}
-	
 	public boolean In(Point2D.Double p) {
 		if (p.getX() < minx || p.getX() > maxx || p.getY() < miny || p.getY() > maxy)
 			return false;

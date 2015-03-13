@@ -188,11 +188,11 @@ public class DataGenerator {
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		int tasksSize = Integer.parseInt(iTasks.getAttribute("size"));
 		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
-		TaskGenerator tg = new TaskGenerator(iTasks);
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		int availableWorkers = 0;
 		if (workersReleaseMode == ReleaseMode.Available) {
 			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
@@ -210,11 +210,11 @@ public class DataGenerator {
 		
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
-		TaskGenerator tg = new TaskGenerator(iTasks);
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		int availableWorkers = 0;
 		if (workersReleaseMode == ReleaseMode.Available) {
 			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
@@ -232,11 +232,11 @@ public class DataGenerator {
 		
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
-		TaskGenerator tg = new TaskGenerator(iTasks);
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		ReleaseMode workersReleaseMode = ReleaseMode.Available;
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
@@ -250,12 +250,12 @@ public class DataGenerator {
 		
 		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
 		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
-		TaskGenerator tg = new TaskGenerator(iTasks);
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
 		tg.SetReleaseTimeDist(tasksReleaseDist);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		ReleaseMode workersReleaseMode = ReleaseMode.Available;
-		WorkerGenerator wg = new WorkerGenerator(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
