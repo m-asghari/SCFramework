@@ -195,6 +195,10 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}*/
 	
 	protected void PrintStat() {
+		edu.usc.infolab.sc.Logging.FrameStats.Add("%d", currentFrame);
+		for (FrameStats fs : _framesStats) {
+			edu.usc.infolab.sc.Logging.FrameStats.Add(fs.ShortString());
+		}
 		for (FrameStats fs : _framesStats) {
 			Log.Add(3, fs.toString());
 		}

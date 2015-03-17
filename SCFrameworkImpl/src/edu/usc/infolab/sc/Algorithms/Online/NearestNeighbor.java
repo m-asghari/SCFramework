@@ -25,6 +25,7 @@ public class NearestNeighbor extends OnlineAlgorithm {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = worker.FastCanPerform(task, currentFrame)) != null) {
 				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, worker.id, worker.location.distance(task.location));
+				task.eligibleWorkers++;
 				if (worker.location.distance(task.location) < minDistance) {
 					minWorker = worker;
 					minDistance = worker.location.distance(task.location);
@@ -39,8 +40,6 @@ public class NearestNeighbor extends OnlineAlgorithm {
 			minWorker.SetSchedule(bestOrder);
 			minWorker.AddTask(task);
 			task.AssignTo(minWorker);
-			//Result.AssignedTasks++;
-			//Result.GainedValue += task.value;
 		}
 		return minWorker;
 	}

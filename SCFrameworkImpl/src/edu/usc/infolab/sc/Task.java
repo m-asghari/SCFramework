@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 public class Task extends SpatialEntity{
 	public static Integer idCntr = 0;
 	ArrayList<Worker> assignedWorkers;
+	public int eligibleWorkers;
 	public Integer value;
 	
 	private Task(Task t) {
@@ -18,6 +19,7 @@ public class Task extends SpatialEntity{
 	public Task() {
 		Initialize();
 		this.id = idCntr++;
+		this.eligibleWorkers = 0;
 	}
 	
 	public Task(Element e) {
@@ -25,6 +27,7 @@ public class Task extends SpatialEntity{
 		Initialize();
 		this.id = idCntr++;
 		this.value = Integer.parseInt(e.getAttribute("value"));
+		this.eligibleWorkers = 0;
 		this.value = 1;
 	}
 	

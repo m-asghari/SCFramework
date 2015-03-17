@@ -18,20 +18,26 @@ public class Ranking extends OnlineAlgorithm {
 	protected Worker AssignTask(Task task) {
 		Log.Add(5, "Task %d:", task.id);
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
+		Worker firstWorker = null;
 		for (Worker worker : availableWorkers) {
 			Log.Add(5, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
-			if ((bestOrder = worker.FastCanPerform(task, currentFrame)) != null )  {
-				Log.Add(5, "\tWorker %d will perform the task", worker.id);
-				task.AssignTo(worker);
-				worker.AddTask(task);
-				worker.SetSchedule(bestOrder);
-				//Result.AssignedTasks++;
-				//Result.GainedValue += task.value;
-				return worker;
+			ArrayList<Task> taskOrder = new ArrayList<Task>();
+			if ((taskOrder = worker.FastCanPerform(task, currentFrame)) != null )  {
+				task.eligibleWorkers++;
+				if (firstWorker == null) {
+					Log.Add(5, "\tWorker %d will perform the task", worker.id);
+					firstWorker = worker;
+					bestOrder = new ArrayList<Task>(taskOrder);
+				}
 			}
 			Log.Add(5, "\tWorker %d cannot perform the task", worker.id);
 		}
-		return null;
+		if (firstWorker != null) {
+			task.AssignTo(firstWorker);
+			firstWorker.AddTask(task);
+			firstWorker.SetSchedule(bestOrder);
+		}
+		return firstWorker;
 	}
 
 }
