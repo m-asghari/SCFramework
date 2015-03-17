@@ -1,7 +1,25 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
-	<Tasks size="5000">
+	<Tasks size="500" releaseMode="InterArrival">
 		<Location>
+			<Distribution name="BivariateNormal" prob="0.45">
+				<Settings>
+					<mean1 value="33" />
+					<sd1 value="1" />
+					<mean2 value="24" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
+			<Distribution name="BivariateNormal" prob="0.45">
+				<Settings>
+					<mean1 value="3" />
+					<sd1 value="1" />
+					<mean2 value="5" />
+					<sd2 value="1.5" />
+					<covar value="" />
+				</Settings>
+			</Distribution>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
 					<minx value="0" />
@@ -11,7 +29,7 @@
 				</Settings>
 			</Distribution>
 		</Location>
-		<ReleaseTime mode="InterArrival">
+		<ReleaseTime>
 			<Distribution name="Exponential" prob="1">
 				<Settings>
 					<mean value="1"/>
@@ -35,7 +53,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers available="10">
+	<Workers releaseMode="Available" available="10">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
