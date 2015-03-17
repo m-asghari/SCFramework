@@ -8,9 +8,9 @@ import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Logging.Log;
 
-public class Greedy extends OnlineAlgorithm {
+public class Ranking extends OnlineAlgorithm {
 
-	public Greedy(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid) {
+	public Ranking(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid) {
 		super(tasks, workers, grid);
 	}
 	

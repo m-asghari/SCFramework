@@ -15,8 +15,8 @@ import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
-import edu.usc.infolab.sc.Algorithms.Online.Greedy;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
+import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
 import edu.usc.infolab.sc.Distributions.ExponentialConfig;
@@ -31,10 +31,10 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_1000_07";
+		String input = "SkewedTasks_T1_W20";
 		Initialize(-1, input);
 		
-		ChangeNumberOfAvailableWorkers(input);
+		ChangeNumberOfTasks(input);
 		
 		Finalize();
 	}
@@ -48,8 +48,8 @@ public class Main {
 	}
 	
 	protected static void ChangeNumberOfTasks(String input) {
-		int size = 10;
-		while (size < 50000) {
+		int size = 50000;
+		while (size <= 50000) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, size);
 				System.out.println(String.format("Starting test %d for size %d", test, size));
@@ -62,15 +62,15 @@ public class Main {
 		}						
 	}
 	
-	private static void ChangeNumberOfAvailableWorkers(String input) {
+	protected static void ChangeNumberOfAvailableWorkers(String input) {
 		int availableWorkers = 1;
 		while (availableWorkers <= 100) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, 1000, availableWorkers);
 				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
+				FrameStats.Add("%d,%d", availableWorkers, test);
 				String algoResults = RunAllAlgorithms(testInput);
 				Result.Add("%d,%s", availableWorkers, algoResults);
-				FrameStats.Add("%d", 1);
 			}
 			
 			availableWorkers = (availableWorkers < 20) ? availableWorkers + 1 : availableWorkers + 10;
@@ -120,9 +120,9 @@ public class Main {
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
-		Greedy grAlgo = new Greedy(tasks, workers, grid.clone());
-		endTime = grAlgo.Run();
-		String grResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
+		Ranking rnkAlgo = new Ranking(tasks, workers, grid.clone());
+		endTime = rnkAlgo.Run();
+		String rnkResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
@@ -142,7 +142,7 @@ public class Main {
 		endTime = bdAlgo.Run();
 		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), endTime);
 		
-		return String.format("%s,%s,%s,%s", grResutls, nnResutls, biResutls, bdResutls);
+		return String.format("%s,%s,%s,%s", rnkResutls, nnResutls, biResutls, bdResutls);
 	}
 	
 	private static HashMap<Integer, Task> GetTasksCopy() {
