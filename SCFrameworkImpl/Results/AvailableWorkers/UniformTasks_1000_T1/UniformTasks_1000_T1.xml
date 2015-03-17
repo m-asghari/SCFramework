@@ -1,6 +1,6 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
-	<Tasks size="50000">
+	<Tasks size="1000" releaseMode="InterArrival">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -11,7 +11,7 @@
 				</Settings>
 			</Distribution>
 		</Location>
-		<ReleaseTime mode="InterArrival">
+		<ReleaseTime>
 			<Distribution name="Exponential" prob="1">
 				<Settings>
 					<mean value="1"/>
@@ -35,7 +35,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers available="10">
+	<Workers releaseMode="Available" available="10">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
