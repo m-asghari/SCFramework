@@ -58,6 +58,7 @@ public final class Result{
 		double maxTraveledDistancePerTask = 0;
 		double avgWorkerUtility = 0;
 		double avgEligibleWorker = 0;
+		double avgEligibleWorkerWhenAssigned = 0;
 		ArrayList<Double> traveledDistances = new ArrayList<Double>();
 		int workerCount = 0;
 		
@@ -96,7 +97,8 @@ public final class Result{
 				sum += t.eligibleWorkers;
 			}
 		}
-		avgEligibleWorker = (count > 0) ? (double)sum/count : 0;
+		avgEligibleWorkerWhenAssigned = (count > 0) ? (double)sum/count : 0;
+		avgEligibleWorker = (double)sum/tasks.size();
 		
 		Log.Add(0, "\n\nFinal Report:\n");
 		Log.Add(0, "Total Number of Workers: %d", workers.size());
@@ -112,7 +114,7 @@ public final class Result{
 		Log.Add(0, "Avg Worker Utility: %.2f", avgWorkerUtility);
 		Log.Add(0, "Avg Eligible Workers: %.2f", avgEligibleWorker);
 		String summary = String.format("%d,%d,%.2f,%.2f, %.2f, %.2f", 
-				assignedTasks, gainedValue, totalTraveledDistance, avgTraveledDistancePerTask, avgEligibleWorker, avgWorkerUtility); 
+				assignedTasks, gainedValue, totalTraveledDistance, avgTraveledDistancePerTask, avgEligibleWorkerWhenAssigned, avgEligibleWorker); 
 		Log.Add(0, summary);
 		return summary;
 	}

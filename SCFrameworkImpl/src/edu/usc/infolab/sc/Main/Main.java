@@ -31,10 +31,10 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "SkewedTasks_T1_W20";
+		String input = "UniformTasks_1000_T07";
 		Initialize(-1, input);
 		
-		ChangeNumberOfTasks(input);
+		ChangeNumberOfAvailableWorkers(input);
 		
 		Finalize();
 	}
@@ -73,7 +73,7 @@ public class Main {
 				Result.Add("%d,%s", availableWorkers, algoResults);
 			}
 			
-			availableWorkers = (availableWorkers < 20) ? availableWorkers + 1 : availableWorkers + 10;
+			availableWorkers = (availableWorkers < 30) ? availableWorkers + 1 : availableWorkers + 10;
 		}						
 	}
 	
