@@ -3,4 +3,5 @@
 /src/*.java
 /FrameImages
 Results/**/input*.xml
+Results/**/*_frameStats.csv
 
