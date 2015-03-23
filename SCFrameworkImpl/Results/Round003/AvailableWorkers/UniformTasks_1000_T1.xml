@@ -1,0 +1,74 @@
+<DataSpecification>
+	<Grid minx="0" miny="0" maxx="40" maxy="30" w="5" l="5"/>
+	<Tasks size="1000" releaseMode="InterArrival">
+		<Location>
+			<Distribution name="Uniform2D" prob="-1">
+				<Settings>
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
+				</Settings>
+			</Distribution>
+		</Location>
+		<ReleaseTime>
+			<Distribution name="Exponential" prob="1">
+				<Settings>
+					<mean value="1"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="10"/>
+					<max value="20"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<Value>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="1"/>
+					<max value="10"/>
+				</Settings>
+			</Distribution>
+		</Value>
+	</Tasks>
+	<Workers releaseMode="Available" available="10">
+		<Location>
+			<Distribution name="Uniform2D" prob="-1">
+				<Settings>
+					<minx value="0" />
+					<miny value="0" />
+					<maxx value="40" />
+					<maxy value="30" />
+				</Settings>
+			</Distribution>
+		</Location>
+		<ReleaseTime>
+			<Distribution name="Normal" prob="1">
+				<Settings>
+					<mean value="0"/>
+					<sd value="5"/>
+				</Settings>
+			</Distribution>
+		</ReleaseTime>
+		<Duration>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="20"/>
+					<max value="70"/>
+				</Settings>
+			</Distribution>
+		</Duration>
+		<MaxTasks>
+			<Distribution name="Uniform" prob="1">
+				<Settings>
+					<min value="8"/>
+					<max value="12"/>
+				</Settings>
+			</Distribution>
+		</MaxTasks>
+	</Workers>
+</DataSpecification>
