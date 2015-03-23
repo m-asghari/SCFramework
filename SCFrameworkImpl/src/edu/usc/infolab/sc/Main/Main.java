@@ -16,7 +16,6 @@ import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
-import edu.usc.infolab.sc.Algorithms.Online.Random;
 import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
@@ -32,10 +31,10 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_1000_T1";
+		String input = "UniformTasks_1000_W8";
 		Initialize(-1, input);
 		
-		ChangeNumberOfAvailableWorkers(input);
+		ChangeRateOfTasks(input);
 		
 		Finalize();
 	}
@@ -79,20 +78,17 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String input) {
-		double rate = 0.5;
-		while (rate < 5) {
+		double rate = 0.05;
+		while (rate <=2 ) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, 1000, 10, rate);
-				System.out.println(String.format("Starting test %d for rate %d", test, rate));
+				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunAllAlgorithms(testInput);
-				Result.Add("%d,%s", rate, algoResults);
+				Result.Add("%.2f,%s", rate, algoResults);
 			}
 			
-			if (rate < 1) {
+			if (rate <= 2) {
 				rate += 0.05;
-			}
-			else if (rate < 2) {
-				rate += 0.1;
 			}
 			else {
 				rate += 1;
