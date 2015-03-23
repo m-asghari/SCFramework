@@ -16,6 +16,7 @@ import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
+import edu.usc.infolab.sc.Algorithms.Online.Random;
 import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
@@ -31,7 +32,7 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_1000_T07";
+		String input = "UniformTasks_1000_T1";
 		Initialize(-1, input);
 		
 		ChangeNumberOfAvailableWorkers(input);
@@ -64,7 +65,7 @@ public class Main {
 	
 	protected static void ChangeNumberOfAvailableWorkers(String input) {
 		int availableWorkers = 1;
-		while (availableWorkers <= 100) {
+		while (availableWorkers <= 40) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, 1000, availableWorkers);
 				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
@@ -73,7 +74,7 @@ public class Main {
 				Result.Add("%d,%s", availableWorkers, algoResults);
 			}
 			
-			availableWorkers = (availableWorkers < 30) ? availableWorkers + 1 : availableWorkers + 10;
+			availableWorkers = (availableWorkers < 40) ? availableWorkers + 1 : availableWorkers + 10;
 		}						
 	}
 	
@@ -117,6 +118,12 @@ public class Main {
 		HashMap<Integer, Task> tasks;
 		HashMap<Integer, Worker> workers;
 		int endTime = 0;
+		
+		/*tasks = GetTasksCopy();
+		workers = GetWorkersCopy();
+		Random rndAlgo = new Random(tasks, workers, grid.clone());
+		endTime = rndAlgo.Run();
+		String rndReString = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);*/
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
