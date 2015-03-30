@@ -3,6 +3,8 @@ package edu.usc.infolab.sc;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
+
 import org.w3c.dom.Element;
 
 import edu.usc.infolab.sc.Logging.Log;
@@ -102,7 +104,14 @@ public class Worker extends SpatialEntity{
 		return new Worker(this);
 	}
 	
-	public ArrayList<Task> FastCanPerform(Task task, int currentFrame) {
+	public Double GetCompleteTime(ArrayList<Task> tasks, int currentFrame) {
+		return CanComplete(tasks, currentFrame);
+	}
+	
+	// Input: One task
+	// Output: If the worker can add the input task to its current remainingTasks, the output will be the corresponding schedule.
+	//			otherwise the output is a null list.
+	public ArrayList<Task> CanPerform(Task task, int currentFrame) {
 		if (assignedTasks.size() == maxNumberOfTasks) {
 			return null;
 		}
@@ -115,29 +124,28 @@ public class Worker extends SpatialEntity{
 			return null;
 	}
 	
-	public ArrayList<Task> CanPerform(Task task, int currentFrame) {
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		Double bestTime = Double.MAX_VALUE;
-		if (assignedTasks.size() == maxNumberOfTasks) {
-			return null;
-		}
-		ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
-		tasks.add(task);
-		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(tasks);
-		for (ArrayList<Task> p : taskPerms) {
-			Double time = Double.MAX_VALUE;
-			if ((time = CanComplete(p, currentFrame)) < bestTime) {
-				bestOrder = new ArrayList<Task>(p);
-				bestTime = time;
+	int count = 0;
+	// Input: A list of tasks.
+	// Output: Whether the list of tasks is a PTS for this worker or not.
+	private Boolean CanPerfom(ArrayList<Task> fixed, ArrayList<Task> remaining, int currentFrame) {
+		for (Task t : remaining) {
+			ArrayList<Task> newFixed = new ArrayList<Task>(fixed);
+			newFixed.add(t);
+			if (CanComplete(newFixed, currentFrame).compareTo(Double.MAX_VALUE) < 0) {
+				ArrayList<Task> newRemaining = new ArrayList<Task>(remaining);
+				newRemaining.remove(t);
+				if (newRemaining.size() == 0) return true;
+				if (CanPerfom(newFixed, newRemaining, currentFrame)) {
+					return true;
+				}
 			}
 		}
-		return (bestOrder.size() > 0) ? bestOrder : null;
+		return false;
 	}
 	
-	public Double GetCompleteTime(ArrayList<Task> tasks, int currentFrame) {
-		return CanComplete(tasks, currentFrame);
-	}
-	
+	// Input: A list of tasks.
+	// Output: A schedule along with completion time if the worker is able to complete the list of tasks on time.
+	//			otherwise the output is a a pair of a null list and Double.MAX_VALUE.
 	private Pair<ArrayList<Task>, Double> CanPerform(ArrayList<Task> fixed, ArrayList<Task> remaining, int currentFrame,
 			ArrayList<Task> bestOrder, Double bestTime) {
 		for (Task t : remaining) {
@@ -163,6 +171,10 @@ public class Worker extends SpatialEntity{
 		return new Pair<ArrayList<Task>, Double>(bestOrder, bestTime);
 	}
 	
+	
+	// Input: Ordered list of tasks.
+	// Output: Completion time if the worker is able to complete the list of tasks in given order.
+	//			otherwise, the output is Double.MAX_VALUE.
 	private Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
 		StringBuilder sb = new StringBuilder();
 		for (Task t : tasks) sb.append(String.format("t%d, ", t.id));
@@ -189,19 +201,12 @@ public class Worker extends SpatialEntity{
 		return time;
 	}
 	
+	// Input: Single task
+	// Output: Whether the worker is able to complete the single task or not.
 	private Boolean CanComplete(Task task, int currentFrame) {
 		ArrayList<Task> taskArr = new ArrayList<Task>();
 		taskArr.add(task);
 		return (CanComplete(taskArr, currentFrame) != Double.MAX_VALUE);
-	}
-	
-	public Boolean IsPTS(PTS pts, int currentFrame) {
-		ArrayList<ArrayList<Task>> taskPerms = Utils.Permutations(pts.list);
-		for (ArrayList<Task> p : taskPerms) {
-			if (CanComplete(p, currentFrame) != Double.MAX_VALUE)
-				return true;
-		}
-		return false;
 	}
 	
 	//Methods for Online Algorithms
@@ -244,7 +249,13 @@ public class Worker extends SpatialEntity{
 	
 	// Methods for Offline Algorithms
 	public PTSs FindPTSs(PTS prefix, ArrayList<Task> tasks) {
-		PTSs result = this.GetPTSs(prefix, tasks);
+		ArrayList<Task> possibleTasks = new ArrayList<Task>();
+		for (Task t : tasks) {
+			if (this.CanComplete(t, 0));
+				possibleTasks.add(t);
+		}
+		Log.Add(2, "Possible tasks for worker %d: %d", this.id, possibleTasks.size());
+		PTSs result = this.GetPTSs(prefix, possibleTasks);
 		this.ptsSet = result;
 		return result;
 	}
@@ -273,6 +284,11 @@ public class Worker extends SpatialEntity{
 			}
 		}
 		return GetBestPTS(new PTS(), possibleTasks, posValue, Integer.MIN_VALUE);
+	}
+	
+	private Boolean IsPTS(PTS pts, int currentFrame) {
+		ArrayList<Task> tasks = new ArrayList<Task>(pts.list);
+		return CanPerfom(new ArrayList<Task>(), tasks, 0);
 	}
 	
 	private PTS GetBestPTS(PTS prefix, ArrayList<Task> remaining, int rValue, int bestValue) {
@@ -306,8 +322,9 @@ public class Worker extends SpatialEntity{
 		PTSs retPTSs = new PTSs();
 		ArrayList<Task> tasks_c = new ArrayList<Task>(tasks);
 		for (Task t : tasks) {
+			if (prefix.list.size() == 0) System.out.println(String.format("Count: %d", ++count));
 			tasks_c.remove(t);
-			if (!this.Overlap(t)) continue;
+			if (!this.CanComplete(t, 0)) continue;
 			PTS pts = new PTS(prefix.list);
 			pts.AddTask(t);
 			if (IsPTS(pts, 0)) {

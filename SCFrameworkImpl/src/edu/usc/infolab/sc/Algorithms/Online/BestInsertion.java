@@ -22,7 +22,7 @@ public class BestInsertion extends OnlineAlgorithm {
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker w : availableWorkers) {
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.FastCanPerform(task, currentFrame)) != null) {
+			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
 				task.eligibleWorkers++;
 				Log.Add(5, "\tWorker %d: currentCompleteTime: %.2f, futureCompleteTime: %.2f", w.id, w.GetCompleteTime(w.GetSchedule(), currentFrame), w.GetCompleteTime(taskOrder, currentFrame));
 				Double diff = w.GetCompleteTime(taskOrder, currentFrame) - w.GetCompleteTime(w.GetSchedule(), currentFrame);

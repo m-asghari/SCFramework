@@ -13,6 +13,7 @@ import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Algorithms.Clairvoyant.Exact;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
@@ -31,10 +32,10 @@ public class Main {
 	private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks_1000_W8";
-		Initialize(-1, input);
+		String input = "UniformTasks";
+		Initialize(2, input);
 		
-		ChangeRateOfTasks(input);
+		RunExactAlgorithm(input);
 		
 		Finalize();
 	}
@@ -42,7 +43,7 @@ public class Main {
 	protected static void RunMultipleTests(String input, int testSize) {
 		for (int test = 0; test < testSize; test++) {
 			String testInput = GenerateNewInput(test, input);
-			String algoResults = RunAllAlgorithms(testInput);
+			String algoResults = RunOnlineAlgorithms(testInput);
 			Result.Add(algoResults);			
 		}
 	}
@@ -53,7 +54,7 @@ public class Main {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, size);
 				System.out.println(String.format("Starting test %d for size %d", test, size));
-				String algoResults = RunAllAlgorithms(testInput);
+				String algoResults = RunOnlineAlgorithms(testInput);
 				Result.Add("%d,%s", size, algoResults);
 			}
 			
@@ -69,7 +70,7 @@ public class Main {
 				String testInput = GenerateNewInput(test, input, 1000, availableWorkers);
 				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
 				FrameStats.Add("%d,%d", availableWorkers, test);
-				String algoResults = RunAllAlgorithms(testInput);
+				String algoResults = RunOnlineAlgorithms(testInput);
 				Result.Add("%d,%s", availableWorkers, algoResults);
 			}
 			
@@ -83,7 +84,7 @@ public class Main {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, 1000, 10, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
-				String algoResults = RunAllAlgorithms(testInput);
+				String algoResults = RunOnlineAlgorithms(testInput);
 				Result.Add("%.2f,%s", rate, algoResults);
 			}
 			
@@ -96,7 +97,19 @@ public class Main {
 		}
 	}
 	
-	private static String RunAllAlgorithms(String input) {
+	protected static String RunExactAlgorithm(String input) {
+		String testInput = GenerateNewInput(0, input);
+		InputParser ip = new InputParser(testInput);
+		grid = ip.GetGrid();
+		_tasks = ip.GetTasks();
+		_workers = ip.GetWorkers();
+		
+		Exact exactAlgo = new Exact(_tasks, _workers);
+		int endTime = exactAlgo.Run();
+		return Result.GenerateReport(new ArrayList<Worker>(_workers.values()), new ArrayList<Task>(_tasks.values()), endTime);
+	}
+	
+	private static String RunOnlineAlgorithms(String input) {
 		InputParser ip = new InputParser(input);
 		grid = ip.GetGrid();
 		_tasks = ip.GetTasks();

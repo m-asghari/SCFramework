@@ -21,7 +21,7 @@ public class Random extends OnlineAlgorithm {
 		ArrayList<Worker> potentialWorkers = new ArrayList<Worker>();
 		for (Worker worker : availableWorkers) {
 			Log.Add(5, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
-			if (worker.FastCanPerform(task, currentFrame) != null )  {
+			if (worker.CanPerform(task, currentFrame) != null )  {
 				task.eligibleWorkers++;
 				potentialWorkers.add(worker);
 			}
@@ -29,7 +29,7 @@ public class Random extends OnlineAlgorithm {
 		}
 		java.util.Random rnd = new java.util.Random();
 		Worker rndWorker = (potentialWorkers.size() > 0) ? potentialWorkers.get(rnd.nextInt(potentialWorkers.size())) : null;
-		bestOrder = rndWorker.FastCanPerform(task, currentFrame);
+		bestOrder = rndWorker.CanPerform(task, currentFrame);
 		
 		if (rndWorker != null) {
 			task.AssignTo(rndWorker);

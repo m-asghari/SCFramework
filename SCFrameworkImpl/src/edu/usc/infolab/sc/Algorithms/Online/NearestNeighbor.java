@@ -23,7 +23,7 @@ public class NearestNeighbor extends OnlineAlgorithm {
 		for (Worker worker : availableWorkers) {
 			Log.Add(5, "Worker: %s", worker.toString());
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = worker.FastCanPerform(task, currentFrame)) != null) {
+			if ((taskOrder = worker.CanPerform(task, currentFrame)) != null) {
 				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, worker.id, worker.location.distance(task.location));
 				task.eligibleWorkers++;
 				if (worker.location.distance(task.location) < minDistance) {

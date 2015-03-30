@@ -15,7 +15,7 @@ public abstract class ClairvoyantAlgorithm extends Algorithm {
 		super(tasks, workers);
 	}
 	
-	public void FindPTSs() {
+	protected void FindPTSs() {
 		ArrayList<Task> tasks = new ArrayList<Task>(_tasks.values());
 		ArrayList<Worker> workers = new ArrayList<Worker>(_workers.values());
 		Collections.sort(workers);
