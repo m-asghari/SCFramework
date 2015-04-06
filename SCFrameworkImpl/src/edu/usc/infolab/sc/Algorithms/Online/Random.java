@@ -6,7 +6,6 @@ import java.util.HashMap;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Logging.Log;
 
 public class Random extends OnlineAlgorithm {
 
@@ -15,29 +14,19 @@ public class Random extends OnlineAlgorithm {
 	}
 	
 	@Override
-	protected Worker AssignTask(Task task) {
-		Log.Add(5, "Task %d:", task.id);
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		ArrayList<Worker> potentialWorkers = new ArrayList<Worker>();
-		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
-			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
-			if (w.CanPerform(task, currentFrame) != null )  {
-				task.assignmentStat.eligibleWorkers++;
-				potentialWorkers.add(w);
-			}
-			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
-		}
+	protected Worker SelectWorker(
+			HashMap<Worker, ArrayList<Task>> eligibleWorkers, Task task) {
+		Worker selectedWorker = null;		
 		java.util.Random rnd = new java.util.Random();
-		Worker rndWorker = (potentialWorkers.size() > 0) ? potentialWorkers.get(rnd.nextInt(potentialWorkers.size())) : null;
-		bestOrder = rndWorker.CanPerform(task, currentFrame);
-		
-		if (rndWorker != null) {
-			task.AssignTo(rndWorker);
-			rndWorker.AddTask(task);
-			rndWorker.SetSchedule(bestOrder);
+		int index = rnd.nextInt(eligibleWorkers.size());
+		int count = 0;
+		for (Worker w : eligibleWorkers.keySet()) {
+			if (count == index) {
+				selectedWorker = w;
+				break;
+			}
+			count++;
 		}
-		return rndWorker;
+		return selectedWorker;
 	}
-
 }

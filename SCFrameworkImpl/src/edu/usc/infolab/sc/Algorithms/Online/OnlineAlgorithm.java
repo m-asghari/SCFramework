@@ -92,11 +92,11 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			AdvanceTime();
 			currentFrame++;
 		}
-		PrintStat();
+		//PrintStat();
 		return currentFrame - 1;
 	}
 	
-	public void AdvanceTime() {
+	private void AdvanceTime() {
 		_frameStats = new FrameStats(currentFrame);
 		HashMap<Task, Worker> assignments = new HashMap<Task, Worker>();
 		// Check to see if any worker becomes available in current frame
@@ -153,6 +153,32 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		//SaveFrameToImage(assignments, 10);
 	}
 	
+	protected Worker AssignTask(Task task) {
+		Log.Add(5, "Task %d:", task.id);
+		HashMap<Worker, ArrayList<Task>> eligibleWorkers = new HashMap<Worker, ArrayList<Task>>();
+		for (Worker w : availableWorkers) {
+			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			task.assignmentStat.availableWorkers++;
+			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
+			ArrayList<Task> taskOrder = new ArrayList<Task>();
+			if ((taskOrder = w.CanPerform(task, currentFrame)) != null )  {
+				task.assignmentStat.eligibleWorkers++;
+				eligibleWorkers.put(w, new ArrayList<Task>(taskOrder));
+				Log.Add(5, "\tWorker %d can perform the task", w.id);
+			}
+			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
+		}
+		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
+		if (selectedWorker != null) {
+			task.AssignTo(selectedWorker);
+			selectedWorker.AddTask(task);
+			selectedWorker.SetSchedule(eligibleWorkers.get(selectedWorker));
+		}
+		return selectedWorker;
+	}
+	
+	protected abstract Worker SelectWorker(HashMap<Worker, ArrayList<Task>> eligibleWorkers, Task task);
+	
 	protected void UpdateWorkerDistribution() {}
 	
 	protected void SaveFrameToImage(HashMap<Task, Worker> assignments, int scale) {
@@ -202,8 +228,5 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		for (FrameStats fs : _framesStats) {
 			Log.Add(3, fs.toString());
 		}
-	}
-
-	protected abstract Worker AssignTask(Task task);
-	
+	}	
 }

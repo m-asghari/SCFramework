@@ -6,7 +6,6 @@ import java.util.HashMap;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Logging.Log;
 
 public class BestInsertion extends OnlineAlgorithm {
 
@@ -15,33 +14,17 @@ public class BestInsertion extends OnlineAlgorithm {
 	}
 	
 	@Override
-	protected Worker AssignTask(Task task) {
-		Log.Add(5, "Task %d:", task.id);
+	protected Worker SelectWorker(
+			HashMap<Worker, ArrayList<Task>> eligibleWorkers, Task task) {
+		Worker selectedWorker = null;
 		Double minDiff = Double.MAX_VALUE;
-		Worker bestWorker = null;
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
-			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
-				task.assignmentStat.eligibleWorkers++;
-				Log.Add(5, "\tWorker %d: currentCompleteTime: %.2f, futureCompleteTime: %.2f", w.id, w.GetCompleteTime(w.GetSchedule(), currentFrame), w.GetCompleteTime(taskOrder, currentFrame));
-				Double diff = w.GetCompleteTime(taskOrder, currentFrame) - w.GetCompleteTime(w.GetSchedule(), currentFrame);
-				Log.Add(5, "\tminDiff: %.2f, diff: %.2f", minDiff, diff);
-				if (diff < minDiff) {
-					bestWorker = w;
-					minDiff = diff;
-					bestOrder = new ArrayList<Task>(taskOrder);
-				}
+		for (Worker w : eligibleWorkers.keySet()) {
+			Double diff = w.GetCompleteTime(eligibleWorkers.get(w), currentFrame) - w.GetCompleteTime(w.GetSchedule(), currentFrame);
+			if (diff < minDiff) {
+				selectedWorker = w;
+				minDiff = diff;
 			}
 		}
-		if (bestWorker != null) {
-			Log.Add(5, "Task %d assigned to worker %d", task.id, bestWorker.id);
-			bestWorker.SetSchedule(bestOrder);
-			bestWorker.AddTask(task);
-			task.AssignTo(bestWorker);
-		}
-		return bestWorker;
+		return selectedWorker;
 	}
-
 }

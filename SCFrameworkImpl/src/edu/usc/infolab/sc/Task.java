@@ -8,11 +8,23 @@ public class Task extends SpatialEntity{
 	
 	public class AssignmentStat {
 		public int eligibleWorkers;
+		public int availableWorkers;
 		public ArrayList<Integer> workerFreeTimes;
+		
+		private AssignmentStat(AssignmentStat as) {
+			this.eligibleWorkers = as.eligibleWorkers;
+			this.availableWorkers = as.availableWorkers;
+			this.workerFreeTimes = new ArrayList<Integer>(as.workerFreeTimes);
+		}
 		
 		public AssignmentStat() {
 			this.eligibleWorkers = 0;
+			this.availableWorkers = 0;
 			workerFreeTimes = new ArrayList<Integer>();
+		}
+		
+		public AssignmentStat clone() {
+			return new AssignmentStat(this);
 		}
 	}
 	public static Integer idCntr = 0;
@@ -23,13 +35,13 @@ public class Task extends SpatialEntity{
 	private Task(Task t) {
 		super(t);
 		this.assignedWorkers = new ArrayList<Worker>(t.assignedWorkers);
+		this.assignmentStat = t.assignmentStat.clone();
 		this.value = t.value;
 	}
 	
 	public Task() {
 		Initialize();
 		this.id = idCntr++;
-		this.assignmentStat = new AssignmentStat();
 	}
 	
 	public Task(Element e) {
@@ -43,6 +55,7 @@ public class Task extends SpatialEntity{
 	
 	private void Initialize() {
 		assignedWorkers = new ArrayList<Worker>();
+		assignmentStat = new AssignmentStat();
 	}
 	
 	public void AssignTo(Worker worker) {

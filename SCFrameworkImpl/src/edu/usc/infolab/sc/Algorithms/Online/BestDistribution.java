@@ -28,38 +28,18 @@ public class BestDistribution extends OnlineAlgorithm {
 	}
 	
 	@Override
-	protected Worker AssignTask(Task task) {
-		Log.Add(5, "Task %d:", task.id);
-		Log.Add(5, distT.toString());
+	protected Worker SelectWorker(HashMap<Worker,ArrayList<Task>> eligibleWorkers, Task task) {
+		Worker selectedWorker = null;
 		Double maxInfluence = -2.0 * distT.GetMaxInfluence();
-		Worker bestWorker = null;
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
-			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
-				task.assignmentStat.eligibleWorkers++;
-				double inf = MoveInfluence(w.location, task.location);
-				Log.Add(5, "maxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
-				if (inf >= maxInfluence) {
-					bestWorker = w;
-					maxInfluence = inf;
-					bestOrder = new ArrayList<>(taskOrder);
-				}
-			}
-			else {
-				Log.Add(5, "Worker %d cannot perform task %d", w.id, task.id);
+		for (Worker w : eligibleWorkers.keySet()) {
+			double inf = MoveInfluence(w.location, task.location);
+			if (inf >= maxInfluence) {
+				selectedWorker = w;
+				maxInfluence = inf;
 			}
 		}
-		if (bestWorker != null) {
-			Double diff = bestWorker.GetCompleteTime(bestOrder, currentFrame) - bestWorker.GetCompleteTime(bestWorker.GetSchedule(), currentFrame);
-			Log.Add(5, "Assigned task %d to worker %d -> diff: %.2f", task.id, bestWorker.id, diff);
-			bestWorker.SetSchedule(bestOrder);
-			task.AssignTo(bestWorker);
-			bestWorker.AddTask(task);
-		}
-		return bestWorker;
-	}
+		return selectedWorker;
+	};
 	
 	/*private double Diff(Worker w, Task t) {
 		CountDistribution distW_c = new CountDistribution(grid, distW.cellCount);

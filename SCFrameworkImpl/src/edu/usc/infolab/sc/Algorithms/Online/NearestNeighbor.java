@@ -6,7 +6,6 @@ import java.util.HashMap;
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
-import edu.usc.infolab.sc.Logging.Log;
 
 public class NearestNeighbor extends OnlineAlgorithm {
 
@@ -15,34 +14,17 @@ public class NearestNeighbor extends OnlineAlgorithm {
 	}
 	
 	@Override
-	protected Worker AssignTask(Task task) {
-		Log.Add(5, "Task %d:", task.id);
-		double minDistance = Double.MAX_VALUE;
-		Worker minWorker = null;
-		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
-			Log.Add(5, "Worker: %s", w.toString());
-			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
-				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, w.id, w.location.distance(task.location));
-				task.assignmentStat.eligibleWorkers++;
-				if (w.location.distance(task.location) < minDistance) {
-					minWorker = w;
-					minDistance = w.location.distance(task.location);
-					bestOrder = new ArrayList<Task>(taskOrder);
-				}
-			} else {
-				Log.Add(5, "\ttaskOrder for Worker %d is null", w.id);
+	protected Worker SelectWorker(
+			HashMap<Worker, ArrayList<Task>> eligibleWorkers, Task task) {
+		Worker selectedWorker = null;
+		Double minDistance = Double.MAX_VALUE;
+		for (Worker w : eligibleWorkers.keySet()) {
+			Double dist = w.location.distance(task.location);
+			if (dist < minDistance) {
+				selectedWorker = w;
+				minDistance = dist;
 			}
 		}
-		if (minWorker != null) {
-			Log.Add(5, "\ttask %d assigned to Worker %d", task.id, minWorker.id);
-			minWorker.SetSchedule(bestOrder);
-			minWorker.AddTask(task);
-			task.AssignTo(minWorker);
-		}
-		return minWorker;
+		return selectedWorker;
 	}
-
 }
