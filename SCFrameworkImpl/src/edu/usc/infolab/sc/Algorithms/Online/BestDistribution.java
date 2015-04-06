@@ -35,9 +35,10 @@ public class BestDistribution extends OnlineAlgorithm {
 		Worker bestWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		for (Worker w : availableWorkers) {
+			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
 			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
-				task.eligibleWorkers++;
+				task.assignmentStat.eligibleWorkers++;
 				double inf = MoveInfluence(w.location, task.location);
 				Log.Add(5, "maxInf: %.2f, inf for worker %d -> %.2f", maxInfluence, w.id, inf);
 				if (inf >= maxInfluence) {

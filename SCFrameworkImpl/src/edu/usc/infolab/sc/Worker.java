@@ -3,8 +3,6 @@ package edu.usc.infolab.sc;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import javax.annotation.PostConstruct;
-
 import org.w3c.dom.Element;
 
 import edu.usc.infolab.sc.Logging.Log;
@@ -106,6 +104,10 @@ public class Worker extends SpatialEntity{
 	
 	public Double GetCompleteTime(ArrayList<Task> tasks, int currentFrame) {
 		return CanComplete(tasks, currentFrame);
+	}
+	
+	public Double GetCompleteTime(int currentFrame) {
+		return this.GetCompleteTime(this.remainingTasks, currentFrame);
 	}
 	
 	// Input: One task

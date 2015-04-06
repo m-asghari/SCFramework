@@ -20,19 +20,20 @@ public class NearestNeighbor extends OnlineAlgorithm {
 		double minDistance = Double.MAX_VALUE;
 		Worker minWorker = null;
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
-		for (Worker worker : availableWorkers) {
-			Log.Add(5, "Worker: %s", worker.toString());
+		for (Worker w : availableWorkers) {
+			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			Log.Add(5, "Worker: %s", w.toString());
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = worker.CanPerform(task, currentFrame)) != null) {
-				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, worker.id, worker.location.distance(task.location));
-				task.eligibleWorkers++;
-				if (worker.location.distance(task.location) < minDistance) {
-					minWorker = worker;
-					minDistance = worker.location.distance(task.location);
+			if ((taskOrder = w.CanPerform(task, currentFrame)) != null) {
+				Log.Add(5, "\tminDistance: %.2f, worker %d distance: %.2f", minDistance, w.id, w.location.distance(task.location));
+				task.assignmentStat.eligibleWorkers++;
+				if (w.location.distance(task.location) < minDistance) {
+					minWorker = w;
+					minDistance = w.location.distance(task.location);
 					bestOrder = new ArrayList<Task>(taskOrder);
 				}
 			} else {
-				Log.Add(5, "\ttaskOrder for Worker %d is null", worker.id);
+				Log.Add(5, "\ttaskOrder for Worker %d is null", w.id);
 			}
 		}
 		if (minWorker != null) {

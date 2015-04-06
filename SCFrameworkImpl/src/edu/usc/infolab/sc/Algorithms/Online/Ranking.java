@@ -19,18 +19,19 @@ public class Ranking extends OnlineAlgorithm {
 		Log.Add(5, "Task %d:", task.id);
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		Worker firstWorker = null;
-		for (Worker worker : availableWorkers) {
-			Log.Add(5, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
+		for (Worker w : availableWorkers) {
+			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
 			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = worker.CanPerform(task, currentFrame)) != null )  {
-				task.eligibleWorkers++;
+			if ((taskOrder = w.CanPerform(task, currentFrame)) != null )  {
+				task.assignmentStat.eligibleWorkers++;
 				if (firstWorker == null) {
-					Log.Add(5, "\tWorker %d will perform the task", worker.id);
-					firstWorker = worker;
+					Log.Add(5, "\tWorker %d will perform the task", w.id);
+					firstWorker = w;
 					bestOrder = new ArrayList<Task>(taskOrder);
 				}
 			}
-			Log.Add(5, "\tWorker %d cannot perform the task", worker.id);
+			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
 		if (firstWorker != null) {
 			task.AssignTo(firstWorker);

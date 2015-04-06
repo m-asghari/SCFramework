@@ -19,13 +19,14 @@ public class Random extends OnlineAlgorithm {
 		Log.Add(5, "Task %d:", task.id);
 		ArrayList<Task> bestOrder = new ArrayList<Task>();
 		ArrayList<Worker> potentialWorkers = new ArrayList<Worker>();
-		for (Worker worker : availableWorkers) {
-			Log.Add(5, "Worker %d has %d tasks scheduled.", worker.id, worker.GetSchedule().size());
-			if (worker.CanPerform(task, currentFrame) != null )  {
-				task.eligibleWorkers++;
-				potentialWorkers.add(worker);
+		for (Worker w : availableWorkers) {
+			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
+			if (w.CanPerform(task, currentFrame) != null )  {
+				task.assignmentStat.eligibleWorkers++;
+				potentialWorkers.add(w);
 			}
-			Log.Add(5, "\tWorker %d cannot perform the task", worker.id);
+			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
 		java.util.Random rnd = new java.util.Random();
 		Worker rndWorker = (potentialWorkers.size() > 0) ? potentialWorkers.get(rnd.nextInt(potentialWorkers.size())) : null;

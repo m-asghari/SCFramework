@@ -5,9 +5,19 @@ import java.util.ArrayList;
 import org.w3c.dom.Element;
 
 public class Task extends SpatialEntity{
+	
+	public class AssignmentStat {
+		public int eligibleWorkers;
+		public ArrayList<Integer> workerFreeTimes;
+		
+		public AssignmentStat() {
+			this.eligibleWorkers = 0;
+			workerFreeTimes = new ArrayList<Integer>();
+		}
+	}
 	public static Integer idCntr = 0;
 	ArrayList<Worker> assignedWorkers;
-	public int eligibleWorkers;
+	public AssignmentStat assignmentStat;
 	public Integer value;
 	
 	private Task(Task t) {
@@ -19,7 +29,7 @@ public class Task extends SpatialEntity{
 	public Task() {
 		Initialize();
 		this.id = idCntr++;
-		this.eligibleWorkers = 0;
+		this.assignmentStat = new AssignmentStat();
 	}
 	
 	public Task(Element e) {
@@ -27,7 +37,7 @@ public class Task extends SpatialEntity{
 		Initialize();
 		this.id = idCntr++;
 		this.value = Integer.parseInt(e.getAttribute("value"));
-		this.eligibleWorkers = 0;
+		this.assignmentStat = new AssignmentStat();
 		this.value = 1;
 	}
 	
