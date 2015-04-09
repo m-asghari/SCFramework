@@ -26,6 +26,8 @@ import edu.usc.infolab.sc.Logging.Log;
 import edu.usc.infolab.sc.Logging.Result;
 
 public class Main {
+	private static final String GENERAL = "GENERAL";
+	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static Grid grid;
 	private static HashMap<Integer, Task> _tasks;
@@ -33,9 +35,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		String input = "UniformTasks";
-		Initialize(2, input);
+		Initialize(-1, input);
 		
-		RunExactAlgorithm(input);
+		//ChangeNumberOfTasks(input);
+		RunMultipleTests(input, 100);
 		
 		Finalize();
 	}
@@ -43,23 +46,25 @@ public class Main {
 	protected static void RunMultipleTests(String input, int testSize) {
 		for (int test = 0; test < testSize; test++) {
 			String testInput = GenerateNewInput(test, input);
+			System.out.println(String.format("Starting test %d", test));
 			String algoResults = RunOnlineAlgorithms(testInput);
-			Result.Add(algoResults);			
+			Result.Add(GENERAL, algoResults);			
 		}
 	}
 	
 	protected static void ChangeNumberOfTasks(String input) {
-		int size = 50000;
-		while (size <= 50000) {
+		int size = 100;
+		while (size <= 2000) {
 			for (int test = 0; test < 20; test++) {
 				String testInput = GenerateNewInput(test, input, size);
 				System.out.println(String.format("Starting test %d for size %d", test, size));
 				String algoResults = RunOnlineAlgorithms(testInput);
-				Result.Add("%d,%s", size, algoResults);
+				Result.Add(GENERAL, "%d,%s", size, algoResults);
 			}
 			
-			int d = (int) Math.log10(size);
-			size += Math.pow(10, d);
+			//int d = (int) Math.log10(size);
+			//size += Math.pow(10, d);
+			size += 100;
 		}						
 	}
 	
@@ -71,7 +76,7 @@ public class Main {
 				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
 				FrameStats.Add("%d,%d", availableWorkers, test);
 				String algoResults = RunOnlineAlgorithms(testInput);
-				Result.Add("%d,%s", availableWorkers, algoResults);
+				Result.Add(GENERAL, "%d,%s", availableWorkers, algoResults);
 			}
 			
 			availableWorkers = (availableWorkers < 40) ? availableWorkers + 1 : availableWorkers + 10;
@@ -85,7 +90,7 @@ public class Main {
 				String testInput = GenerateNewInput(test, input, 1000, 10, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunOnlineAlgorithms(testInput);
-				Result.Add("%.2f,%s", rate, algoResults);
+				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
 			if (rate <= 2) {
@@ -106,6 +111,18 @@ public class Main {
 		
 		Exact exactAlgo = new Exact(_tasks, _workers);
 		int endTime = exactAlgo.Run();
+		return Result.GenerateReport(new ArrayList<Worker>(_workers.values()), new ArrayList<Task>(_tasks.values()), endTime);
+	}
+	
+	protected static String RunBestInsertion(String input) {
+		String testInput = GenerateNewInput(0, input);
+		InputParser ip = new InputParser(testInput);
+		grid = ip.GetGrid();
+		_tasks = ip.GetTasks();
+		_workers = ip.GetWorkers();
+		
+		BestInsertion biAlgo = new BestInsertion(_tasks, _workers, grid.clone());
+		int endTime = biAlgo.Run();
 		return Result.GenerateReport(new ArrayList<Worker>(_workers.values()), new ArrayList<Task>(_tasks.values()), endTime);
 	}
 	
@@ -139,24 +156,28 @@ public class Main {
 		Ranking rnkAlgo = new Ranking(tasks, workers, grid.clone());
 		endTime = rnkAlgo.Run();
 		String rnkResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnk", new ArrayList<Task>(tasks.values())));
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
 		endTime = nnAlgo.Run();
 		String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("NN", new ArrayList<Task>(tasks.values())));
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
 		endTime = biAlgo.Run();
 		String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BI", new ArrayList<Task>(tasks.values())));
 		
 		tasks = GetTasksCopy();
 		workers = GetWorkersCopy();
 		BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
 		endTime = bdAlgo.Run();
 		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
 		
 		return String.format("%s,%s,%s,%s", rnkResutls, nnResutls, biResutls, bdResutls);
 	}
@@ -210,8 +231,8 @@ public class Main {
 			
 			File f = new File(dir, input);
 			Log.Initialize(level, f.getPath());
-			Result.Initialize(f.getPath());
-			FrameStats.Initialize(String.format("%s_frameStats", f.getPath()));
+			Result.InitNewWriter(GENERAL, String.format("%s_%s", f.getPath(), GENERAL));
+			Result.InitNewWriter(ASSIGNMENT_STAT, String.format("%s_%s", f.getPath(), ASSIGNMENT_STAT));
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -220,7 +241,6 @@ public class Main {
 	
 	private static void Finalize() {
 		Log.Finalize();
-		Result.Finalize();
-		FrameStats.Finalize();
+		Result.FinalizeAll();
 	}
 }

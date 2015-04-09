@@ -16,7 +16,7 @@ public class Ranking extends OnlineAlgorithm {
 	@Override
 	protected Worker SelectWorker(HashMap<Worker, ArrayList<Task>> eligibleWorkers, Task task) {
 		Worker selectedWorker = null;
-		int minId = -1;
+		int minId = Integer.MAX_VALUE;
 		for (Worker w : eligibleWorkers.keySet()) {
 			if (w.id < minId) {
 				selectedWorker = w;

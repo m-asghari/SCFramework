@@ -4,46 +4,53 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
 public final class Result{
-	private static FileWriter fw;
-	private static BufferedWriter bw;
+	private static HashMap<String, FileWriter> fws = new HashMap<String, FileWriter>();
+	private static HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
 	
-	public static void Initialize(String input) {
+	public static void InitNewWriter(String name, String input) {
 		try {
-			fw = new FileWriter(String.format("%s.csv", input));
-			bw = new BufferedWriter(fw);
+			fws.put(name, new FileWriter(String.format("%s.csv", input)));
+			bws.put(name, new BufferedWriter(fws.get(name)));
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 	}
 	
-	public static void Finalize() {
+	public static void FinalizeAll() {
 		try {
-			bw.close();
-			fw.close();
+			for (BufferedWriter bw : bws.values()) {
+				bw.close();
+			}
+			for (FileWriter fw : fws.values()) {
+				fw.close();
+			}
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 	
-	public static void Add(String format, Object... args) {
-		Add(String.format(format, args));
+	public static void Add(String name, String format, Object... args) {
+		Add(name, String.format(format, args));
 	}
 	
-	public static void Add(String msg) {
+	public static void Add(String name, String msg) {
 		try {
+			BufferedWriter bw = bws.get(name);
 			bw.write(msg);
 			bw.write("\n");
 			bw.flush();
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 	
@@ -57,8 +64,6 @@ public final class Result{
 		double maxTraveledDistance = 0;
 		double maxTraveledDistancePerTask = 0;
 		double avgWorkerUtility = 0;
-		double avgEligibleWorker = 0;
-		double avgEligibleWorkerWhenAssigned = 0;
 		ArrayList<Double> traveledDistances = new ArrayList<Double>();
 		int workerCount = 0;
 		
@@ -89,17 +94,6 @@ public final class Result{
 		}
 		avgWorkerUtility = avgWorkerUtility / workers.size();
 
-		int sum = 0;
-		int count = 0;
-		for (Task t : tasks) {
-			if (t.eligibleWorkers > 0) {
-				count++;
-				sum += t.eligibleWorkers;
-			}
-		}
-		avgEligibleWorkerWhenAssigned = (count > 0) ? (double)sum/count : 0;
-		avgEligibleWorker = (double)sum/tasks.size();
-		
 		Log.Add(0, "\n\nFinal Report:\n");
 		Log.Add(0, "Total Number of Workers: %d", workers.size());
 		Log.Add(0, "Total Number of Used Workers: %d", workerCount);
@@ -112,10 +106,39 @@ public final class Result{
 		Log.Add(0, "Max Traveled Distance: %.2f", maxTraveledDistance);
 		Log.Add(0, "Max Traveled Distance (Per Task): %.2f", maxTraveledDistancePerTask);
 		Log.Add(0, "Avg Worker Utility: %.2f", avgWorkerUtility);
-		Log.Add(0, "Avg Eligible Workers: %.2f", avgEligibleWorker);
-		String summary = String.format("%d,%d,%.2f,%.2f, %.2f, %.2f", 
-				assignedTasks, gainedValue, totalTraveledDistance, avgTraveledDistancePerTask, avgEligibleWorkerWhenAssigned, avgEligibleWorker); 
+		String summary = String.format("%d,%d,%.2f,%.2f", 
+				assignedTasks, gainedValue, totalTraveledDistance, avgTraveledDistancePerTask); 
 		Log.Add(0, summary);
 		return summary;
+	}
+	
+	public static String GetAssignmentStats(String algorithm, ArrayList<Task> tasks) {
+		Collections.sort(tasks);
+		StringBuilder sb = new StringBuilder();
+		sb.append(algorithm);
+		for (Task t : tasks) {
+			sb.append(String.format(",%d", t.assignmentStat.availableWorkers));
+		}
+		sb.append("\n");
+		sb.append(algorithm);
+		for (Task t : tasks) {
+			sb.append(String.format(",%d", t.assignmentStat.eligibleWorkers));
+		}
+		sb.append("\n");
+		sb.append(algorithm);
+		for (Task t : tasks) {
+			Double sum = 0.0;
+			for (int ft : t.assignmentStat.workerFreeTimes) {
+				sum += ft;
+			}
+			sb.append(String.format(",%.2f", sum / t.assignmentStat.workerFreeTimes.size()));
+		}
+		sb.append("\n");
+		sb.append(algorithm);
+		for (Task t : tasks) {
+			sb.append(String.format(",%d", t.assignmentStat.assigned));
+		}
+		sb.append("\n");
+		return sb.toString();
 	}
 }

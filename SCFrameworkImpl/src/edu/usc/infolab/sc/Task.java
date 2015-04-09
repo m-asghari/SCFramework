@@ -7,17 +7,20 @@ import org.w3c.dom.Element;
 public class Task extends SpatialEntity{
 	
 	public class AssignmentStat {
+		public int assigned;
 		public int eligibleWorkers;
 		public int availableWorkers;
 		public ArrayList<Integer> workerFreeTimes;
 		
 		private AssignmentStat(AssignmentStat as) {
+			this.assigned = as.assigned;
 			this.eligibleWorkers = as.eligibleWorkers;
 			this.availableWorkers = as.availableWorkers;
 			this.workerFreeTimes = new ArrayList<Integer>(as.workerFreeTimes);
 		}
 		
 		public AssignmentStat() {
+			this.assigned = 0;
 			this.eligibleWorkers = 0;
 			this.availableWorkers = 0;
 			workerFreeTimes = new ArrayList<Integer>();

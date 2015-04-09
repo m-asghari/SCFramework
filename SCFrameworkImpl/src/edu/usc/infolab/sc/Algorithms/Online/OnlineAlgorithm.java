@@ -150,7 +150,8 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			}
 		}
 		_framesStats.add(_frameStats);
-		//SaveFrameToImage(assignments, 10);
+		//if (currentFrame < 1000)
+		//	SaveFrameToImage(assignments, 10);
 	}
 	
 	protected Worker AssignTask(Task task) {
@@ -170,6 +171,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
 		if (selectedWorker != null) {
+			task.assignmentStat.assigned = 1;
 			task.AssignTo(selectedWorker);
 			selectedWorker.AddTask(task);
 			selectedWorker.SetSchedule(eligibleWorkers.get(selectedWorker));
