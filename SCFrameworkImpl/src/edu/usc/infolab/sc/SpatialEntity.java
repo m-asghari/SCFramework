@@ -15,7 +15,7 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 	
 	protected SpatialEntity(SpatialEntity se) {
 		this.id = se.id;
-		this.location = se.location;
+		this.location = (Point2D.Double) se.location.clone();
 		this.releaseFrame = se.releaseFrame;
 		this.retractFrame = se.retractFrame;
 	}
