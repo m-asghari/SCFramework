@@ -68,20 +68,16 @@ public final class Result{
 		int workerCount = 0;
 		
 		for (Worker w : workers) {
-			ArrayList<Task> wTasks = w.GetAssignedTasks();
-			for (Task t : wTasks) {
-				assignedTasks++;
-				gainedValue += t.value;
-			}
-			if (wTasks.size() > 0) {
+			int numOfAssignedTask = w.GetAssignedTasks().size();
+			if (numOfAssignedTask > 0) {
 				totalTraveledDistance += w.travledDistance;
-				totalTraveledDistancePerTask += w.travledDistance / wTasks.size();
+				totalTraveledDistancePerTask += w.travledDistance / numOfAssignedTask;
 				traveledDistances.add(w.travledDistance);
 				if (maxTraveledDistance < w.travledDistance) {
 					maxTraveledDistance = w.travledDistance;
 				}
-				if (w.travledDistance / wTasks.size() > maxTraveledDistancePerTask) {
-					maxTraveledDistancePerTask = w.travledDistance / wTasks.size();
+				if (w.travledDistance / numOfAssignedTask > maxTraveledDistancePerTask) {
+					maxTraveledDistancePerTask = w.travledDistance / numOfAssignedTask;
 				}
 				avgWorkerUtility += w.GetUtility(endTime);
 				workerCount++;
@@ -94,11 +90,24 @@ public final class Result{
 		}
 		avgWorkerUtility = avgWorkerUtility / workers.size();
 
+		
+		int eligibleWorkersSum = 0;
+		for (Task t : tasks) {
+			if (t.assignmentStat.assigned == 1) {
+				assignedTasks++;
+				gainedValue += t.value;
+				eligibleWorkersSum += t.assignmentStat.eligibleWorkers;
+			}
+				
+		}
+		double eligibleWorkerAvg = (double)eligibleWorkersSum / assignedTasks;
+		
 		Log.Add(0, "\n\nFinal Report:\n");
 		Log.Add(0, "Total Number of Workers: %d", workers.size());
 		Log.Add(0, "Total Number of Used Workers: %d", workerCount);
 		Log.Add(0, "Total Number of Assigned Tasks: %d", assignedTasks);
 		Log.Add(0, "Total Gained Valued: %d", gainedValue);
+		Log.Add(0, "Avg Eligible Workers (Per Assigned Tasks): %.2f", eligibleWorkerAvg);
 		Log.Add(0, "Total Traveled Distance: %.2f", totalTraveledDistance);
 		Log.Add(0, "Total Traveled Distance (Per Task): %.2f", totalTraveledDistancePerTask);
 		Log.Add(0, "Avg Traveled Distance: %.2f", avgTraveledDistance);
@@ -106,8 +115,8 @@ public final class Result{
 		Log.Add(0, "Max Traveled Distance: %.2f", maxTraveledDistance);
 		Log.Add(0, "Max Traveled Distance (Per Task): %.2f", maxTraveledDistancePerTask);
 		Log.Add(0, "Avg Worker Utility: %.2f", avgWorkerUtility);
-		String summary = String.format("%d,%d,%.2f,%.2f", 
-				assignedTasks, gainedValue, totalTraveledDistance, avgTraveledDistancePerTask); 
+		String summary = String.format("%d,%d,%.2f,%.2f,%.2f", 
+				assignedTasks, gainedValue, eligibleWorkerAvg, totalTraveledDistance, avgTraveledDistancePerTask); 
 		Log.Add(0, summary);
 		return summary;
 	}
