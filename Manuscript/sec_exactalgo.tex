@@ -18,7 +18,7 @@ Value(PTS) = \sum_{t \in PTS} t.v
 \end{equation*}
 \end{definition}
 
-For each worker \emph{w}, we define \emph{w.PTS} as the union of all such potential task subsets.\\
+For each worker \emph{w}, we define \emph{w.PTS} as the set of all such potential task subsets.\\
 
 In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether it's a PTS for the worker or not. It's trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore we will adopt a branch and bound algorithm similar to the one introduced in \cite{deng13}. We use the following propositions for pruning purposes in our branch and bound algorithm.
 
@@ -127,7 +127,7 @@ The PTS-Graph is a multi-layered graph such that for each worker we add a layer 
 \begin{equation}
 E = \left\{ \left\langle n_{ai}, n_{bj} \right\rangle \middle | a \neq b \land \left(PTS_{ai} \cap PTS_{bj} = \emptyset \right) \right\}
 \end{equation}
-where $PTS_lm$ refers to the corresponding PTS of node $n_{lm}$. In other words, there will be an edge between two nodes in different layers if the corresponding PTSs of the two nodes don't contain a similar task.
+where $PTS_lm$ refers to the corresponding PTS of node $n_{lm}$. In other words, there will be an edge between two nodes in different layers if the corresponding PTSs of the two nodes don't contain the same task.
 
 \begin{figure}[t]
 	\centering
