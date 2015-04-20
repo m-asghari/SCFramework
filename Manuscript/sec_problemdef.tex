@@ -3,6 +3,7 @@
 In this section, we define the terminologies used in the paper and give a formal definition of the problem under consideration. Also, we analyze the complexity of the problem and its hardness.
 
 \subsection{Problem Definition}
+\label{subsec:problemdef}
 
 In this section, we define a set of terminologies in order to define the task assignment problem in spatial crowdsourcing.
 
@@ -16,7 +17,7 @@ It should be pointed out that in a spatial crowdsourcing environment, a spatial 
 A worker w is any entity willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
 \end{definition}
 
-We assume once a task is assigned to a worker, the worker has no option but to perform the task. Hence, the server will assign a task to a worker only if it is possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, the worker has to be able to complete every task within his availability interval before the tasks' deadlines expire.
+We assume once a task is assigned to a worker, the worker has no option but to perform the task. Hence, the server will assign a task to a worker only if it is possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, at each point of time, each worker keeps track of a \textit{schedule} which is an ordered list of tasks. The worker completes the tasks based on their order in its schedule.
 
 \begin{definition} [Matching]
 Assuming we have a set of workers W and a set of tasks T, we call $M \subset W \times T$ a matching if for each $t \in T$ there is at most one $w \in W$ such that $\left( w, t \right) \in M$. We call $\left( w, t \right) \in M$ an \emph{assignment} and say t has been assigned to w. For each matching M, we define the value (benefit) of M as:
@@ -32,10 +33,9 @@ Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $d: \
 \end{definition}
 Throughout the paper we assume every worker moves one unit of length per unit of time. Therefore, we can assume that $d \left( \left\langle a,b \right\rangle \right)$ is also the \emph{time} required to move from $a$ to $b$.\\
 
-The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{kazemi12}. \cref{tab:notation} lists the notations we frequently use in this paper.\\
+The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is shown as TASK$\left\langle W, T, l, K \right\rangle$. In the case where every task has a value of 1, the TASC problem become similar to the MTA problem defined in \cite{Kazemi12}. \cref{tab:notation} lists the notations we frequently use in this paper.\\
 
 \begin{table}
-\label{tab:notation}
 \begin{center}
 \begin{tabular}{| c | l |} \hline
 Notation	&	Description \\ \hline
@@ -53,6 +53,7 @@ $w.PTS$	&	list of all potential task subsets worker $w$ \\
 				&	can perform \\ \hline
 \end{tabular}
 \caption{List of notations}
+\label{tab:notation}
 \end{center}
 \end{table}
 
