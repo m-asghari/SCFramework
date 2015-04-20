@@ -15,7 +15,9 @@ import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Clairvoyant.Exact;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
+import edu.usc.infolab.sc.Algorithms.Online.MostFreeTime;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
+import edu.usc.infolab.sc.Algorithms.Online.Random;
 import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
@@ -33,8 +35,8 @@ public class Main {
 	//private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks";
-		Initialize(0, input);
+		String input = "UniformTasks1";
+		Initialize(5, input);
 		
 		//ChangeNumberOfTasks(input);
 		//RunMultipleTests(input, 100);
@@ -121,6 +123,18 @@ public class Main {
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
+	protected static String RunRandom(String input) {
+		InputParser ip = new InputParser(input);
+		Grid grid = ip.GetGrid();
+		HashMap<Integer, Task> tasks = ip.GetTasks();
+		HashMap<Integer, Worker> workers = ip.GetWorkers();
+		
+		Random rndAlgo = new Random(tasks, workers, grid.clone());
+		int endTime = rndAlgo.Run();
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnd", new ArrayList<Task>(tasks.values())));
+		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+	}
+	
 	protected static String RunRanking(String input) {
 		InputParser ip = new InputParser(input);
 		Grid grid = ip.GetGrid();
@@ -157,6 +171,18 @@ public class Main {
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
+	protected static String RunMostFreeTime(String input) {
+		InputParser ip = new InputParser(input);
+		Grid grid = ip.GetGrid();
+		HashMap<Integer, Task> tasks = ip.GetTasks();
+		HashMap<Integer, Worker> workers = ip.GetWorkers();
+		
+		MostFreeTime mftAlgo = new MostFreeTime(tasks, workers, grid.clone());
+		int endTime = mftAlgo.Run();
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("MFT", new ArrayList<Task>(tasks.values())));
+		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+	}
+	
 	protected static String RunBestDistribution(String input) {
 		InputParser ip = new InputParser(input);
 		Grid grid = ip.GetGrid();
@@ -183,7 +209,8 @@ public class Main {
 		String rnkResults = RunRanking(input);
 		String nnResults = RunNearestNeighbor(input);
 		String biResults = RunBestInsertion(input);
-		String bdResults = RunBestDistribution(input);
+		//String bdResults = RunBestDistribution(input);
+		String mftResults = RunMostFreeTime(input);
 		
 		/*InputParser ip = new InputParser(input);
 		grid = ip.GetGrid();
@@ -237,7 +264,7 @@ public class Main {
 		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));*/
 		
-		return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, bdResults);
+		return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
 	}
 	
 	/*private static HashMap<Integer, Task> GetTasksCopy() {

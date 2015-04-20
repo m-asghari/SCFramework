@@ -171,10 +171,14 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
 		if (selectedWorker != null) {
+			//Log.Add(1, "Task %d assigned to Worker %d", task.id, selectedWorker.id);
 			task.assignmentStat.assigned = 1;
 			task.AssignTo(selectedWorker);
 			selectedWorker.AddTask(task);
 			selectedWorker.SetSchedule(eligibleWorkers.get(selectedWorker));
+		}
+		else {
+			Log.Add(1, "Task %d not assigned", task.id);
 		}
 		return selectedWorker;
 	}

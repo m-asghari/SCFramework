@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Log {
-	private static final boolean print = true;
+	private static final int printLevel = 1;
 	private static final DateFormat sdf = new SimpleDateFormat("dd-MMM-yy HH:mm:ss");
 	private static final String logName = String.format("logs_%s.log", new SimpleDateFormat("dd-MMM-yy_HH-mm-ss").format(Calendar.getInstance().getTime())); 
 	private static FileWriter fw;
@@ -75,7 +75,7 @@ public class Log {
 			bw.write(log);
 			bw.write("\n");
 			bw.flush();
-			if (print) System.out.println(log);
+			if (level < printLevel) System.out.println(log);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
