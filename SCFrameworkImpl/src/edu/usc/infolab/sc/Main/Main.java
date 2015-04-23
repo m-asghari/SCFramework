@@ -35,12 +35,12 @@ public class Main {
 	//private static HashMap<Integer, Worker> _workers;
 
 	public static void main(String[] args) {
-		String input = "UniformTasks1";
+		String input = "UniformTasks2";
 		Initialize(5, input);
 		
-		//ChangeNumberOfTasks(input);
 		//RunMultipleTests(input, 100);
 		RunSingleTests(input);
+		//RunBestDistribution("inputGrid.xml");
 		
 		Finalize();
 	}
@@ -211,77 +211,10 @@ public class Main {
 		String biResults = RunBestInsertion(input);
 		//String bdResults = RunBestDistribution(input);
 		String mftResults = RunMostFreeTime(input);
-		
-		/*InputParser ip = new InputParser(input);
-		grid = ip.GetGrid();
-		_tasks = ip.GetTasks();
-		_workers = ip.GetWorkers();
-		
-		double[] taskCount = new double[grid.size()];
-		for (int i = 0; i < taskCount.length; ++i) {
-			taskCount[i] = 0;
-		}
-		for (Task t : _tasks.values()) {
-			taskCount[grid.GetCell(t.location)]++;
-		}
-		CountDistribution distT = new CountDistribution(grid, taskCount);
-		
-		HashMap<Integer, Task> tasks;
-		HashMap<Integer, Worker> workers;
-		int endTime = 0;
-		
-		tasks = GetTasksCopy();
-		workers = GetWorkersCopy();
-		Random rndAlgo = new Random(tasks, workers, grid.clone());
-		endTime = rndAlgo.Run();
-		String rndReString = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
-		
-		tasks = GetTasksCopy();
-		workers = GetWorkersCopy();
-		Ranking rnkAlgo = new Ranking(tasks, workers, grid.clone());
-		endTime = rnkAlgo.Run();
-		String rnkResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
-		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnk", new ArrayList<Task>(tasks.values())));
-		
-		tasks = GetTasksCopy();
-		workers = GetWorkersCopy();
-		NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
-		endTime = nnAlgo.Run();
-		String nnResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
-		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("NN", new ArrayList<Task>(tasks.values())));
-		
-		tasks = GetTasksCopy();
-		workers = GetWorkersCopy();
-		BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
-		endTime = biAlgo.Run();
-		String biResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
-		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BI", new ArrayList<Task>(tasks.values())));
-		
-		tasks = GetTasksCopy();
-		workers = GetWorkersCopy();
-		BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
-		endTime = bdAlgo.Run();
-		String bdResutls = Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
-		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));*/
-		
+			
 		return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
+		//return String.format(bdResults);
 	}
-	
-	/*private static HashMap<Integer, Task> GetTasksCopy() {
-		HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
-		for (Entry<Integer, Task> e : _tasks.entrySet()) {
-			tasks.put(e.getKey(), e.getValue().clone());
-		}
-		return tasks;
-	}
-	
-	private static HashMap<Integer, Worker> GetWorkersCopy() {
-		HashMap<Integer, Worker> workers = new HashMap<Integer, Worker>();
-		for (Entry<Integer, Worker> e : _workers.entrySet()) {
-			workers.put(e.getKey(), e.getValue().clone());
-		}
-		return workers;
-	}*/
 	
 	private static String GenerateNewInput(String input) {
 		File inputFile = new File(input, "input.xml");
