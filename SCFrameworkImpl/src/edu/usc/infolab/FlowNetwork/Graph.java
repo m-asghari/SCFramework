@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 public class Graph {
-	protected HashMap<Integer, Node> nodes;
-	protected HashMap<String, Edge> edges;
+	public HashMap<Integer, Node> nodes;
+	public HashMap<String, Edge> edges;
 	
 	public Graph(ArrayList<Node> nodes, ArrayList<Edge> edges) {
 		this.nodes = new HashMap<Integer, Node>();

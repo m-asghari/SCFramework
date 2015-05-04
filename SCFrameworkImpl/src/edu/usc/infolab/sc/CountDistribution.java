@@ -1,6 +1,13 @@
 package edu.usc.infolab.sc;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import edu.usc.infolab.FlowNetwork.Edge;
+import edu.usc.infolab.FlowNetwork.Graph;
+import edu.usc.infolab.FlowNetwork.Node;
 
 
 public class CountDistribution {
@@ -51,7 +58,8 @@ public class CountDistribution {
 		double sum = 0;
 		for (int i = 0; i < cellCount.length; ++i) {
 			double dist = p.distance(grid.GetCellMidPoint(i));
-			double distInf = (dist >= 1) ? grid.maxDistance / dist : 2 * grid.maxDistance;
+			//double distInf = (dist >= 1) ? grid.maxDistance / dist : 2 * grid.maxDistance;
+			double distInf = (dist >= 1) ? grid.maxDistance / dist : grid.maxDistance;
 			sum += distInf * Prob(i);
 		}
 		return sum;
@@ -75,6 +83,39 @@ public class CountDistribution {
 		}
 		retDist.totalCount = A_n.totalCount + B_n.totalCount;
 		return retDist.Normalize();
+	}
+	
+	public static Double EMD(CountDistribution P, CountDistribution Q) {
+		HashMap<Integer, Node> pNodes = new HashMap<Integer, Node>();
+		HashMap<Integer, Node> nNodes	= new HashMap<Integer, Node>();
+		for (int cell = 0; cell < Q.grid.size(); cell++) {
+			double diff = P.Prob(cell) - Q.Prob(cell);
+			if (diff > 0) {
+				pNodes.put(cell, new Node(diff*100));
+			} else if (diff < 0) {
+				nNodes.put(cell, new Node(diff*100));
+			}
+		}
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		nodes.addAll(pNodes.values());
+		nodes.addAll(nNodes.values());
+		
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		for (Entry<Integer, Node> pNode : pNodes.entrySet()) {
+			for (Entry<Integer, Node> nNode : nNodes.entrySet()) {
+				Double cost = P.grid.GetCellMidPoint(pNode.getKey()).distance(P.grid.GetCellMidPoint(nNode.getKey()));
+				edges.add(new Edge(pNode.getValue(), nNode.getValue(), cost));
+			}
+		}
+		
+		Graph emdGraph = new Graph(nodes, edges);
+		emdGraph.FindMinFlow();
+		
+		Double emd = 0.;
+		for (Edge e : emdGraph.edges.values()) {
+			emd += e.flow * e.cost;
+		}
+		return emd;
 	}
 	
 	public static double JSD(CountDistribution P, CountDistribution Q) {

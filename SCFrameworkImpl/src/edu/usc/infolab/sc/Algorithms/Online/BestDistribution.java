@@ -13,10 +13,18 @@ import edu.usc.infolab.sc.Logging.Log;
 public class BestDistribution extends OnlineAlgorithm {
 	private CountDistribution distW;
 	private CountDistribution distT;
+	private Boolean updateDistT;
 	
 	public BestDistribution(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid, Object...args) {
 		super(tasks, workers, grid);
 		this.distT = (CountDistribution)args[0];
+		updateDistT = false;
+	}
+	
+	public BestDistribution(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid) {
+		super(tasks, workers, grid);
+		this.distT = new CountDistribution(grid, false);
+		updateDistT = true;
 	}
 	
 	@Override
@@ -30,6 +38,7 @@ public class BestDistribution extends OnlineAlgorithm {
 	@Override
 	protected Worker SelectWorker(HashMap<Worker,ArrayList<Task>> eligibleWorkers, Task task) {
 		Worker selectedWorker = null;
+		if (updateDistT) distT.Inc(grid.GetCell(task.location));
 		Double maxInfluence = -2.0 * distT.GetMaxInfluence();
 		for (Worker w : eligibleWorkers.keySet()) {
 			double inf = MoveInfluence(w.location, task.location);
@@ -39,14 +48,23 @@ public class BestDistribution extends OnlineAlgorithm {
 			}
 		}
 		return selectedWorker;
-	};
+	}
 	
-	/*private double Diff(Worker w, Task t) {
+	@SuppressWarnings("unused")
+	private double JSDDiff(Worker w, Task t) {
 		CountDistribution distW_c = new CountDistribution(grid, distW.cellCount);
 		distW_c.Dec(grid.GetCell(w.location));
 		distW_c.Inc(grid.GetCell(t.location));
 		return CountDistribution.JSD(distT, distW_c);
-	}*/
+	}
+	
+	@SuppressWarnings("unused")
+	private Double EMDDiff(Worker w, Task t) {
+		CountDistribution distW_c = new CountDistribution(grid, distW.cellCount);
+		distW_c.Dec(grid.GetCell(w.location));
+		distW_c.Inc(grid.GetCell(t.location));
+		return CountDistribution.EMD(distW_c, distT);
+	}
 	
 	private double MoveInfluence(Point2D.Double src, Point2D.Double dst) 
 	{
