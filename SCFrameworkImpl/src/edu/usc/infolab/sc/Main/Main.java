@@ -34,10 +34,10 @@ public class Main {
 		String input = "UniformTasks";
 		Initialize(5, input);
 		
-		//ChangeNumberOfTasks(input);
 		//RunMultipleTests(input, 100);
 		RunSingleTests(input);
 		//RunBestDistribution("input.xml");
+		//RunBestDistribution("inputGrid.xml");
 		
 		Finalize();
 	}
@@ -208,13 +208,14 @@ public class Main {
 		String biResults = RunBestInsertion(input);
 		//String bdResults = RunBestDistribution(input);
 		String mftResults = RunMostFreeTime(input);
-		
 		return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
+		//return String.format(bdResults);
 	}
 	
 	private static String GenerateNewInput(String config) {
 		File inputFile = new File(config, "input.xml");
 		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath());
+
 		return inputFile.getPath();
 	}
 

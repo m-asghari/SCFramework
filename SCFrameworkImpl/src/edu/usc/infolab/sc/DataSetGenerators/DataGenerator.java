@@ -85,14 +85,20 @@ public class DataGenerator {
 		return tasks;
 	}
 	
-	public static ArrayList<Worker> GenerateInterArrivalWorkers(WorkerGenerator wg, int cutOffTime) {
+	public static ArrayList<Worker> GenerateInterArrivalWorkers(WorkerGenerator wg, int cutOffTime, int availableWorkers) {
 		ArrayList<Worker> workers = new ArrayList<Worker>();
-		Worker initWorker = new Worker();
-		initWorker.location = wg.NextLocation();
-		initWorker.releaseFrame = 0;
-		initWorker.retractFrame = 0 + wg.NextDuration();
-		initWorker.maxNumberOfTasks = wg.NextNumOfTasks();
-		workers.add(initWorker);
+		for (int i = 0; i < availableWorkers; i++) {
+			Worker w = new Worker();
+			w.location = wg.NextLocation();
+			w.releaseFrame = 0;
+			Random rand = new Random();
+			Double rnd = rand.nextDouble();
+			Double retractTime = rnd * wg.NextDuration();
+			w.retractFrame = retractTime.intValue();
+			Double mnot = rnd * wg.NextNumOfTasks();
+			w.maxNumberOfTasks = mnot.intValue();
+			workers.add(w);
+		}
 		
 		Double lastTime = 0.0;
 		while (lastTime <= cutOffTime) {
@@ -359,7 +365,7 @@ public class DataGenerator {
 		ArrayList<Worker> workers = new ArrayList<Worker>();
 		switch (workersReleaseMode) {
 		case InterArrival:
-			workers = GenerateInterArrivalWorkers(wg, cutOffTime);
+			workers = GenerateInterArrivalWorkers(wg, cutOffTime, availableWorkers);
 			break;
 		case Available:
 			workers = GenerateWorkers(wg, cutOffTime, availableWorkers);
