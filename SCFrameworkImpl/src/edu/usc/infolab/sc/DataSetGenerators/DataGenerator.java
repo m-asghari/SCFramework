@@ -2,6 +2,7 @@ package edu.usc.infolab.sc.DataSetGenerators;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,11 +16,11 @@ import edu.usc.infolab.sc.Distributions.Distribution;
 public class DataGenerator {
 	
 	public static enum ReleaseMode {
-		Independent, InterArrival, Available
+		Independent, InterArrival, Available, PerMinute
 	};
 	
 	public static void main(String[] args) {
-		GenerateData("UniformInput.xml", "SampleOutput.xml");
+		GenerateData("UniformTasks.xml", "SampleOutput.xml");
 	}
 	
 	public static ArrayList<Task> GenerateInterArrivalTasks(TaskGenerator tg, int size) {
@@ -60,6 +61,30 @@ public class DataGenerator {
 		return tasks;
 	}
 	
+	public static ArrayList<Task> GeneratePerMinuteTasks(TaskGenerator tg, int size) {
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
+		int totalCount = 0;
+		int minute = 0;
+		Random rand = new Random();
+		
+		while (totalCount < size) {
+			int perMinuteCount = tg.NextRelease().intValue();
+			for (int i = 0; i < perMinuteCount; i++) {
+				Task t = new Task();
+				t.location = tg.NextLocation();
+				t.releaseFrame = 60 * minute + rand.nextInt(60);
+				t.retractFrame = t.releaseFrame + tg.NextDuration();
+				t.value = tg.NextValue();
+				tasks.add(t);
+				totalCount++;
+			}
+			minute++;
+		}
+		
+		return tasks;
+	}
+	
 	public static ArrayList<Worker> GenerateInterArrivalWorkers(WorkerGenerator wg, int cutOffTime) {
 		ArrayList<Worker> workers = new ArrayList<Worker>();
 		Worker initWorker = new Worker();
@@ -77,6 +102,25 @@ public class DataGenerator {
 			w.releaseFrame = lastTime.intValue();
 			w.retractFrame = lastTime.intValue() + wg.NextDuration();
 			w.maxNumberOfTasks = wg.NextNumOfTasks();
+			workers.add(w);
+		}
+		
+		return workers;
+	}
+	
+	private static ArrayList<Worker> GenerateInitialWorkers(WorkerGenerator wg, int availableWorkers) {
+		ArrayList<Worker> workers = new ArrayList<Worker>();
+		
+		Random rand = new Random();
+		for (int i = 0; i < availableWorkers; i++) {
+			Worker w = new Worker();
+			w.location = wg.NextLocation();
+			w.releaseFrame = 0;
+			Double portion = rand.nextDouble();
+			Double duration = portion * wg.NextDuration();
+			w.retractFrame = duration.intValue();
+			Double numOfTasks = portion * wg.NextNumOfTasks();
+			w.maxNumberOfTasks = numOfTasks.intValue();
 			workers.add(w);
 		}
 		
@@ -124,6 +168,32 @@ public class DataGenerator {
 		return workers;
 	}
 	
+	public static ArrayList<Worker> GeneratePerMinuteWorkers(WorkerGenerator wg, int cutOffTime, int availableWorkers) {
+		ArrayList<Worker> workers = new ArrayList<Worker>();
+		
+		workers.addAll(GenerateInitialWorkers(wg, availableWorkers));
+		
+		int time = 0;
+		int minute = 0;
+		Random rand = new Random();
+		
+		while (time < cutOffTime) {
+			int perMinuteCount = wg.NextRelease().intValue();
+			for (int i = 0; i < perMinuteCount; i++) {
+				Worker w = new Worker();
+				w.location = wg.NextLocation();
+				w.releaseFrame = 60 * minute + rand.nextInt(60);
+				w.retractFrame = w.releaseFrame + wg.NextDuration();
+				w.maxNumberOfTasks = wg.NextNumOfTasks();
+				workers.add(w);
+			}
+			time += 60;
+			minute++;
+		}
+		
+		return workers;
+	}
+	
 	public static void SaveData(Grid grid, ArrayList<Task> tasks, ArrayList<Worker> workers, String outputFile) {
 		Document output = IO.GetEmptyDoc();
 		Element data = output.createElement("Data");
@@ -165,6 +235,9 @@ public class DataGenerator {
 		}
 		else if (str.equals("InterArrival")) {
 			return ReleaseMode.InterArrival;
+		}
+		else if (str.equals("PerMinute")) {
+			return ReleaseMode.PerMinute;
 		}
 		else return ReleaseMode.Independent;		
 	}
@@ -273,6 +346,10 @@ public class DataGenerator {
 			break;
 		case InterArrival:
 			tasks = GenerateInterArrivalTasks(tg, tasksSize);
+			break;
+		case PerMinute:
+			tasks = GeneratePerMinuteTasks(tg, tasksSize);
+			break;
 		default:
 			break;
 		}
@@ -286,6 +363,9 @@ public class DataGenerator {
 			break;
 		case Available:
 			workers = GenerateWorkers(wg, cutOffTime, availableWorkers);
+			break;
+		case PerMinute:
+			workers = GeneratePerMinuteWorkers(wg, cutOffTime, availableWorkers);
 			break;
 		default:
 			break;
