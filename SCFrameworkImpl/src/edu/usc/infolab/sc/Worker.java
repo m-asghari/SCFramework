@@ -110,6 +110,11 @@ public class Worker extends SpatialEntity{
 		return this.GetCompleteTime(this.remainingTasks, currentFrame);
 	}
 	
+	public Double GetAvailability(int currentFrame) {
+		if (this.assignedTasks.size() == this.maxNumberOfTasks) return 0.;
+		return this.retractFrame - this.GetCompleteTime(currentFrame);
+	}
+	
 	// Input: One task
 	// Output: If the worker can add the input task to its current remainingTasks, the output will be the corresponding schedule.
 	//			otherwise the output is a null list.

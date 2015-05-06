@@ -38,9 +38,19 @@ public class CountDistribution {
 		return cellCount[cell]/totalCount;
 	}
 	
+	public void Inc(int cell, int num) {
+		for (int i = 0; i < num; i++)
+			this.Inc(cell);
+	}
+	
 	public void Inc(int cell) {
 		cellCount[cell]++;
 		totalCount++;
+	}
+	
+	public void Dec(int cell, int num) {
+		for (int i = 0; i < num; i++)
+			this.Dec(cell);
 	}
 	
 	public void Dec(int cell) {

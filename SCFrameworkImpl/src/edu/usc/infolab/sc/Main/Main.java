@@ -13,7 +13,9 @@ import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Clairvoyant.Exact;
-import edu.usc.infolab.sc.Algorithms.Online.BestDistribution;
+import edu.usc.infolab.sc.Algorithms.Online.BestDistributionAdhoc;
+import edu.usc.infolab.sc.Algorithms.Online.BestDistributionEMD;
+import edu.usc.infolab.sc.Algorithms.Online.BestDistributionJSD;
 import edu.usc.infolab.sc.Algorithms.Online.BestInsertion;
 import edu.usc.infolab.sc.Algorithms.Online.MostFreeTime;
 import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
@@ -36,7 +38,7 @@ public class Main {
 		
 		//RunMultipleTests(input, 100);
 		RunSingleTests(input);
-		//RunBestDistribution("input.xml");
+		//RunBestDistribution(input);
 		//RunBestDistribution("inputGrid.xml");
 		
 		Finalize();
@@ -180,7 +182,7 @@ public class Main {
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
-	protected static String RunBestDistribution(String input) {
+	protected static String RunBestDistributionAdhoc(String input) {
 		InputParser ip = new InputParser(input);
 		Grid grid = ip.GetGrid();
 		HashMap<Integer, Task> tasks = ip.GetTasks();
@@ -195,21 +197,72 @@ public class Main {
 		}
 		CountDistribution distT = new CountDistribution(grid, taskCount);
 		
-		BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone(), new Object[]{distT});
+		BestDistributionAdhoc bdAlgo = new BestDistributionAdhoc(tasks, workers, grid.clone(), new Object[]{distT});
 		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
 		int endTime = bdAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
+	protected static String RunBestDistributionEMD(String input) {
+		InputParser ip = new InputParser(input);
+		Grid grid = ip.GetGrid();
+		HashMap<Integer, Task> tasks = ip.GetTasks();
+		HashMap<Integer, Worker> workers = ip.GetWorkers();
+		
+		double[] taskCount = new double[grid.size()];
+		for (int i = 0; i < taskCount.length; ++i) {
+			taskCount[i] = 0;
+		}
+		for (Task t : tasks.values()) {
+			taskCount[grid.GetCell(t.location)]++;
+		}
+		CountDistribution distT = new CountDistribution(grid, taskCount);
+		
+		BestDistributionEMD bdAlgo = new BestDistributionEMD(tasks, workers, grid.clone(), new Object[]{distT});
+		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
+		int endTime = bdAlgo.Run();
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
+		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+	}
+	
+	protected static String RunBestDistributionJSD(String input) {
+		InputParser ip = new InputParser(input);
+		Grid grid = ip.GetGrid();
+		HashMap<Integer, Task> tasks = ip.GetTasks();
+		HashMap<Integer, Worker> workers = ip.GetWorkers();
+		
+		double[] taskCount = new double[grid.size()];
+		for (int i = 0; i < taskCount.length; ++i) {
+			taskCount[i] = 0;
+		}
+		for (Task t : tasks.values()) {
+			taskCount[grid.GetCell(t.location)]++;
+		}
+		CountDistribution distT = new CountDistribution(grid, taskCount);
+		
+		BestDistributionJSD bdAlgo = new BestDistributionJSD(tasks, workers, grid.clone(), new Object[]{distT});
+		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
+		int endTime = bdAlgo.Run();
+		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
+		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+	}
+	
+	protected static String RunBestDistribution(String input) {
+		String adhocResult = RunBestDistributionAdhoc(input);
+		String emdResult = RunBestDistributionEMD(input);
+		String jsdResult = RunBestDistributionJSD(input);
+		return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
+	}
+	
 	private static String RunOnlineAlgorithms(String input) {
 		String rnkResults = RunRanking(input);
-		String nnResults = RunNearestNeighbor(input);
-		String biResults = RunBestInsertion(input);
-		//String bdResults = RunBestDistribution(input);
-		String mftResults = RunMostFreeTime(input);
-		return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
-		//return String.format(bdResults);
+		//String nnResults = RunNearestNeighbor(input);
+		//String biResults = RunBestInsertion(input);
+		String bdResults = RunBestDistribution(input);
+		//String mftResults = RunMostFreeTime(input);
+		//return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
+		return String.format(bdResults);
 	}
 	
 	private static String GenerateNewInput(String config) {
