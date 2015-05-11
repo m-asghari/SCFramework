@@ -96,14 +96,15 @@ public class CountDistribution {
 	}
 	
 	public static Double EMD(CountDistribution P, CountDistribution Q) {
+		Node.Reset();
 		HashMap<Integer, Node> pNodes = new HashMap<Integer, Node>();
 		HashMap<Integer, Node> nNodes	= new HashMap<Integer, Node>();
 		for (int cell = 0; cell < Q.grid.size(); cell++) {
-			double diff = P.Prob(cell) - Q.Prob(cell);
+			Double diff = (P.Prob(cell) - Q.Prob(cell)) * 100;
 			if (diff > 0) {
-				pNodes.put(cell, new Node(diff*100));
+				pNodes.put(cell, new Node(diff.intValue()));
 			} else if (diff < 0) {
-				nNodes.put(cell, new Node(diff*100));
+				nNodes.put(cell, new Node(diff.intValue()));
 			}
 		}
 		ArrayList<Node> nodes = new ArrayList<Node>();
@@ -114,7 +115,8 @@ public class CountDistribution {
 		for (Entry<Integer, Node> pNode : pNodes.entrySet()) {
 			for (Entry<Integer, Node> nNode : nNodes.entrySet()) {
 				Double cost = P.grid.GetCellMidPoint(pNode.getKey()).distance(P.grid.GetCellMidPoint(nNode.getKey()));
-				edges.add(new Edge(pNode.getValue(), nNode.getValue(), cost));
+				edges.add(new Edge(pNode.getValue(), nNode.getValue(), cost.intValue()));
+				
 			}
 		}
 		

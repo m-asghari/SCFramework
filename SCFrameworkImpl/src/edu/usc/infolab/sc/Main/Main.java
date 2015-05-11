@@ -249,21 +249,21 @@ public class Main {
 	}
 	
 	protected static String RunBestDistribution(String input) {
-		String adhocResult = RunBestDistributionAdhoc(input);
+		//String adhocResult = RunBestDistributionAdhoc(input);
 		String emdResult = RunBestDistributionEMD(input);
-		//String emdResult = "";
-		String jsdResult = RunBestDistributionJSD(input);
-		return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
+		//String jsdResult = RunBestDistributionJSD(input);
+		//return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
+		return "";
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
-		String rnkResults = RunRanking(input);
-		String nnResults = RunNearestNeighbor(input);
-		String biResults = RunBestInsertion(input);
+		//String rnkResults = RunRanking(input);
+		//String nnResults = RunNearestNeighbor(input);
+		//String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistribution(input);
-		String mftResults = RunMostFreeTime(input);
-		return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
-		//return String.format(bdResults);
+		//String mftResults = RunMostFreeTime(input);
+		//return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
+		return "";
 	}
 	
 	private static String GenerateNewInput(String config) {

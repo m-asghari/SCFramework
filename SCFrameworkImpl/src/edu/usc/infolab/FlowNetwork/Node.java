@@ -11,6 +11,8 @@ public class Node {
 	public ArrayList<Edge> inEdges;
 	public ArrayList<Edge> outEdges;
 	
+	public static void Reset () {cntr = 0;}
+	
 	public Node(double b) {
 		this.id = cntr++;
 		this.b = b;

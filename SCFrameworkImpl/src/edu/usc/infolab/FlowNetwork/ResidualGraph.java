@@ -35,4 +35,19 @@ public class ResidualGraph extends Graph {
 	protected ArrayList<Edge> GetEdges() {
 		return new ArrayList<Edge>(rEdges.values());
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Node n : nodes.values()) {
+			sb.append(String.format("%d imbalace:%.1f, potential:%.1f", n.id, n.b, n.potential));
+			sb.append("\n");
+		}
+		
+		for (REdge re : rEdges.values()) {
+			sb.append(String.format("%d-%d cost:%.1f, flow:%.1f, rCost:%f", re.start.id, re.end.id, re.cost, re.flow, re.GetReducedCost()));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
 }

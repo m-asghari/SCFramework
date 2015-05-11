@@ -1,5 +1,6 @@
 package edu.usc.infolab.FlowNetwork;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -107,28 +108,34 @@ public class Graph {
 	}
 	
 	protected HashMap<Integer, Path> ComputeAllShortestPaths(Node start) {
-		HashMap<Integer, Double> distances = new HashMap<Integer, Double>();
+		HashMap<Integer, Integer> distances = new HashMap<Integer, Integer>();
 		HashMap<Integer, Integer> preds = new HashMap<Integer, Integer>();
 		for (Node n : nodes.values()) {
-			distances.put(n.id, 1.0 * Integer.MAX_VALUE);
+			distances.put(n.id, Integer.MAX_VALUE);
 			preds.put(n.id, null);
 		}
-		distances.put(start.id, 0.);
+		distances.put(start.id, 0);		
 		
 		for (int round = 1; round < nodes.size(); round++) {
 			for (Edge e : GetEdges()) {
-				Double cost = GetEdgeCost(String.format("%d-%d", e.start.id, e.end.id));
-				if (distances.get(e.start.id) + cost < distances.get(e.end.id)) {
-					distances.put(e.end.id, distances.get(e.start.id) + cost);
+				BigDecimal dStart = new BigDecimal(distances.get(e.start.id));
+				BigDecimal dEnd = new BigDecimal(distances.get(e.end.id));
+				BigDecimal cost = new BigDecimal(GetEdgeCost(String.format("%d-%d", e.start.id, e.end.id)));
+				if (dStart.add(cost).compareTo(dEnd) < 0) {
+					distances.put(e.end.id, dStart.add(cost).intValue());
 					preds.put(e.end.id, e.start.id);
 				}
 			}
 		}
 		
 		for (Edge e : GetEdges()) {
-			Double cost = GetEdgeCost(String.format("%d-%d", e.start.id, e.end.id));
-			if (distances.get(e.start.id) + cost < distances.get(e.end.id)) {
+			BigDecimal dStart = new BigDecimal(distances.get(e.start.id));
+			BigDecimal dEnd = new BigDecimal(distances.get(e.end.id));
+			BigDecimal cost = new BigDecimal(GetEdgeCost(String.format("%d-%d", e.start.id, e.end.id)));
+			if (dStart.add(cost).compareTo(dEnd) < 0) {
+				System.out.println(String.format("Processing edge %s", e.toString()));
 				System.out.println("Graph Contains Negative Cycle");
+				System.out.println(this.toString());
 				return null;
 			}
 		}
