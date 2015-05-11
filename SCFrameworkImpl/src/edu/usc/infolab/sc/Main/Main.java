@@ -33,7 +33,7 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "UniformTasks";
+		String input = "SkewedTasks";
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
@@ -251,18 +251,19 @@ public class Main {
 	protected static String RunBestDistribution(String input) {
 		String adhocResult = RunBestDistributionAdhoc(input);
 		String emdResult = RunBestDistributionEMD(input);
+		//String emdResult = "";
 		String jsdResult = RunBestDistributionJSD(input);
 		return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
 		String rnkResults = RunRanking(input);
-		//String nnResults = RunNearestNeighbor(input);
-		//String biResults = RunBestInsertion(input);
+		String nnResults = RunNearestNeighbor(input);
+		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistribution(input);
-		//String mftResults = RunMostFreeTime(input);
-		//return String.format("%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults);
-		return String.format(bdResults);
+		String mftResults = RunMostFreeTime(input);
+		return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
+		//return String.format(bdResults);
 	}
 	
 	private static String GenerateNewInput(String config) {

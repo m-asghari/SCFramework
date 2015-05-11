@@ -273,9 +273,7 @@ public class DataGenerator {
 		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
 		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		int availableWorkers = 0;
-		if (workersReleaseMode == ReleaseMode.Available) {
-			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
-		}
+		availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
