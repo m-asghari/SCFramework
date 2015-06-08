@@ -25,7 +25,7 @@ The main advantage of this auction-based mechanism is its simplicity and, as men
 
 \cref{algo:OnlineTASC} outlines the process of assigning a task $t$ in our framework once $t$ arrives. Notice that all iterations of the \textbf{for} loop in \cref{algo:OnlineTASC} (lines 3-6) can run in parallel. The \emph{ComputeBid()} method (line 4) that each worker executes depends on the bidding rule we choose. Similarly, the \emph{SelectBestBid()} method (line 7) returns the worker with either the highest or lowest bid. In case of a tie, the \emph{SelectBestBid()} method, randomly selects one worker among the ones with optimum bid.\\
 
-In the remainder of this section, we will discuss different heuristics for bidding. For each heuristic we will describe how each worker will compute its bid for each task and how the server chooses the winner after all workers submit their bids. For all the following bidding rules, if the worker is not able to perform a task it will submit a \textit{null} bid. For example, if the worker does not have enough time to complete the new task in addition to its current schedule, it will make a \textit{null} bid for that task.
+In the remainder of this section, we will discuss different heuristics for bidding. First we will introduce four commonly used heuristics that perform well in the Online Matching Problem, Online Traveling Salesman Problem and Online Scheduling Problem (Provide References). For each heuristic we will describe how each worker will compute its bid for each task and how the server chooses the winner after all workers submit their bids. For all the following bidding rules, if the worker is not able to perform a task it will submit a \textit{null} bid. For example, if the worker does not have enough time to complete the new task in addition to its current schedule, it will make a \textit{null} bid for that task. Then we will introduce a new heuristic where workers take into account the spatial distribution of available workers and the tasks when computing their bids. The goal is make the distribution of available workers as close as possible to the overall distribution of tasks so that once future tasks arrive, there's a higher chance that a worker will be available at a close proximity.
 
 \begin{itemize}
 
@@ -44,15 +44,16 @@ Once every worker submits its bid, the server will assign the task to the worker
 One can argue that the more available workers there are once a task arrives, the higher the chance of that task getting assigned. The \textit{Nearest Neighbor} and \textit{Best Insertion} bidding rules where trying to achieve this goal, by choosing workers that could complete the task by dedicating the least amount of time so they have more of their time to dedicate to future tasks. However, workers will not be available after their deadline. Therefore, in addition to how much time a worker has to dedicate for a new task, it is also important how much free time will it will have if the task is assigned to it.\\
 To make a bid, each worker finds its finish time in case the new task is added to its schedule $(f)$. This is similar to computing $f_2$ for the \textit{Best Insertion} rule. Each worker will submit a bid equal to $w.d - f$. Unlike the previous two bidding rules, in this case, the higher the bid the better. Therefore, after receiving all bids, the server will assign the task to the worker with the highest bid.
 
-\item \textbf{Best Distribution}
+%\item \textbf{Best Distribution}
 
-The general idea behind this heuristic is to try to move workers to locations where there is a higher chance for future tasks to be located around. Ideally, we want the spatial distribution of the \textit{current} workers $(S_W)$. to be as close as possible to the \textit{overall} spatial distribution of the tasks $(S_T)$.\\
-One can argue that knowing $S_T$ contradicts the assumption that the SC server has no spatiotemporal knowledge about future tasks. However, even if the server knows $S_T$ doesn't mean it also knows the exact location where the task is going to be released. Even if we don't want the server to know $S_T$ as a priori, we can assume that the server starts with an empty distribution and keeps updating it as new tasks arrive. During each round of bidding, the server shares the most updated version of $S_T$ with workers.\\
-We show a spatial distribution using a grid and count the number of events in each cell. By normalizing the counts, we can come up with the probability of an event occurring in each cell.
-
-
-
-
+%The general idea behind this heuristic is to try to move workers to locations where there is a higher chance for future tasks to be located around. Ideally, we want the spatial distribution of the \textit{current} workers $(S_W)$. to be as close as possible to the \textit{overall} spatial distribution of the tasks $(S_T)$.\\
+%One can argue that knowing $S_T$ contradicts the assumption that the SC server has no spatiotemporal knowledge about future tasks. However, even if the server knows $S_T$ doesn't mean it also knows the exact location where the task is going to be released. Even if we don't want the server to know $S_T$ as a priori, we can assume that the server starts with an empty distribution and keeps updating it as new tasks arrive. During each round of bidding, the server shares the most updated version of $S_T$ with workers.\\
+%We show a spatial distribution using a grid and count the number of events in each cell. By normalizing the counts, we can come up with the probability of an event occurring in each cell.
 
 \end{itemize}
 
+\subsection{Best Distribution Heuristic}
+
+The general idea behind this heuristic is to try to move workers to locations where there is a higher chance for future tasks to be located around. Ideally, we want the spatial distribution of the \textit{current} workers $(S_W)$. to be as close as possible to the \textit{overall} spatial distribution of the tasks $(S_T)$.\\
+One can argue that knowing $S_T$ contradicts the assumption that the SC server has no spatiotemporal knowledge about future tasks. However, even if the server knows $S_T$ doesn't mean it also knows the exact location where the task is going to be released. Even if we don't want the server to know $S_T$ as a priori, we can assume that the server starts with an empty distribution and keeps updating it as new tasks arrive. During each round of bidding, the server shares the most updated version of $S_T$ with workers.\\
+We show a spatial distribution using a grid and count the number of events in each cell. By normalizing the counts, we can come up with the probability of an event occurring in each cell.\\
