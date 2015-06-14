@@ -55,5 +55,66 @@ To make a bid, each worker finds its finish time in case the new task is added t
 \subsection{Best Distribution Heuristic}
 
 The general idea behind this heuristic is to try to move workers to locations where there is a higher chance for future tasks to be located around. Ideally, we want the spatial distribution of the \textit{current} workers $(S_W)$. to be as close as possible to the \textit{overall} spatial distribution of the tasks $(S_T)$.\\
-One can argue that knowing $S_T$ contradicts the assumption that the SC server has no spatiotemporal knowledge about future tasks. However, even if the server knows $S_T$ doesn't mean it also knows the exact location where the task is going to be released. Even if we don't want the server to know $S_T$ as a priori, we can assume that the server starts with an empty distribution and keeps updating it as new tasks arrive. During each round of bidding, the server shares the most updated version of $S_T$ with workers.\\
-We show a spatial distribution using a grid and count the number of events in each cell. By normalizing the counts, we can come up with the probability of an event occurring in each cell.\\
+One can argue that knowing $S_T$ contradicts the assumption that the SC server has no spatiotemporal knowledge about future tasks. However, even if the server knows $S_T$, it doesn't mean it also knows the exact location where the tasks are going to be released at. Even if the server does not know $S_T$ as a priori, we can assume that the server starts with an empty distribution and keeps updating it as new tasks arrive. During each round of bidding, the server shares the most updated version of $S_T$ with available workers.\\
+We show a spatial distribution using a grid and for each event occurring inside a cell, we add to weight of that cell. In the case of $S_T$, for each task inside a cell, we add one unit to the weight of its covering cell. On the other hand, for $S_W$, we need to consider the \textit{availability} of the worker. For example, if the maximum number of tasks worker $w$ can perform is $n$, and it already has been assigned $m$ tasks, we say the availability of worker $w$ is $n-m$. In this case, when computing $S_W$, we add $n-m$ units to the cell covering $w$. For both $S_T$ and $S_W$, by normalizing the weights of the cells, we can come up with the probability of an event occurring in each cell.\\
+Having $S_W$ and $S_T$, we need a metric to compare how close these two distributions are. Several methods have been used to compute the similarity between two distributions. Among the more commonly used methods, we can name the Kullback-Leibler divergence \cite{Kullback51} and Jensen-Shannon divergence \cite{Lin91}. The problem with these methods is that they do not take the spatial attribute of the cells into consideration. Therefore, \textbf{Include of figure and explain this with an example.}\\
+For the purpose of this paper, we use the \textit{Earth Mover's Distance} metric since it has the ability in incorporate the spatial aspect of the distributions when computing their similarity.
+
+\begin{definition}[Earth Mover's Distance]
+The Earth Mover's Distance (EMD) is a measure of distance between two probability distributions over a region D. If the distributions are interpreted as two different ways of piling up a certain amount of dirt over region D, the EMD is the minimum cost or turning one pile into the other; where the cost is assumed to be the amount of dirt moved times the distance by which it's moved \cite{Rubner98}.
+\end{definition}
+
+In order to compute the EMD for two distributions $A$ and $B$, we model it a the old \textit{transportation problem} \cite{Dantzig51}. For each bin $i$, in the distributions, we call cell $i$ a supplier iff $P_A(i) > P_B(i)$ and a consumer iff $P_A(i) < P_B(i)$. If $P_A(i) = P_B(i)$, cell $i$ is neither a supplier nor a consumer. For each supplier $i$, we say $a_i = P_A(i) - P_B(i)$ is the total supply of $i$. Also, the total demand for consumer $j$ is shown as $b_j = P_B(j) - P_A(j)$. Now we can model the problem as a bipartite network flow where on one hand we have the suppliers and on the other side we have consumer nodes \textbf{ref to figure}. The weight of each edge $c_{ij}$ between supplier $i$ and consumer $j$, is the cost of moving one unit of mass from $i$ to $j$.  Now, finding EMD reduces to finding \textit{Minimum Cost Flow} for this bipartite graph. The Minimum Cost Flow problem can be formalized as the following linear programming problem:\\
+
+\setcounter{equation}{0}
+\begin{alignat}{2}
+\mathbf{minimize}&\mathrlap{\sum_{i \in \mathcal{I}} \sum_{j \in \mathcal{J}} c_{ij}.f_{ij}} \notag\\
+\mathbf{subject\ to:}&\phantom{{a}={a}} f_{ij} && \geq 0 \ \quad\quad i \in \mathcal{I}, j \in \mathcal{J}\\
+&\phantom{{a}}\sum_{i \in \mathcal{I}} f_{ij} &&= b_j \quad\quad j \in \mathcal{J}\\
+&\phantom{{a}}\sum_{j \in \mathcal{J}} f_{ij} &&\leq a_i \quad\quad i \in \mathcal{I}
+\end{alignat}
+
+More generally, for any graph $G = (V, E)$ we can assign an integer $b(i)$ to each node in the graph, which indicates the supply (or demand) of the node if $b(i) > 0$ (or $b(i) < 0$) . Then we can rewrite the linear programming problem as: 
+
+\setcounter{equation}{0}
+\begin{alignat}{2}
+\mathbf{minimize}&\mathrlap{\sum_{(i,j) \in \mathcal{E}} c_{ij}.f_{ij}} \notag\\
+\mathbf{subject\ to:}&\phantom{{a}={a}{a}={a}{a}={a}{a}} f_{ij} && \geq 0 \ \quad\quad (i,j) \in \mathcal{E}\\
+&\sum_{j:(j,i) \in \mathcal{E}} f_{ij} - \sum_{j:(i,j) \in \mathcal{E}} &&= b(i) \quad\quad i \in \mathcal{V}
+\end{alignat}
+
+We use a variation of the algorithm proposed in \cite{Edmonds72}. The solution in \cite{Edmonds72} is based on solving the dual of the linear programming problem:
+
+\setcounter{equation}{0}
+\begin{alignat}{2}
+\mathbf{maximize}&\quad\mathrlap{\sum_{i \in \mathcal{V}} b(i).\pi(i)} \notag\\
+\mathbf{subject\ to:}&\quad\pi(i) - \pi(j) \leq c_{ij} \quad\quad (i,j) \in \mathcal{E}
+\end{alignat}
+
+\begin{algorithm}[t]
+\caption{MinFlow($V, E, b$)}
+\label{algo:MinFlow}
+\begin{algorithmic}[1]
+\REQUIRE $V$ is the set of nodes, $E$ the set of edges and $b$ the supply/demand of each node
+\ENSURE $f$ as the amount of flow on each edge
+\STATE for $i \in V$ set $f_i = 0, \pi_i =0$ and $e_i = b_i$
+\STATE $U = \max_{i \in V} \left\lbrace\vert b_i\vert \right\rbrace$
+\STATE $\delta = 2^{ \lceil \log U \rceil }$
+\WHILE {$\delta \geq 1$}
+   \STATE $S_{\delta} = \left\lbrace i : e_i \geq \delta \right\rbrace$
+   \STATE $C_{\delta} = \left\lbrace i : e_i \leq -\delta \right\rbrace$
+   \WHILE{$S_{\delta} \neq \emptyset$ and $C_{\delta} \neq \emptyset$}
+     \STATE choose some $s \in S_{\delta}$
+     \STATE compute shortest path distances $d_i$ from node $k$ to all other nodes
+     \STATE for $i \in V$ set $\pi_i = \pi_i - d_i$
+     \STATE choose $c \in C_{\delta}$ such that a path exists from $s$ to $c$
+     \STATE augment $\delta$ units of flow along the shortest path from $s$ to $c$
+     \STATE update $f, e, S_{\delta}$ and $C_{\delta}$
+   \ENDWHILE
+   \STATE $\delta = \frac{\delta}{2}$ 
+\ENDWHILE
+\RETURN $f$
+\end{algorithmic}
+\end{algorithm}
+
+\cref{algo:MinFlow} is based on the ideas proposed in \cite{Edmonds72}. In line 9, we use Dijkstra's algorithm to compute shortest paths from node $s$ to all other nodes. Instead of using the normal cost of each edge, $c_{ij}$, in computing the shortest paths, \cref{algo:MinFlow} uses a modified cost, $c_{ij}^{*} = c_{ij} - \pi_i + \pi_j$, as the cost of each edge in line 9. It is shown in \cite{Edmonds72} that \cref{algo:MinFlow} runs in polynomial time.
