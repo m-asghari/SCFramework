@@ -1,23 +1,23 @@
 \section{Preliminaries}
 
-In this section, we define the terminologies used in the paper and give a formal definition of the problem under consideration. Also, we analyze the complexity of the problem and its hardness.
+In this section, we define the terminologies used in the paper and give a formal definition of the problem under consideration. In addition, we analyze the complexity of the problem and its hardness.
 
 \subsection{Problem Definition}
 \label{subsec:problemdef}
 
-In this section, we define a set of terminologies in order to define the task assignment problem in spatial crowdsourcing.
+We start by defining a set of terminologies in order to formally define the task assignment problem in spatial crowdsourcing.
 
 \begin{definition} [Spatial Task]
-A spatial task t is a task to be performed at location t.l with geographical coordinates, i.e. latitude and longitude. The task becomes available at t.r (release time) and expires at t.d (deadline). Also, t.v is the obtained reward after completing t.
+A spatial task t is a task to be performed at location t.l with geographical coordinates, i.e., latitude and longitude. The task becomes available at t.r (release time) and expires at t.d (deadline). Also, t.v is the obtained reward after completing t.
 \end{definition}
 
 It should be pointed out that in a spatial crowdsourcing environment, a spatial task \emph{t} can be executed only if a worker is at location \emph{t.l}. For example, if the query is to report the traffic situation at a specific location, someone has to actually be present at the location to be able to report the traffic. From here on, whenever we use \emph{task} we are actually referring to a spatial task. Now, we formally define a worker.
 
 \begin{definition} [Worker]
-A worker w is any entity willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
+A worker w is any entity, e.g., a person or a UAV, willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to him, w.T, and a maximum number of tasks it is willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
 \end{definition}
 
-We assume once a task is assigned to a worker, the worker has no option but to perform the task. Hence, the server will assign a task to a worker only if it is possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, at each point of time, each worker keeps track of a \textit{schedule} which is an ordered list of tasks. The worker completes the tasks based on their order in its schedule.
+We assume once a task is assigned to a worker, the worker has no option but to perform the task. Hence, the server will assign a task to a worker only if it is possible for the worker to complete the current task and any other task already assigned to him within all the temporal constraints. More specifically, at each point in time, each worker keeps track of a \textit{schedule} which is an ordered list of tasks. The worker completes the tasks based on their order in its schedule.
 
 \begin{definition} [Matching]
 Assuming we have a set of workers W and a set of tasks T, we call $M \subset W \times T$ a matching if for each $t \in T$ there is at most one $w \in W$ such that $\left( w, t \right) \in M$. We call $\left( w, t \right) \in M$ an \emph{assignment} and say t has been assigned to w. For each matching M, we define the value (benefit) of M as:
@@ -86,7 +86,7 @@ The TASC problem is NP-Complete.
 
 \begin{proof}
 %Proof is shown in \cref{app:TASCProof}
-We start the proof by showing that the decision problem of TASC is NP. Given a matching M, we can check that no task is assigned to more than one worker in polynomial time. Also, we can find the value of M by adding the value of every task in M.\\
+We start the proof by showing that the decision problem of TASC \textit{verifiable} in polynomial time. Given a matching M, we can check that no task is assigned to more than one worker in polynomial time. Also, we can find the value of M by adding the value of every task in M.\\
 
 Now we prove TASC is NP-Hard by showing the reduction Min-Ham-Path $\leq_p$ TASC. Given an instance of the Min-Ham-Path problem $\left\langle G(V,E), l, o, K \right\rangle$ we reduce it to an instance of the TASC$\left\langle W, T, l', n-1 \right\rangle$ problem such that $W = \left\{ o \right\}$, $T = V \setminus \left\{ o \right\}$. For every task $t$ we set $t.v = 1$, $t.r = 0$ and $t.d = K$ (We assume workers travel one unit of length with every unit of time). Also for every $e \in E, l'(e) = l(e)$. In addition for every $e' \in \left( W \times T \right) \cup \left( T \times T \right) $ where $e' \not\in E$ we set $l'(e') = \infty$.\\ 
 
