@@ -24,6 +24,8 @@ import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
 import edu.usc.infolab.sc.Distributions.Exponential;
 import edu.usc.infolab.sc.Distributions.ExponentialConfig;
+import edu.usc.infolab.sc.Distributions.Poisson;
+import edu.usc.infolab.sc.Distributions.PoissonConfig;
 import edu.usc.infolab.sc.Logging.FrameStats;
 import edu.usc.infolab.sc.Logging.Log;
 import edu.usc.infolab.sc.Logging.Result;
@@ -33,13 +35,11 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "SkewedTasks";
+		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
-		RunSingleTests(input);
-		//RunBestDistribution(input);
-		//RunBestDistribution("inputGrid.xml");
+		ChangeRateOfTasks(input);
 		
 		Finalize();
 	}
@@ -92,17 +92,17 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 0.05;
-		while (rate <=2 ) {
-			for (int test = 0; test < 20; test++) {
+		double rate = 0.5;
+		while (rate <= 10 ) {
+			for (int test = 0; test < 10; test++) {
 				String input = GenerateNewInput(test, config, 1000, 10, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunOnlineAlgorithms(input);
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			if (rate <= 2) {
-				rate += 0.05;
+			if (rate < 5) {
+				rate += 0.5;
 			}
 			else {
 				rate += 1;
@@ -249,21 +249,21 @@ public class Main {
 	}
 	
 	protected static String RunBestDistribution(String input) {
-		//String adhocResult = RunBestDistributionAdhoc(input);
+		String adhocResult = RunBestDistributionAdhoc(input);
 		String emdResult = RunBestDistributionEMD(input);
-		//String jsdResult = RunBestDistributionJSD(input);
-		//return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
-		return "";
+		String jsdResult = RunBestDistributionJSD(input);
+		return String.format("%s,%s,%s", adhocResult, emdResult, jsdResult);
+		//return "";
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
-		//String rnkResults = RunRanking(input);
-		//String nnResults = RunNearestNeighbor(input);
-		//String biResults = RunBestInsertion(input);
+		String rnkResults = RunRanking(input);
+		String nnResults = RunNearestNeighbor(input);
+		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistribution(input);
-		//String mftResults = RunMostFreeTime(input);
-		//return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
-		return "";
+		String mftResults = RunMostFreeTime(input);
+		return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
+		//return "";
 	}
 	
 	private static String GenerateNewInput(String config) {
@@ -293,7 +293,8 @@ public class Main {
 	
 	private static String GenerateNewInput(int test, String config, int tasksSize, int availableWorkers, double tasksRate) {
 		File inputFile = new File(config, String.format("input%03d_%05d_w%03d_t%s.xml", test, tasksSize, availableWorkers, String.format("%.1f", tasksRate).replace(".", "")));
-		Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
+		//Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
+		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
 		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, availableWorkers, tasksReleaseDist);
 		return inputFile.getPath();
 	}

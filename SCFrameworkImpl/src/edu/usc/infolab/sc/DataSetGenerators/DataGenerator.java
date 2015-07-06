@@ -331,7 +331,9 @@ public class DataGenerator {
 		tg.SetReleaseTimeDist(tasksReleaseDist);
 		
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
-		ReleaseMode workersReleaseMode = ReleaseMode.Available;
+		//ReleaseMode workersReleaseMode = ReleaseMode.Available;
+		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
+		availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
 		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
