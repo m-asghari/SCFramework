@@ -1,6 +1,6 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="360" maxy="360" w="30" l="30"/>
-	<Tasks size="2000" releaseMode="PerMinute">
+	<Tasks size="10000" releaseMode="PerMinute">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -19,10 +19,16 @@
 			</Distribution>
 		</ReleaseTime>
 		<Duration>
-			<Distribution name="Uniform" prob="1">
+			<Distribution name="Uniform" prob="0.25">
 				<Settings>
 					<min value="200"/>
 					<max value="300"/>
+				</Settings>
+			</Distribution>
+			<Distribution name="Uniform" prob="-1">
+				<Settings>
+					<min value="50"/>
+					<max value="90"/>
 				</Settings>
 			</Distribution>
 		</Duration>

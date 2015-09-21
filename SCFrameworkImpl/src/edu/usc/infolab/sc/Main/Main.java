@@ -35,7 +35,7 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "SkewedTasks_2";
+		String input = "UniformTasks";
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
@@ -92,7 +92,7 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 0.5;
+		double rate = 4;
 		while (rate <= 1024 ) {
 			for (int test = 0; test < 10; test++) {
 				String input = GenerateNewInput(test, config, 1000, 10, rate);
