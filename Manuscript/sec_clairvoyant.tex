@@ -20,7 +20,7 @@ Value(PTS) = \sum_{t \in PTS} t.v
 
 For each worker \emph{w}, we define \emph{w.PTS} as the set of all such potential task subsets.\\
 
-In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether it is a PTS for the worker or not. It is trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore, we will adapt a branch and bound algorithm similar to the one introduced in \cite{deng13}. We use the following propositions for pruning purposes in our branch and bound algorithm.
+In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether it is a PTS for the worker or not. It is trivial to see that such approach will require $O(n!)$ permutations which makes it computationally expensive. Therefore, we will adapt a branch and bound algorithm similar to the one introduced in \cite{Deng13}. We use the following propositions for pruning purposes in our branch and bound algorithm.
 
 \begin{proposition}
 \label{prop:overlap}
