@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,6 +98,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}
 	
 	private void AdvanceTime() {
+		long frameDuration = 0;
 		_frameStats = new FrameStats(currentFrame);
 		HashMap<Task, Worker> assignments = new HashMap<Task, Worker>();
 		// Check to see if any worker becomes available in current frame
@@ -132,6 +134,8 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			else {
 				unassignedTasks.add(upcomingTasks.get(0));
 			}
+			frameDuration += (upcomingTasks.get(0).assignmentStat.decideEligibilityTime + 
+					upcomingTasks.get(0).assignmentStat.selectWorkerTime);
 			upcomingTasks.remove(0);
 		}
 		
@@ -157,19 +161,29 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	protected Worker AssignTask(Task task) {
 		Log.Add(5, "Task %d:", task.id);
 		HashMap<Worker, ArrayList<Task>> eligibleWorkers = new HashMap<Worker, ArrayList<Task>>();
+		
 		for (Worker w : availableWorkers) {
+			Calendar start1, end1;
 			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
-			ArrayList<Task> taskOrder = new ArrayList<Task>();
-			if ((taskOrder = w.CanPerform(task, currentFrame)) != null )  {
+			start1 = Calendar.getInstance();
+			ArrayList<Task> taskOrder = w.CanPerform(task, currentFrame);
+			end1 = Calendar.getInstance();
+			long time = end1.getTimeInMillis() - start1.getTimeInMillis();
+			if (time > task.assignmentStat.decideEligibilityTime)
+				task.assignmentStat.decideEligibilityTime = time;
+			if (taskOrder != null )  {
 				task.assignmentStat.eligibleWorkers++;
 				eligibleWorkers.put(w, new ArrayList<Task>(taskOrder));
 				Log.Add(5, "\tWorker %d can perform the task", w.id);
 			}
 			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
+		Calendar start2 = Calendar.getInstance();
 		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
+		Calendar end2 = Calendar.getInstance();
+		task.assignmentStat.selectWorkerTime = end2.getTimeInMillis() - start2.getTimeInMillis();
 		if (selectedWorker != null) {
 			//Log.Add(1, "Task %d assigned to Worker %d", task.id, selectedWorker.id);
 			task.assignmentStat.assigned = 1;
