@@ -35,7 +35,7 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "UniformTasks";
+		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
@@ -92,16 +92,16 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 4;
-		while (rate <= 1024 ) {
-			for (int test = 0; test < 10; test++) {
+		double rate = 0.125;
+		while (rate <= 8 ) {
+			for (int test = 0; test < 5; test++) {
 				String input = GenerateNewInput(test, config, 1000, 10, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunOnlineAlgorithms(input);
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			rate *= 2;
+			rate*=2;
 		}
 	}
 	
