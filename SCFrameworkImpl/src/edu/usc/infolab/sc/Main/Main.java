@@ -103,7 +103,7 @@ public class Main {
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			rate *= 2;
+			rate*=2;
 		}
 	}
 	
