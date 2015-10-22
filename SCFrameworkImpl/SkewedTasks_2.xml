@@ -5,18 +5,18 @@
 			<Distribution name="BivariateNormal" prob="0.45">
 				<Settings>
 					<mean1 value="33" />
-					<sd1 value="1" />
-					<mean2 value="24" />
-					<sd2 value="1.5" />
+					<sd1 value="10" />
+					<mean2 value="240" />
+					<sd2 value="15" />
 					<covar value="" />
 				</Settings>
 			</Distribution>
 			<Distribution name="BivariateNormal" prob="0.45">
 				<Settings>
-					<mean1 value="3" />
-					<sd1 value="1" />
-					<mean2 value="5" />
-					<sd2 value="1.5" />
+					<mean1 value="300" />
+					<sd1 value="10" />
+					<mean2 value="105" />
+					<sd2 value="15" />
 					<covar value="" />
 				</Settings>
 			</Distribution>
@@ -24,8 +24,8 @@
 				<Settings>
 					<minx value="0" />
 					<miny value="0" />
-					<maxx value="40" />
-					<maxy value="30" />
+					<maxx value="360" />
+					<maxy value="360" />
 				</Settings>
 			</Distribution>
 		</Location>
