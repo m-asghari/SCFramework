@@ -95,7 +95,7 @@ public class Main {
 	
 	protected static void ChangeRateOfWorkers(String config) {
 		double rate = 1;
-		while (rate <= 8) {
+		while (rate <= 64) {
 			for (int test = 0; test < 5; test++) {
 				String input = GenerateNewInput(test, config, 1000, 4, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
@@ -103,7 +103,7 @@ public class Main {
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			rate += 1;
+			rate *= 2;
 		}
 	}
 	
