@@ -41,7 +41,8 @@ public class Main {
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
-		ChangeRateOfTasks(input);
+		//ChangeRateOfTasks(input);
+		ChangeRateOfWorkers(input);
 		
 		Finalize();
 	}
@@ -78,32 +79,31 @@ public class Main {
 		}						
 	}
 	
-	protected static void ChangeNumberOfAvailableWorkers(String config) {
-		int availableWorkers = 1;
-		while (availableWorkers <= 40) {
-			for (int test = 0; test < 20; test++) {
-				String input = GenerateNewInput(test, config, 1000, availableWorkers);
-				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
-				FrameStats.Add("%d,%d", availableWorkers, test);
-				String algoResults = RunOnlineAlgorithms(input);
-				Result.Add(GENERAL, "%d,%s", availableWorkers, algoResults);
-			}
-			
-			availableWorkers = (availableWorkers < 40) ? availableWorkers + 1 : availableWorkers + 10;
-		}						
-	}
-	
 	protected static void ChangeRateOfTasks(String config) {
 		double rate = 0.125;
 		while (rate <= 8 ) {
 			for (int test = 0; test < 5; test++) {
-				String input = GenerateNewInput(test, config, 1000, 10, rate);
+				String input = GenerateNewInput(test, config, 1000, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunOnlineAlgorithms(input);
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
 			rate*=2;
+		}
+	}
+	
+	protected static void ChangeRateOfWorkers(String config) {
+		double rate = 1;
+		while (rate <= 8) {
+			for (int test = 0; test < 5; test++) {
+				String input = GenerateNewInput(test, config, 1000, 4, rate);
+				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
+				String algoResults = RunOnlineAlgorithms(input);
+				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
+			}
+			
+			rate += 1;
 		}
 	}
 	
@@ -290,17 +290,20 @@ public class Main {
 		return inputFile.getPath();
 	}
 	
-	private static String GenerateNewInput(int test, String config, int tasksSize, int availableWorkers) {
-		File inputFile = new File(config, String.format("input%03d_%05d_w%03d.xml", test, tasksSize, availableWorkers));
-		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, availableWorkers);
+	private static String GenerateNewInput(int test, String config, int tasksSize, double tasksRate) {
+		File inputFile = new File(config, String.format("input%03d_%05d_t%s.xml", test, tasksSize, String.format("%.1f", tasksRate).replace(".", "")));
+		//Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
+		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
+		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, tasksReleaseDist);
 		return inputFile.getPath();
 	}
 	
-	private static String GenerateNewInput(int test, String config, int tasksSize, int availableWorkers, double tasksRate) {
-		File inputFile = new File(config, String.format("input%03d_%05d_w%03d_t%s.xml", test, tasksSize, availableWorkers, String.format("%.1f", tasksRate).replace(".", "")));
+	private static String GenerateNewInput(int test, String config, int tasksSize, double tasksRate, double workerRate) {
+		File inputFile = new File(config, String.format("input%03d_%05d_t%s_w%s.xml", test, tasksSize, String.format("%.1f", tasksRate).replace(".", ""), String.format("%.1f", workerRate).replace(".", "")));
 		//Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
 		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
-		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, availableWorkers, tasksReleaseDist);
+		Poisson workerReleaseDist = new Poisson(new PoissonConfig(workerRate));
+		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, tasksReleaseDist, workerReleaseDist);
 		return inputFile.getPath();
 	}
 	
