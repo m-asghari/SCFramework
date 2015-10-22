@@ -180,10 +180,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			}
 			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
-		Calendar start2 = Calendar.getInstance();
 		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
-		Calendar end2 = Calendar.getInstance();
-		task.assignmentStat.selectWorkerTime = end2.getTimeInMillis() - start2.getTimeInMillis();
 		if (selectedWorker != null) {
 			//Log.Add(1, "Task %d assigned to Worker %d", task.id, selectedWorker.id);
 			task.assignmentStat.assigned = 1;

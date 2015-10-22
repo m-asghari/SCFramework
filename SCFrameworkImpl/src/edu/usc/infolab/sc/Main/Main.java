@@ -1,6 +1,8 @@
 package edu.usc.infolab.sc.Main;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,11 +37,12 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "UniformTasks";
+		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
 		//RunMultipleTests(input, 100);
-		ChangeRateOfTasks(input);
+		//ChangeRateOfTasks(input);
+		ChangeRateOfWorkers(input);
 		
 		Finalize();
 	}
@@ -76,32 +79,31 @@ public class Main {
 		}						
 	}
 	
-	protected static void ChangeNumberOfAvailableWorkers(String config) {
-		int availableWorkers = 1;
-		while (availableWorkers <= 40) {
-			for (int test = 0; test < 20; test++) {
-				String input = GenerateNewInput(test, config, 1000, availableWorkers);
-				System.out.println(String.format("Starting test %d for availableWorlers %d", test, availableWorkers));
-				FrameStats.Add("%d,%d", availableWorkers, test);
-				String algoResults = RunOnlineAlgorithms(input);
-				Result.Add(GENERAL, "%d,%s", availableWorkers, algoResults);
-			}
-			
-			availableWorkers = (availableWorkers < 40) ? availableWorkers + 1 : availableWorkers + 10;
-		}						
-	}
-	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 4;
-		while (rate <= 1024 ) {
-			for (int test = 0; test < 10; test++) {
-				String input = GenerateNewInput(test, config, 1000, 10, rate);
+		double rate = 0.125;
+		while (rate <= 8 ) {
+			for (int test = 0; test < 5; test++) {
+				String input = GenerateNewInput(test, config, 1000, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
 				String algoResults = RunOnlineAlgorithms(input);
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			rate *= 2;
+			rate*=2;
+		}
+	}
+	
+	protected static void ChangeRateOfWorkers(String config) {
+		double rate = 1;
+		while (rate <= 8) {
+			for (int test = 0; test < 5; test++) {
+				String input = GenerateNewInput(test, config, 1000, 4, rate);
+				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
+				String algoResults = RunOnlineAlgorithms(input);
+				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
+			}
+			
+			rate += 1;
 		}
 	}
 	
@@ -126,6 +128,7 @@ public class Main {
 		Random rndAlgo = new Random(tasks, workers, grid.clone());
 		int endTime = rndAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnd", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".str", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -138,6 +141,7 @@ public class Main {
 		Ranking rnkAlgo = new Ranking(tasks, workers, grid.clone());
 		int endTime = rnkAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnk", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".Ranking.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -150,6 +154,7 @@ public class Main {
 		NearestNeighbor nnAlgo = new NearestNeighbor(tasks, workers, grid.clone());
 		int endTime = nnAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("NN", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".NearestNeighbor.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -162,6 +167,7 @@ public class Main {
 		BestInsertion biAlgo = new BestInsertion(tasks, workers, grid.clone());
 		int endTime = biAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BI", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".BestInsersion.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -174,6 +180,7 @@ public class Main {
 		MostFreeTime mftAlgo = new MostFreeTime(tasks, workers, grid.clone());
 		int endTime = mftAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("MFT", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".MostFreeTime.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -196,6 +203,7 @@ public class Main {
 		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
 		int endTime = bdAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".AdHoc.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -218,6 +226,7 @@ public class Main {
 		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
 		int endTime = bdAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".EMD.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -240,6 +249,7 @@ public class Main {
 		//BestDistribution bdAlgo = new BestDistribution(tasks, workers, grid.clone());
 		int endTime = bdAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("BD", new ArrayList<Task>(tasks.values())));
+		SaveToFile(input+".JSD.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -280,17 +290,20 @@ public class Main {
 		return inputFile.getPath();
 	}
 	
-	private static String GenerateNewInput(int test, String config, int tasksSize, int availableWorkers) {
-		File inputFile = new File(config, String.format("input%03d_%05d_w%03d.xml", test, tasksSize, availableWorkers));
-		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, availableWorkers);
+	private static String GenerateNewInput(int test, String config, int tasksSize, double tasksRate) {
+		File inputFile = new File(config, String.format("input%03d_%05d_t%s.xml", test, tasksSize, String.format("%.1f", tasksRate).replace(".", "")));
+		//Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
+		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
+		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, tasksReleaseDist);
 		return inputFile.getPath();
 	}
 	
-	private static String GenerateNewInput(int test, String config, int tasksSize, int availableWorkers, double tasksRate) {
-		File inputFile = new File(config, String.format("input%03d_%05d_w%03d_t%s.xml", test, tasksSize, availableWorkers, String.format("%.1f", tasksRate).replace(".", "")));
+	private static String GenerateNewInput(int test, String config, int tasksSize, double tasksRate, double workerRate) {
+		File inputFile = new File(config, String.format("input%03d_%05d_t%s_w%s.xml", test, tasksSize, String.format("%.1f", tasksRate).replace(".", ""), String.format("%.1f", workerRate).replace(".", "")));
 		//Exponential tasksReleaseDist = new Exponential(new ExponentialConfig(tasksRate));
 		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
-		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, availableWorkers, tasksReleaseDist);
+		Poisson workerReleaseDist = new Poisson(new PoissonConfig(workerRate));
+		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, tasksReleaseDist, workerReleaseDist);
 		return inputFile.getPath();
 	}
 	
@@ -308,6 +321,44 @@ public class Main {
 		catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+	}
+	
+	private static void SaveToFile(String name, ArrayList<Task> tasks, ArrayList<Worker> workers) {
+		try {
+			FileWriter fw = new FileWriter(name);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(String.format("%d", tasks.size()));
+			bw.write("\n");
+			for (Task t : tasks) {
+				String p1 = String.format("%d,%d,%d,%d,%d,%d,%d,%d,", 
+						t.assignmentStat.assigned, t.releaseFrame, t.retractFrame, t.value,t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.availableWorkers, t.assignmentStat.eligibleWorkers);
+				StringBuilder sb = new StringBuilder();
+				for (Integer i : t.assignmentStat.workerFreeTimes) {
+					sb.append(i);
+					sb.append(";");
+				}
+				String p2 = sb.toString();
+				if (p2.length() > 0)
+					p2 = p2.substring(0, p2.length()-1);
+				bw.write(p1);
+				bw.write(p2);
+				bw.write("\n");
+			}
+			bw.write(String.format("%d",workers.size()));
+			bw.write("\n");
+			for (Worker w : workers) {
+				String p1 = String.format("%d,%d,%.2f,%d",
+						w.releaseFrame, w.retractFrame, w.travledDistance, w.maxNumberOfTasks);
+				bw.write(p1);
+				bw.write("\n");
+			}
+			bw.close();
+			fw.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	private static void Finalize() {

@@ -2,6 +2,7 @@ package edu.usc.infolab.sc.Algorithms.Online;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import edu.usc.infolab.sc.Grid;
@@ -24,13 +25,20 @@ public class BestDistributionAdhoc extends BestDistribution {
 		Worker selectedWorker = null;
 		if (updateDistT) distT.Inc(grid.GetCell(task.location));
 		Double maxInfluence = -2.0 * distT.GetMaxInfluence();
+		long maxTime = 0;
 		for (Worker w : eligibleWorkers.keySet()) {
+			Calendar start = Calendar.getInstance();
 			double inf = MoveInfluence(w.location, task.location);
 			if (inf >= maxInfluence) {
 				selectedWorker = w;
 				maxInfluence = inf;
 			}
+			Calendar end = Calendar.getInstance();
+			long time = end.getTimeInMillis() - start.getTimeInMillis();
+			if (time > maxTime)
+				maxTime = time;
 		}
+		task.assignmentStat.selectWorkerTime = maxTime;
 		return selectedWorker;
 	}
 	

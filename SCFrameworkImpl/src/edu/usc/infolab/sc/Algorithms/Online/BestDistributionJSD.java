@@ -1,6 +1,7 @@
 package edu.usc.infolab.sc.Algorithms.Online;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import edu.usc.infolab.sc.CountDistribution;
@@ -23,13 +24,20 @@ public class BestDistributionJSD extends BestDistribution {
 		Worker selectedWorker = null;
 		if (updateDistT) distT.Inc(grid.GetCell(task.location));
 		Double minDiff = 1.0 * Integer.MAX_VALUE;
+		long maxTime = 0;
 		for (Worker w : eligibleWorkers.keySet()) {
+			Calendar start = Calendar.getInstance();
 			double diff = JSDDiff(w, eligibleWorkers.get(w), task);
 			if (diff < minDiff) {
 				selectedWorker = w;
 				minDiff = diff;
 			}
+			Calendar end = Calendar.getInstance();
+			long time = end.getTimeInMillis() - start.getTimeInMillis();
+			if (time > maxTime)
+				maxTime = time;
 		}
+		task.assignmentStat.selectWorkerTime = maxTime;
 		return selectedWorker;
 	}
 	

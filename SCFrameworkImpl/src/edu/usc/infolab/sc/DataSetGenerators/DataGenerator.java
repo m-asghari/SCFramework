@@ -300,7 +300,7 @@ public class DataGenerator {
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
 	
-	public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers) {
+	/*public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers) {
 		Document input = IO.ReadXML(inputFile);
 		Element dataSpec = input.getDocumentElement();
 		
@@ -316,9 +316,9 @@ public class DataGenerator {
 		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
-	}
+	}*/
 	
-	public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers, Distribution<Double> tasksReleaseDist) {
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize, Distribution<Double> tasksReleaseDist) {
 		Document input = IO.ReadXML(inputFile);
 		Element dataSpec = input.getDocumentElement();
 		
@@ -333,8 +333,29 @@ public class DataGenerator {
 		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
 		//ReleaseMode workersReleaseMode = ReleaseMode.Available;
 		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
-		availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		int availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
 		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize, Distribution<Double> tasksReleaseDist, Distribution<Double> workerReleaseDist) {
+		Document input = IO.ReadXML(inputFile);
+		Element dataSpec = input.getDocumentElement();
+		
+		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
+		Grid grid = new Grid(gridElement);
+		
+		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks); 
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
+		tg.SetReleaseTimeDist(tasksReleaseDist);
+		
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
+		int availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
+		wg.SetReleaseTimeDist(workerReleaseDist);
 		
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
