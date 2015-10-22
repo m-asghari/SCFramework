@@ -4,7 +4,7 @@
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.20">
 				<Settings>
-					<mean1 value="330" />
+					<mean1 value="33" />
 					<sd1 value="10" />
 					<mean2 value="240" />
 					<sd2 value="15" />
@@ -13,9 +13,9 @@
 			</Distribution>
 			<Distribution name="BivariateNormal" prob="0.25">
 				<Settings>
-					<mean1 value="3" />
+					<mean1 value="300" />
 					<sd1 value="10" />
-					<mean2 value="5" />
+					<mean2 value="105" />
 					<sd2 value="15" />
 					<covar value="" />
 				</Settings>
@@ -31,9 +31,9 @@
 			</Distribution>
 			<Distribution name="BivariateNormal" prob="0.30">
 				<Settings>
-					<mean1 value="30" />
+					<mean1 value="150" />
 					<sd1 value="10" />
-					<mean2 value="250" />
+					<mean2 value="300" />
 					<sd2 value="15" />
 					<covar value="" />
 				</Settings>
@@ -42,8 +42,8 @@
 				<Settings>
 					<minx value="0" />
 					<miny value="0" />
-					<maxx value="40" />
-					<maxy value="30" />
+					<maxx value="360" />
+					<maxy value="360" />
 				</Settings>
 			</Distribution>
 		</Location>
