@@ -1,6 +1,6 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="360" maxy="360" w="60" l="60"/>
-	<Tasks size="100" releaseMode="PerMinute">
+	<Tasks size="10000" releaseMode="PerMinute">
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.20">
 				<Settings>
