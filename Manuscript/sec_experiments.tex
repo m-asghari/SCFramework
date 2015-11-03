@@ -3,4 +3,10 @@
 Experiments
 
 \subsection{Dataset}
-We refer to \cite{Basu15, Tang07}
+Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. For this reason, we generate a realistic streaming workload based on the ideas in \cite{Tang07}. To generate a workload suitable for SC systems we have to model three different sets of parameters:\\
+\textbf{Temporal Parameters:} In \cite{Basu15}, it's shown that in crowdsourcing environments, workers and tasks arrive following a Poisson process\textcolor{red}{\textbf{ref to Poisson process}}. For our experiments, unless stated otherwise, tasks and workers arrive based on a Poisson process with an arrival rate of $\mu_t = 250/$hour and $\mu_w = 40/$hour respectively.\\
+\textbf{Spatial Parameters:} Former studies on the SC framework \cite{Kazemi12, Kazemi13, Deng13} have used datasets such as Gowalla and Yelp  to model the location of the tasks in an SC environment. As shown in \textcolor{red}{\textbf{ref Hien's paper}}, the location of the tasks are not uniformly distributed. Rather, the spatial distribution of tasks are skewed, meaning that the density of the tasks in certain areas is higher. To model the same effect in our workload, 80\% of the tasks are located within 6 Gaussian clusters. The mean and standard deviation of the clusters are selected randomly. The locations of the remaining 20\% of the tasks are uniformly selected. Also, we assume the workers are uniformly distributed in the entire area under study.\\
+\textbf{Static Parameters:} In addition to the spatiotemporal parameters discussed here, there exists a few other parameters that are generated as follows:\\
+\emph{Workload Size:} Unless stated otherwise, each experiment runs on 10K tasks. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
+\emph{Grid Size:} We assume the simulation is run in a $36 \times 36 mile^2$ area. For the algorithms requiring a grid, the entire area is divided into a $10 \times 10$ grid with equally sized cells.\\
+\emph{$w_{max}$:} The maximum number of tasks a worker can perform is a uniformly random number from the closed interval $\left[8,12 \right]$.
