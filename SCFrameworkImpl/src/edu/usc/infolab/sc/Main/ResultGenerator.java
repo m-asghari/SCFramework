@@ -39,7 +39,7 @@ public class ResultGenerator {
 	};
 
 	public static void main(String[] args) {
-		String inputDir = "SkewedTasks_4_TaskRate";
+		String inputDir = "SkewedTasks_4";
 		File dir = new File(inputDir);
 		File[] files = dir.listFiles();
 		for (File file : files) {
