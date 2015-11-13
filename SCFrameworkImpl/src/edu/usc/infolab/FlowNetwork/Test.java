@@ -6,11 +6,11 @@ public class Test {
 
 	public static void main(String[] args) {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		//nodes.add(new Node(2));
-		//nodes.add(new Node(1));
-		//nodes.add(new Node(-1));
-		//nodes.add(new Node(-2));
-		nodes.add(new Node(-53.3966));
+		nodes.add(new Node(2));
+		nodes.add(new Node(1));
+		nodes.add(new Node(-1));
+		nodes.add(new Node(-2));
+		/*nodes.add(new Node(-53.3966));
 		nodes.add(new Node(-46.0365));
 		nodes.add(new Node(18.0060));
 		nodes.add(new Node(16.2721));
@@ -18,14 +18,14 @@ public class Test {
 		nodes.add(new Node(11.2371));
 		nodes.add(new Node(22.8076));
 		nodes.add(new Node(5.5018));
-		nodes.add(new Node(23.1410));
+		nodes.add(new Node(23.1410));*/
 		
 		ArrayList<Edge> edges = new ArrayList<Edge>();
-		//edges.add(new Edge(nodes.get(0), nodes.get(2), 1));
-		//edges.add(new Edge(nodes.get(0), nodes.get(3), 2));
-		//edges.add(new Edge(nodes.get(1), nodes.get(2), 2));
-		//edges.add(new Edge(nodes.get(1), nodes.get(3), 1));
-		edges.add(new Edge(nodes.get(3), nodes.get(0), 212.13));
+		edges.add(new Edge(nodes.get(0), nodes.get(2), 1));
+		edges.add(new Edge(nodes.get(0), nodes.get(3), 2));
+		edges.add(new Edge(nodes.get(1), nodes.get(2), 2));
+		edges.add(new Edge(nodes.get(1), nodes.get(3), 1));
+		/*edges.add(new Edge(nodes.get(3), nodes.get(0), 212.13));
 		edges.add(new Edge(nodes.get(3), nodes.get(1), 192.09));
 		edges.add(new Edge(nodes.get(7), nodes.get(0), 403.61));
 		edges.add(new Edge(nodes.get(7), nodes.get(1), 384.19));
@@ -38,7 +38,7 @@ public class Test {
 		edges.add(new Edge(nodes.get(4), nodes.get(0), 342.05));
 		edges.add(new Edge(nodes.get(4), nodes.get(1), 318.90));
 		edges.add(new Edge(nodes.get(6), nodes.get(0), 366.20));
-		edges.add(new Edge(nodes.get(6), nodes.get(1), 349.86));
+		edges.add(new Edge(nodes.get(6), nodes.get(1), 349.86));*/
 		
 		Graph graph = new Graph(nodes, edges);
 		graph.FindMinFlow();

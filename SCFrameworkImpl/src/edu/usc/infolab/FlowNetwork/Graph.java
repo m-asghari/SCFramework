@@ -3,7 +3,16 @@ package edu.usc.infolab.FlowNetwork;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
+
+import org.apache.commons.math3.optim.MaxIter;
+import org.apache.commons.math3.optim.PointValuePair;
+import org.apache.commons.math3.optim.linear.LinearConstraint;
+import org.apache.commons.math3.optim.linear.LinearConstraintSet;
+import org.apache.commons.math3.optim.linear.LinearObjectiveFunction;
+import org.apache.commons.math3.optim.linear.NonNegativeConstraint;
+import org.apache.commons.math3.optim.linear.Relationship;
+import org.apache.commons.math3.optim.linear.SimplexSolver;
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 
 public class Graph {
 	public HashMap<Integer, Node> nodes;
@@ -39,8 +48,54 @@ public class Graph {
 		AddEdge(e);
 	}
 	
+	private void SimplexMethod() {
+		ArrayList<Edge> edgesArr = new ArrayList<Edge>(edges.values());
+		ArrayList<Node> nodesArr = new ArrayList<Node>(nodes.values());
+		double[] coef = new double[edgesArr.size()];
+		for (int i = 0; i < edgesArr.size(); i++) {
+			coef[i] = edgesArr.get(i).cost;
+		}
+		LinearObjectiveFunction f = new LinearObjectiveFunction(coef, 0);
+		ArrayList<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
+		for (int i = 0; i < nodesArr.size(); i++) {
+			double[] Av = new double[edgesArr.size()];
+			for (int j = 0; j < edgesArr.size(); j++) {
+				if (edgesArr.get(j).start.id == i) {
+					//Av[j] = edgesArr.get(j).cost;
+					Av[j] = 1;
+				}
+				else if (edgesArr.get(j).end.id == i) {
+					//Av[j] = edgesArr.get(j).cost * -1.0;
+					Av[j] = -1;
+				}
+				else {
+					Av[j] = 0;
+				}
+			}
+			constraints.add(new LinearConstraint(Av, Relationship.EQ, nodesArr.get(i).b));
+		}
+		
+		SimplexSolver solver = new SimplexSolver();
+		PointValuePair optSolution = solver.optimize(
+				new MaxIter(100),
+				f,
+				new LinearConstraintSet(constraints),
+				GoalType.MINIMIZE,
+				new NonNegativeConstraint(true));
+		
+		double[] solution = optSolution.getPoint();
+		for (int i = 0; i < edgesArr.size(); i++) {
+			edgesArr.get(i).flow = solution[i];
+		}
+		for (Edge e : edgesArr) {
+			edges.get(String.format("%d-%d", e.start.id, e.end.id)).flow = e.flow;
+		}
+		
+	}
+	
 	public void FindMinFlow() {
-		Double maxB = 0.;
+		SimplexMethod();
+		/*Double maxB = 0.;
 		for (Node n : nodes.values()) {
 			if (Math.abs(n.b) > maxB) {
 				maxB = Math.abs(n.b);
@@ -70,10 +125,10 @@ public class Graph {
 				T_delta = GetT(delta);				
 			}
 			delta = delta / 2;
-		}
+		}*/
 	}
 	
-	private void AddFlow(int start, int end, Double f) {
+	/*private void AddFlow(int start, int end, Double f) {
 		String edgeID = GetEdgeID(start, end);
 		if (edges.containsKey(edgeID)) {
 			edges.get(edgeID).flow += f;
@@ -85,7 +140,7 @@ public class Graph {
 	
 	protected String GetEdgeID(Integer s, Integer e) {
 		return String.format("%d-%d", s, e);
-	}
+	}*/
 	
 	protected ArrayList<Integer> GetS(Double delta) {
 		ArrayList<Integer> retList = new ArrayList<Integer>();
