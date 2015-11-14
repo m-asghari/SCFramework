@@ -4,13 +4,17 @@ public class Result {
 	public Result() {
 		ID = "";
 		NumOfAssignedTasks = 0;
+		NumOfCompletedTasks = 0;
 		DecideEligibilityRunTime = 0;
 		SelectWorkerRunTime = 0;
+		TotalTime = 0;
 		AvgTraveledDistancePerTask = 0;
 	}
 	String ID;
 	int NumOfAssignedTasks;
+	int NumOfCompletedTasks;
 	double DecideEligibilityRunTime;
 	double SelectWorkerRunTime;
+	double TotalTime;
 	double AvgTraveledDistancePerTask;
 }

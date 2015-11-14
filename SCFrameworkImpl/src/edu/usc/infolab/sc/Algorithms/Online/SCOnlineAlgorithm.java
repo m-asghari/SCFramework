@@ -19,24 +19,25 @@ public abstract class SCOnlineAlgorithm extends OnlineAlgorithm {
 		Log.Add(5, "Task %d:", task.id);
 		HashMap<Worker, ArrayList<Task>> eligibleWorkers = new HashMap<Worker, ArrayList<Task>>();
 		
+		long worstDecideEligibility = 0;
 		for (Worker w : availableWorkers) {
-			Calendar start1, end1;
 			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
-			start1 = Calendar.getInstance();
+			Calendar startDecideEligibility = Calendar.getInstance();
 			ArrayList<Task> taskOrder = w.CanPerform(task, currentFrame);
-			end1 = Calendar.getInstance();
-			long time = end1.getTimeInMillis() - start1.getTimeInMillis();
-			if (time > task.assignmentStat.decideEligibilityTime)
-				task.assignmentStat.decideEligibilityTime = time;
 			if (taskOrder != null )  {
 				task.assignmentStat.eligibleWorkers++;
 				eligibleWorkers.put(w, new ArrayList<Task>(taskOrder));
 				Log.Add(5, "\tWorker %d can perform the task", w.id);
 			}
+			Calendar endDecideEligibility = Calendar.getInstance();
+			long time = endDecideEligibility.getTimeInMillis() - startDecideEligibility.getTimeInMillis();
+			if (time > worstDecideEligibility)
+				worstDecideEligibility = time;
 			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
+		task.assignmentStat.decideEligibilityTime = worstDecideEligibility;
 		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
 		if (selectedWorker != null) {
 			task.assignmentStat.assigned = 1;

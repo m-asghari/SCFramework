@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 
 import edu.usc.infolab.sc.Grid;
+import edu.usc.infolab.sc.Pair;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
@@ -22,7 +23,7 @@ import edu.usc.infolab.sc.Algorithms.Algorithm;
 import edu.usc.infolab.sc.Logging.Log;
 
 public abstract class OnlineAlgorithm extends Algorithm{
-	protected class FrameStats {
+	/*protected class FrameStats {
 		public int frameNum;
 		public int presentWorkers;
 		public int availableWorkers;
@@ -57,10 +58,10 @@ public abstract class OnlineAlgorithm extends Algorithm{
 					frameNum, presentWorkers, availableWorkers, workerAvailabilities, releasedTasks, assignedTasks);
 			
 		}
-	}
+	}*/
 	
-	protected ArrayList<FrameStats> _framesStats;
-	protected FrameStats _frameStats;
+	//protected ArrayList<FrameStats> _framesStats;
+	//protected FrameStats _frameStats;
 	private File _frameImgDir;
 	
 	Integer currentFrame;
@@ -82,26 +83,22 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		presentTasks = new ArrayList<Task>();
 		unassignedTasks = new ArrayList<Task>();
 		this.grid = grid.clone();
-		_framesStats = new ArrayList<FrameStats>();
+		//_framesStats = new ArrayList<FrameStats>();
 		_frameImgDir = Utils.CreateEmptyDirectory("FrameImages");
 	}
 	
 	@Override
 	public int Run() {
-		if (upcomingTasks.size() == 0) {
-			System.out.print("");
-		}
 		while (!upcomingTasks.isEmpty() || !presentTasks.isEmpty()) {
 			Log.Add(1, "Current Time Frame: %d", currentFrame);
 			AdvanceTime();
 			currentFrame++;
 		}
-		//PrintStat();
 		return currentFrame - 1;
 	}
 	
 	private void AdvanceTime() {
-		_frameStats = new FrameStats(currentFrame);
+		//_frameStats = new FrameStats(currentFrame);
 		HashMap<Task, Worker> assignments = new HashMap<Task, Worker>();
 		// Check to see if any worker becomes available in current frame
 		while (!upcomingWorkers.isEmpty() && 
@@ -111,11 +108,11 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 		
 		for (Worker w : availableWorkers) {
-			_frameStats.presentWorkers++;
+			//_frameStats.presentWorkers++;
 			int availability = w.maxNumberOfTasks - w.GetAssignedTasks().size();
 			if (availability > 0) {
-				_frameStats.availableWorkers++;
-				_frameStats.workerAvailabilities += availability;
+				//_frameStats.availableWorkers++;
+				//_frameStats.workerAvailabilities += availability;
 			}			
 		}
 		
@@ -126,16 +123,18 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		// Check to see if any task arrives in current frame
 		while (!upcomingTasks.isEmpty() &&
 				upcomingTasks.get(0).releaseFrame <= currentFrame) {
-			_frameStats.releasedTasks++;
+			//_frameStats.releasedTasks++;
+			Calendar startTaskTotalRuntime = Calendar.getInstance();
 			Worker w = null;
 			if ((w = AssignTask(upcomingTasks.get(0))) != null) {
 				assignments.put(upcomingTasks.get(0), w);
-				//presentTasks.add(upcomingTasks.get(0));
-				_frameStats.assignedTasks++;
+				//_frameStats.assignedTasks++;
 			}
 			else {
 				unassignedTasks.add(upcomingTasks.get(0));
 			}
+			Calendar endTaskTotalRuntime = Calendar.getInstance();
+			upcomingTasks.get(0).assignmentStat.totalTime = endTaskTotalRuntime.getTimeInMillis() - startTaskTotalRuntime.getTimeInMillis();
 			upcomingTasks.remove(0);
 		}
 		
@@ -153,7 +152,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 				it.remove();
 			}
 		}
-		_framesStats.add(_frameStats);
+		//_framesStats.add(_frameStats);
 		//if (currentFrame < 1000)
 		//	SaveFrameToImage(assignments, 10);
 	}
@@ -162,38 +161,50 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		Log.Add(5, "Task %d:", task.id);
 		HashMap<Worker, ArrayList<Task>> eligibleWorkers = new HashMap<Worker, ArrayList<Task>>();
 		
+		long worstDecideEligibilityTime = 0;
 		for (Worker w : availableWorkers) {
-			Calendar start1, end1;
 			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
-			start1 = Calendar.getInstance();
-			ArrayList<Task> taskOrder = w.CanPerform();
-			end1 = Calendar.getInstance();
-			long time = end1.getTimeInMillis() - start1.getTimeInMillis();
-			if (time > task.assignmentStat.decideEligibilityTime)
-				task.assignmentStat.decideEligibilityTime = time;
-			if (taskOrder != null )  {
+			Calendar startDecideEligibilityTime = Calendar.getInstance();
+			if (w.CanReach(task, currentFrame))  {
 				task.assignmentStat.eligibleWorkers++;
-				eligibleWorkers.put(w, new ArrayList<Task>(taskOrder));
+				eligibleWorkers.put(w, new ArrayList<Task>());
 				Log.Add(5, "\tWorker %d can perform the task", w.id);
+			}
+			Calendar endDecideEligibilityTime = Calendar.getInstance();
+			long decideEligibilityTime = endDecideEligibilityTime.getTimeInMillis() - startDecideEligibilityTime.getTimeInMillis();
+			if (decideEligibilityTime > worstDecideEligibilityTime) {
+				worstDecideEligibilityTime = decideEligibilityTime;
 			}
 			Log.Add(5, "\tWorker %d cannot perform the task", w.id);
 		}
-		Worker selectedWorker = SelectWorker(eligibleWorkers, task);
+		task.assignmentStat.decideEligibilityTime = worstDecideEligibilityTime;
+		
+		Worker selectedWorker = null;
+		if (eligibleWorkers.size() > 0) {
+			selectedWorker = SelectWorker(eligibleWorkers, task);
+		}
+		Calendar startFinalizingAssignment = Calendar.getInstance();
 		if (selectedWorker != null) {
 			//Log.Add(1, "Task %d assigned to Worker %d", task.id, selectedWorker.id);
 			task.assignmentStat.assigned = 1;
 			task.AssignTo(selectedWorker);
 			selectedWorker.AddTask(task);
-			boolean scheduled = selectedWorker.ComputeSchedule(task, currentFrame);
-			if (scheduled) {
+			Pair<Task, Task> scheduleRes = selectedWorker.ComputeSchedule(task, currentFrame);
+			if (scheduleRes.First != null) {
 				presentTasks.add(task);
+			}
+			if (scheduleRes.Second != null) {
+				presentTasks.remove(scheduleRes.Second);
 			}
 		}
 		else {
 			Log.Add(1, "Task %d not assigned", task.id);
 		}
+		Calendar endFinalizingAssignment = Calendar.getInstance();
+		long finalizingAssignmentTime = endFinalizingAssignment.getTimeInMillis() - startFinalizingAssignment.getTimeInMillis();
+		//task.assignmentStat.selectWorkerTime += finalizingAssignmentTime;
 		return selectedWorker;
 	}
 	
@@ -240,7 +251,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		_framesStats.add(new FrameStats(frameStatParams));
 	}*/
 	
-	protected void PrintStat() {
+	/*protected void PrintStat() {
 		edu.usc.infolab.sc.Logging.FrameStats.Add("%d", currentFrame);
 		for (FrameStats fs : _framesStats) {
 			edu.usc.infolab.sc.Logging.FrameStats.Add(fs.ShortString());
@@ -248,5 +259,5 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		for (FrameStats fs : _framesStats) {
 			Log.Add(3, fs.toString());
 		}
-	}	
+	}*/	
 }

@@ -24,11 +24,8 @@ import edu.usc.infolab.sc.Algorithms.Online.NearestNeighbor;
 import edu.usc.infolab.sc.Algorithms.Online.Random;
 import edu.usc.infolab.sc.Algorithms.Online.Ranking;
 import edu.usc.infolab.sc.DataSetGenerators.DataGenerator;
-import edu.usc.infolab.sc.Distributions.Exponential;
-import edu.usc.infolab.sc.Distributions.ExponentialConfig;
 import edu.usc.infolab.sc.Distributions.Poisson;
 import edu.usc.infolab.sc.Distributions.PoissonConfig;
-import edu.usc.infolab.sc.Logging.FrameStats;
 import edu.usc.infolab.sc.Logging.Log;
 import edu.usc.infolab.sc.Logging.Result;
 
@@ -40,11 +37,12 @@ public class Main {
 		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
-		//RunMultipleTests(input, 10);
+		RunMultipleTests(input, 20);
 		//ChangeRateOfTasks(input);
 		//ChangeRateOfWorkers(input);
-		RunSingleTests(input);
+		//RunSingleTests(input);
 		//ChangeNumberOfTasks(input);
+
 		
 		Finalize();
 	}
@@ -84,8 +82,8 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 0.125;
-		while (rate <= 8 ) {
+		double rate = 60;
+		while (rate <= 600000 ) {
 			for (int test = 0; test < 5; test++) {
 				String input = GenerateNewInput(test, config, 1000, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
@@ -93,7 +91,7 @@ public class Main {
 				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
 			}
 			
-			rate*=2;
+			rate*=10;
 		}
 	}
 	
@@ -108,6 +106,20 @@ public class Main {
 			}
 			
 			rate *= 2;
+		}
+	}
+	
+	protected static void ChangeRateOfTasksAndWorkers(String config) {
+		double tRate = 60;
+		while (tRate <= 600000) {
+			double wRate = tRate / 12;
+			for (int test = 0; test < 5; test++) {
+				String input = GenerateNewInput(test, config, (int)tRate*10, tRate, wRate);
+				System.out.println(String.format("Starting test %d for rate %.2f", test, tRate));
+				String algoResults = RunOnlineAlgorithms(input);
+				Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
+			}
+			tRate *= 10;
 		}
 	}
 	
@@ -266,12 +278,14 @@ public class Main {
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
-		String rndResults = RunRandom(input);
+		//String rndResults = RunRandom(input);
+		//String rnkResults = RunRanking(input);
 		String nnResults = RunNearestNeighbor(input);
+		//String mftResults = RunMostFreeTime(input);
 		String biResults = RunBestInsertion(input);
-		String bdResults = RunBestDistribution(input);
-		String mftResults = RunMostFreeTime(input);
-		return String.format("%s,%s,%s,%s,%s", rndResults, nnResults, biResults, mftResults, bdResults);
+		String bdResults = RunBestDistributionEMD(input);
+		//return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
+		return String.format("%s,%s,%s", nnResults, biResults, bdResults);
 		//return "";
 	}
 	
@@ -334,8 +348,11 @@ public class Main {
 			bw.write(String.format("%d", tasks.size()));
 			bw.write("\n");
 			for (Task t : tasks) {
-				String p1 = String.format("%d,%d,%d,%d,%d,%d,%d,%d,", 
-						t.assignmentStat.assigned, t.releaseFrame, t.retractFrame, t.value,t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.availableWorkers, t.assignmentStat.eligibleWorkers);
+				String p1 = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,", 
+						t.assignmentStat.assigned, t.assignmentStat.completed, 
+						t.releaseFrame, t.retractFrame, t.value, 
+						t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.totalTime, 
+						t.assignmentStat.availableWorkers, t.assignmentStat.eligibleWorkers);
 				StringBuilder sb = new StringBuilder();
 				for (Integer i : t.assignmentStat.workerFreeTimes) {
 					sb.append(i);
@@ -351,8 +368,9 @@ public class Main {
 			bw.write(String.format("%d",workers.size()));
 			bw.write("\n");
 			for (Worker w : workers) {
-				String p1 = String.format("%d,%d,%.2f,%d",
-						w.releaseFrame, w.retractFrame, w.travledDistance, w.maxNumberOfTasks);
+				String p1 = String.format("%d,%d,%.2f,%d,%d,%d",
+						w.releaseFrame, w.retractFrame, w.travledDistance, w.maxNumberOfTasks, 
+						w.GetAssignedTasks().size(), w.GetCompletedTasks().size());
 				bw.write(p1);
 				bw.write("\n");
 			}
