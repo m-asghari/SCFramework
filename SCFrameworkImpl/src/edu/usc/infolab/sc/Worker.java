@@ -10,6 +10,7 @@ import edu.usc.infolab.sc.Logging.Log;
 public class Worker extends SpatialEntity{
 	public static Integer idCntr = 0;
 	//private Boolean active;
+	private ArrayList<Task> completedTasks;
 	private ArrayList<Task> assignedTasks;
 	private ArrayList<Task> remainingTasks;
 	public Integer maxNumberOfTasks;
@@ -20,6 +21,7 @@ public class Worker extends SpatialEntity{
 		super(w);
 		this.assignedTasks = new ArrayList<Task>(w.assignedTasks);
 		this.remainingTasks = new ArrayList<Task>(w.remainingTasks);
+		this.completedTasks = new ArrayList<Task>(w.completedTasks);
 		this.maxNumberOfTasks = w.maxNumberOfTasks;
 		this.travledDistance = w.travledDistance;
 		this.ptsSet = w.ptsSet.clone();
@@ -41,12 +43,17 @@ public class Worker extends SpatialEntity{
 		ptsSet = new PTSs();
 		assignedTasks = new ArrayList<Task>();
 		remainingTasks = new ArrayList<Task>();
+		completedTasks = new ArrayList<Task>();
 		travledDistance = 0.0;
 		//active = false;
 	}
 	
 	public ArrayList<Task> GetAssignedTasks() {
 		return this.assignedTasks;
+	}
+	
+	public ArrayList<Task> GetCompletedTasks() {
+		return this.completedTasks;
 	}
 	
 	public void AddTask(Task task) {
@@ -61,6 +68,15 @@ public class Worker extends SpatialEntity{
 		this.remainingTasks = new ArrayList<Task>(tasks);
 	}
 	
+	public boolean ComputeSchedule(Task t, int currentFrame) {
+		ArrayList<Task> tasksOrder = new ArrayList<Task>();
+		tasksOrder = CanPerform(t, currentFrame);
+		if (tasksOrder != null) {
+			SetSchedule(tasksOrder);
+			return true;
+		}
+		return false;
+	}
 
 	public PTSs GetPTSSet() {
 		return this.ptsSet;
@@ -113,6 +129,15 @@ public class Worker extends SpatialEntity{
 	public Double GetAvailability(int currentFrame) {
 		if (this.assignedTasks.size() == this.maxNumberOfTasks) return 0.;
 		return this.retractFrame - this.GetCompleteTime(currentFrame);
+	}
+	
+	
+	// Output: If worker still has room to accept more tasks. Used for non-SC online assignment.
+	public ArrayList<Task> CanPerform() {
+		if (assignedTasks.size() == maxNumberOfTasks) {
+			return null;
+		}
+		return new ArrayList<Task>();
 	}
 	
 	// Input: One task
@@ -228,7 +253,9 @@ public class Worker extends SpatialEntity{
 		}
 		else {
 			// TODO(masghari): set assignedTask.get(0) as Done!
+			remainingTasks.get(0).assignmentStat.completed = 1;
 			finished.add(remainingTasks.get(0));
+			completedTasks.add(remainingTasks.get(0));
 			
 			// TODO(masghari): remove done task from the list!
 			this.location = dest;

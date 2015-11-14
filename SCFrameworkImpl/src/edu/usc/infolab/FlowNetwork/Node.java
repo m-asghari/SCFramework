@@ -54,6 +54,6 @@ public class Node {
 	
 	@Override
 	public String toString() {
-		return String.format("%d", id);
+		return String.format("%d, %.2f", id, this.b);
 	}
 }

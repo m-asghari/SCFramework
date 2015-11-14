@@ -8,6 +8,7 @@ public class Task extends SpatialEntity{
 	
 	public class AssignmentStat {
 		public int assigned;
+		public int completed;
 		public int eligibleWorkers;
 		public int availableWorkers;
 		public ArrayList<Integer> workerFreeTimes;
@@ -23,6 +24,7 @@ public class Task extends SpatialEntity{
 		
 		public AssignmentStat() {
 			this.assigned = 0;
+			this.completed = 0;
 			this.eligibleWorkers = 0;
 			this.availableWorkers = 0;
 			this.decideEligibilityTime = 0;

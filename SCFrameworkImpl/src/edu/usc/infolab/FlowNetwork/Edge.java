@@ -32,6 +32,6 @@ public class Edge {
 	
 	@Override
 	public String toString() {
-		return this.GetID();
+		return this.GetID() + ", " + Double.toString(this.cost);
 	}
 }

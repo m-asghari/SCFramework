@@ -102,14 +102,18 @@ public class CountDistribution {
 		for (int cell = 0; cell < Q.grid.size(); cell++) {
 			Double diff = (P.Prob(cell) - Q.Prob(cell)) * 100;
 			if (diff > 0) {
-				pNodes.put(cell, new Node(diff.intValue()));
+				pNodes.put(cell, new Node(diff));
 			} else if (diff < 0) {
-				nNodes.put(cell, new Node(diff.intValue()));
+				nNodes.put(cell, new Node(diff));
 			}
 		}
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(pNodes.values());
 		nodes.addAll(nNodes.values());
+		/*for (int i = 0; i < nodes.size(); i++) {
+			System.out.println(String.format("nodes.add(new Node(%.2f));\\\\%d", 
+					nodes.get(i).b, nodes.get(i).id));
+		}*/
 		
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		for (Entry<Integer, Node> pNode : pNodes.entrySet()) {
@@ -119,6 +123,10 @@ public class CountDistribution {
 				
 			}
 		}
+		/*for (int i = 0; i < edges.size(); i++) {
+			System.out.println(String.format("edges.add(new Edge(nodes.get(%d), nodes.get(%d), %.2f));",
+					edges.get(i).start.id, edges.get(i).end.id, edges.get(i).cost));
+		}*/
 		
 		Graph emdGraph = new Graph(nodes, edges);
 		emdGraph.FindMinFlow();

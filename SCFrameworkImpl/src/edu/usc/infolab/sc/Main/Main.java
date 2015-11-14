@@ -40,9 +40,11 @@ public class Main {
 		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
-		//RunMultipleTests(input, 100);
+		//RunMultipleTests(input, 10);
 		//ChangeRateOfTasks(input);
-		ChangeRateOfWorkers(input);
+		//ChangeRateOfWorkers(input);
+		RunSingleTests(input);
+		//ChangeNumberOfTasks(input);
 		
 		Finalize();
 	}
@@ -64,9 +66,11 @@ public class Main {
 	}
 	
 	protected static void ChangeNumberOfTasks(String config) {
-		int size = 100;
-		while (size <= 2000) {
-			for (int test = 0; test < 20; test++) {
+		//int size = 100;
+		int[] sizes = {1000, 2500, 5000};
+		//while (size <= 2000) {
+		for (int size : sizes) {
+			for (int test = 0; test < 5; test++) {
 				String input = GenerateNewInput(test, config, size);
 				System.out.println(String.format("Starting test %d for size %d", test, size));
 				String algoResults = RunOnlineAlgorithms(input);
@@ -75,7 +79,7 @@ public class Main {
 			
 			//int d = (int) Math.log10(size);
 			//size += Math.pow(10, d);
-			size += 100;
+			//size += 100;
 		}						
 	}
 	
@@ -262,12 +266,12 @@ public class Main {
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
-		String rnkResults = RunRanking(input);
+		String rndResults = RunRandom(input);
 		String nnResults = RunNearestNeighbor(input);
 		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistribution(input);
 		String mftResults = RunMostFreeTime(input);
-		return String.format("%s,%s,%s,%s,%s", rnkResults, nnResults, biResults, mftResults, bdResults);
+		return String.format("%s,%s,%s,%s,%s", rndResults, nnResults, biResults, mftResults, bdResults);
 		//return "";
 	}
 	

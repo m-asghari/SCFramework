@@ -59,7 +59,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 	}
 	
-	private ArrayList<FrameStats> _framesStats;
+	protected ArrayList<FrameStats> _framesStats;
 	protected FrameStats _frameStats;
 	private File _frameImgDir;
 	
@@ -88,6 +88,9 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	
 	@Override
 	public int Run() {
+		if (upcomingTasks.size() == 0) {
+			System.out.print("");
+		}
 		while (!upcomingTasks.isEmpty() || !presentTasks.isEmpty()) {
 			Log.Add(1, "Current Time Frame: %d", currentFrame);
 			AdvanceTime();
@@ -98,7 +101,6 @@ public abstract class OnlineAlgorithm extends Algorithm{
 	}
 	
 	private void AdvanceTime() {
-		long frameDuration = 0;
 		_frameStats = new FrameStats(currentFrame);
 		HashMap<Task, Worker> assignments = new HashMap<Task, Worker>();
 		// Check to see if any worker becomes available in current frame
@@ -128,14 +130,12 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			Worker w = null;
 			if ((w = AssignTask(upcomingTasks.get(0))) != null) {
 				assignments.put(upcomingTasks.get(0), w);
-				presentTasks.add(upcomingTasks.get(0));
+				//presentTasks.add(upcomingTasks.get(0));
 				_frameStats.assignedTasks++;
 			}
 			else {
 				unassignedTasks.add(upcomingTasks.get(0));
 			}
-			frameDuration += (upcomingTasks.get(0).assignmentStat.decideEligibilityTime + 
-					upcomingTasks.get(0).assignmentStat.selectWorkerTime);
 			upcomingTasks.remove(0);
 		}
 		
@@ -168,7 +168,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
 			start1 = Calendar.getInstance();
-			ArrayList<Task> taskOrder = w.CanPerform(task, currentFrame);
+			ArrayList<Task> taskOrder = w.CanPerform();
 			end1 = Calendar.getInstance();
 			long time = end1.getTimeInMillis() - start1.getTimeInMillis();
 			if (time > task.assignmentStat.decideEligibilityTime)
@@ -186,7 +186,10 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			task.assignmentStat.assigned = 1;
 			task.AssignTo(selectedWorker);
 			selectedWorker.AddTask(task);
-			selectedWorker.SetSchedule(eligibleWorkers.get(selectedWorker));
+			boolean scheduled = selectedWorker.ComputeSchedule(task, currentFrame);
+			if (scheduled) {
+				presentTasks.add(task);
+			}
 		}
 		else {
 			Log.Add(1, "Task %d not assigned", task.id);

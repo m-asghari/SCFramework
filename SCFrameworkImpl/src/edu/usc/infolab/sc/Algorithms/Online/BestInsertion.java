@@ -8,7 +8,7 @@ import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
-public class BestInsertion extends OnlineAlgorithm {
+public class BestInsertion extends SCOnlineAlgorithm {
 
 	public BestInsertion(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers, Grid grid) {
 		super(tasks, workers, grid);

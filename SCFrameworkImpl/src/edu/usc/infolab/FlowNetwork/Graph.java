@@ -53,11 +53,14 @@ public class Graph {
 		ArrayList<Node> nodesArr = new ArrayList<Node>(nodes.values());
 		double[] coef = new double[edgesArr.size()];
 		for (int i = 0; i < edgesArr.size(); i++) {
+			//System.out.print(edgesArr.get(i).GetID());
 			coef[i] = edgesArr.get(i).cost;
 		}
+		//System.out.print("\n");
 		LinearObjectiveFunction f = new LinearObjectiveFunction(coef, 0);
 		ArrayList<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
 		for (int i = 0; i < nodesArr.size(); i++) {
+			//System.out.println("Node: " + nodesArr.get(i).toString());
 			double[] Av = new double[edgesArr.size()];
 			for (int j = 0; j < edgesArr.size(); j++) {
 				if (edgesArr.get(j).start.id == i) {
@@ -72,6 +75,7 @@ public class Graph {
 					Av[j] = 0;
 				}
 			}
+			//Print("Coef", Av);
 			constraints.add(new LinearConstraint(Av, Relationship.EQ, nodesArr.get(i).b));
 		}
 		
@@ -93,6 +97,15 @@ public class Graph {
 		
 	}
 	
+	public void Print(String string, double[] av) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(string + ": ");
+		for (int i = 0; i < av.length; i++) {
+			sb.append(Double.toString(av[i]) + ", ");
+		}
+		System.out.println(sb.toString());
+	}
+
 	public void FindMinFlow() {
 		SimplexMethod();
 		/*Double maxB = 0.;

@@ -7,7 +7,7 @@ import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
-public abstract class BestDistribution extends OnlineAlgorithm {
+public abstract class BestDistribution extends SCOnlineAlgorithm {
 	protected CountDistribution distW;
 	protected CountDistribution distT;
 	protected Boolean updateDistT;
