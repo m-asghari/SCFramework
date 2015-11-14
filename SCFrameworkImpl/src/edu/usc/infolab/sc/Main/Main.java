@@ -37,7 +37,7 @@ public class Main {
 		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
-		RunMultipleTests(input, 20);
+		RunMultipleTests(input, 2);
 		//ChangeRateOfTasks(input);
 		//ChangeRateOfWorkers(input);
 		//RunSingleTests(input);
@@ -144,7 +144,7 @@ public class Main {
 		Random rndAlgo = new Random(tasks, workers, grid.clone());
 		int endTime = rndAlgo.Run();
 		Result.Add(ASSIGNMENT_STAT, Result.GetAssignmentStats("Rnd", new ArrayList<Task>(tasks.values())));
-		SaveToFile(input+".str", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
+		SaveToFile(input+".Random.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -278,14 +278,14 @@ public class Main {
 	}
 	
 	private static String RunOnlineAlgorithms(String input) {
-		//String rndResults = RunRandom(input);
-		//String rnkResults = RunRanking(input);
+		String rndResults = RunRandom(input);
+		String rnkResults = RunRanking(input);
 		String nnResults = RunNearestNeighbor(input);
-		//String mftResults = RunMostFreeTime(input);
+		String mftResults = RunMostFreeTime(input);
 		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistributionEMD(input);
-		//return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
-		return String.format("%s,%s,%s", nnResults, biResults, bdResults);
+		return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
+		//return String.format("%s,%s,%s", nnResults, biResults, bdResults);
 		//return "";
 	}
 	
