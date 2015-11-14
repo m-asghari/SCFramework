@@ -37,11 +37,8 @@ public class Main {
 		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
-		RunMultipleTests(input, 2);
-		//ChangeRateOfTasks(input);
-		//ChangeRateOfWorkers(input);
-		//RunSingleTests(input);
-		//ChangeNumberOfTasks(input);
+		//RunMultipleTests(input, 2);
+		ChangeRateOfTasksAndWorkers(input);
 
 		
 		Finalize();
@@ -110,16 +107,15 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasksAndWorkers(String config) {
-		double tRate = 60;
-		while (tRate <= 600000) {
-			double wRate = tRate / 12;
-			for (int test = 0; test < 5; test++) {
-				String input = GenerateNewInput(test, config, (int)tRate*10, tRate, wRate);
-				System.out.println(String.format("Starting test %d for rate %.2f", test, tRate));
-				String algoResults = RunOnlineAlgorithms(input);
-				Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
+		for (double tRate = 1; tRate < 1000; tRate += Math.pow(10, Math.floor(Math.log10(tRate)))) {
+			for (double wRate = 0.1; wRate < 100; wRate += Math.pow(10, Math.floor(Math.log10(wRate)))) {
+				for (int test = 0; test < 5; test++) {
+					String input = GenerateNewInput(test, config, Math.max(1000, (int)tRate*10), tRate, wRate);
+					System.out.println(String.format("Starting test %d for tRate %.2f and wRate %.2f", test, tRate, wRate));
+					String algoResults = RunOnlineAlgorithms(input);
+					Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
+				}
 			}
-			tRate *= 10;
 		}
 	}
 	
