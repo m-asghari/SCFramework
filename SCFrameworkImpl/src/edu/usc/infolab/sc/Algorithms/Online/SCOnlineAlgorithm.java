@@ -21,7 +21,7 @@ public abstract class SCOnlineAlgorithm extends OnlineAlgorithm {
 		
 		long worstDecideEligibility = 0;
 		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			//task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
 			Calendar startDecideEligibility = Calendar.getInstance();
@@ -33,6 +33,7 @@ public abstract class SCOnlineAlgorithm extends OnlineAlgorithm {
 			}
 			Calendar endDecideEligibility = Calendar.getInstance();
 			long time = endDecideEligibility.getTimeInMillis() - startDecideEligibility.getTimeInMillis();
+			task.assignmentStat.workerFreeTimes.add(time);
 			if (time > worstDecideEligibility)
 				worstDecideEligibility = time;
 			Log.Add(5, "\tWorker %d cannot perform the task", w.id);

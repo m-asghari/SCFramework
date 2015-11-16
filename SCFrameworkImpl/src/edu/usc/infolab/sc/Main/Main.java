@@ -37,8 +37,9 @@ public class Main {
 		String input = "SkewedTasks_4";
 		Initialize(5, input);
 		
-		//RunMultipleTests(input, 2);
-		ChangeRateOfTasksAndWorkers(input);
+		RunMultipleTests(input, 5);
+		//ChangeRateOfTasks(input);
+		//ChangeNumberOfTasks(input);
 
 		
 		Finalize();
@@ -62,7 +63,7 @@ public class Main {
 	
 	protected static void ChangeNumberOfTasks(String config) {
 		//int size = 100;
-		int[] sizes = {1000, 2500, 5000};
+		int[] sizes = {100, 500, 1000, 2500, 5000};
 		//while (size <= 2000) {
 		for (int size : sizes) {
 			for (int test = 0; test < 5; test++) {
@@ -80,7 +81,7 @@ public class Main {
 	
 	protected static void ChangeRateOfTasks(String config) {
 		double rate = 60;
-		while (rate <= 600000 ) {
+		while (rate <= 300000 ) {
 			for (int test = 0; test < 5; test++) {
 				String input = GenerateNewInput(test, config, 1000, rate);
 				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
@@ -350,9 +351,11 @@ public class Main {
 						t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.totalTime, 
 						t.assignmentStat.availableWorkers, t.assignmentStat.eligibleWorkers);
 				StringBuilder sb = new StringBuilder();
-				for (Integer i : t.assignmentStat.workerFreeTimes) {
-					sb.append(i);
-					sb.append(";");
+				for (Long i : t.assignmentStat.workerFreeTimes) {
+					if (!i.toString().equals("0")) {
+						sb.append(i.toString());
+						sb.append(";");
+					}
 				}
 				String p2 = sb.toString();
 				if (p2.length() > 0)

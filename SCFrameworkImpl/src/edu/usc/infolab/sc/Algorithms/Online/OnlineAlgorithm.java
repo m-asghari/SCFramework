@@ -163,7 +163,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		
 		long worstDecideEligibilityTime = 0;
 		for (Worker w : availableWorkers) {
-			task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
+			//task.assignmentStat.workerFreeTimes.add(w.retractFrame - w.GetCompleteTime(currentFrame).intValue());
 			task.assignmentStat.availableWorkers++;
 			Log.Add(5, "Worker %d has %d tasks scheduled.", w.id, w.GetSchedule().size());
 			Calendar startDecideEligibilityTime = Calendar.getInstance();
@@ -174,6 +174,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			}
 			Calendar endDecideEligibilityTime = Calendar.getInstance();
 			long decideEligibilityTime = endDecideEligibilityTime.getTimeInMillis() - startDecideEligibilityTime.getTimeInMillis();
+			task.assignmentStat.workerFreeTimes.add(decideEligibilityTime);
 			if (decideEligibilityTime > worstDecideEligibilityTime) {
 				worstDecideEligibilityTime = decideEligibilityTime;
 			}

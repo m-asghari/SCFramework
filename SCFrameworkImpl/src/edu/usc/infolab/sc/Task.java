@@ -11,16 +11,17 @@ public class Task extends SpatialEntity{
 		public int completed;
 		public int eligibleWorkers;
 		public int availableWorkers;
-		public ArrayList<Integer> workerFreeTimes;
+		public ArrayList<Long> workerFreeTimes;
 		public long decideEligibilityTime;
 		public long selectWorkerTime;
 		public long totalTime;
+		public ArrayList<Integer> decTimes;
 		
 		private AssignmentStat(AssignmentStat as) {
 			this.assigned = as.assigned;
 			this.eligibleWorkers = as.eligibleWorkers;
 			this.availableWorkers = as.availableWorkers;
-			this.workerFreeTimes = new ArrayList<Integer>(as.workerFreeTimes);
+			this.workerFreeTimes = new ArrayList<Long>(as.workerFreeTimes);
 		}
 		
 		public AssignmentStat() {
@@ -31,7 +32,7 @@ public class Task extends SpatialEntity{
 			this.decideEligibilityTime = 0;
 			this.selectWorkerTime = 0;
 			this.totalTime = 0;
-			workerFreeTimes = new ArrayList<Integer>();
+			workerFreeTimes = new ArrayList<Long>();
 		}
 		
 		public AssignmentStat clone() {

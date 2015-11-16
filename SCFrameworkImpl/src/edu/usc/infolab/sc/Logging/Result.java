@@ -146,7 +146,7 @@ public final class Result{
 		sb.append(algorithm);
 		for (Task t : tasks) {
 			Double sum = 0.0;
-			for (int ft : t.assignmentStat.workerFreeTimes) {
+			for (long ft : t.assignmentStat.workerFreeTimes) {
 				sum += ft;
 			}
 			sb.append(String.format(",%.2f", sum / t.assignmentStat.workerFreeTimes.size()));

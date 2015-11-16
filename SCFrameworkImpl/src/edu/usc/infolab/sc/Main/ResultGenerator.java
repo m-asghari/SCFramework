@@ -83,6 +83,7 @@ public class ResultGenerator {
 				//Result jsd = res.get(JSD).get(i);
 				Result emd = res.get(EMD).get(i);
 				line.append(emd.ID + ",");
+				line.append(emd.TaskCount + ",");
 				line.append(rnd.NumOfAssignedTasks + ",");
 				line.append(rnk.NumOfAssignedTasks + ",");
 				line.append(nn.NumOfAssignedTasks + ",");
@@ -123,6 +124,14 @@ public class ResultGenerator {
 				//line.append(adhoc.TotalTime + ",");
 				//line.append(jsd.TotalTime + ",");
 				line.append(emd.TotalTime + ",");
+				line.append(rnd.EligibleWorkers + ",");
+				line.append(rnk.EligibleWorkers + ",");
+				line.append(nn.EligibleWorkers + ",");
+				line.append(mft.EligibleWorkers + ",");
+				line.append(bi.EligibleWorkers + ",");
+				//line.append(adhoc.EligibleWorkers + ",");
+				//line.append(jsd.EligibleWorkers + ",");
+				line.append(emd.EligibleWorkers + ",");
 				line.append(rnd.AvgTraveledDistancePerTask + ",");
 				line.append(rnk.AvgTraveledDistancePerTask + ",");
 				line.append(nn.AvgTraveledDistancePerTask + ",");
@@ -148,19 +157,23 @@ public class ResultGenerator {
 		for (Task t : tasks) {
 			if (t.assignmentStat.assigned == 1)
 				result.NumOfAssignedTasks++;
-			if (t.assignmentStat.completed == 1) 
+			if (t.assignmentStat.completed == 1) {
 				result.NumOfCompletedTasks++;
+				result.EligibleWorkers += t.assignmentStat.eligibleWorkers;
+				result.TotalTime += t.assignmentStat.totalTime;	
+			}
 			result.DecideEligibilityRunTime += t.assignmentStat.decideEligibilityTime;
 			result.SelectWorkerRunTime += t.assignmentStat.selectWorkerTime;
-			result.TotalTime += t.assignmentStat.totalTime;
 		}
 		for (Worker w : workers) {
 			result.AvgTraveledDistancePerTask += w.travledDistance;
 		}
 		result.DecideEligibilityRunTime /= tasks.size();
 		result.SelectWorkerRunTime /= tasks.size();
-		result.TotalTime /= tasks.size();
+		result.TotalTime /= result.NumOfCompletedTasks;
+		result.EligibleWorkers /= result.NumOfCompletedTasks;
 		result.AvgTraveledDistancePerTask /= result.NumOfCompletedTasks;
+		result.TaskCount = tasks.size();
 		return result;
 	}
 
@@ -189,7 +202,7 @@ public class ResultGenerator {
 				if (params.length > 10) {
 					String[] times = params[10].split(";");
 					for (int j = 0; j < times.length; j++) {
-						t.assignmentStat.workerFreeTimes.add(Integer.parseInt(times[j]));
+						t.assignmentStat.workerFreeTimes.add(Long.parseLong(times[j]));
 					}
 				}
 				tasks.add(t);
