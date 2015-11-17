@@ -41,6 +41,9 @@
 \setcounter{bottomnumber}{100}
 \setcounter{topnumber}{100}
 
+% URLs
+\usepackage{url}
+
 \newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
 \title{A Formal Treatment of the Task Assignment Problem in Spatial Crowdsourcing}
@@ -57,7 +60,15 @@
 
 \maketitle
 \begin{abstract}
-Spatial crowdsourcing engages individuals, groups, and communities in the act of collecting, analyzing, and disseminating urban, social, and other spatiotemporal information. This new paradigm of data collection has shown to be useful when traditional means fail (e.g., due to disaster), are censored or do not scale in time and space.  The main enablers of spatial crowdsourcing are mobile devices. 
+A new platform, termed spatial crowdsourcing (SC), is emerging that enables a requester to commission workers to physically travel to some specified locations to perform a set of spatial tasks (i.e., tasks related to a geographical location and time). Enabled by the pervasiveness of mobile devices, spatial crowdsourcing engages individuals, groups, and communities in the act of collecting urban, social, and other spatiotemporal information at scale and on demand.
+
+For spatial crowdsourcing to scale to millions of workers and tasks, it should be able to efficiently assign tasks to workers, considering various spatiotemporal constraints and optimization objectives.
+
+In this paper, we take a fundamental look at task assignment in SC. We formally define the problem, prove it is NP-Complete and for the first time propose a clairvoyant offline algorithm that gives the globally optimal assignment. 
+
+Subsequently, we study the more practical online version of the problem where information regarding each task (or worker) is known only when the task (or the worker) becomes available. For this online problem, we propose an auction-based framework where workers bid on every arriving task, resulting in a real-time online algorithm for assigning tasks to workers. This algorithm simultaneously \emph{assigns} and \emph{schedules} tasks. 
+
+Through various experiments, we evaluate the accuracy of the real-time algorithm by comparing it with the clairvoyant algorithm for small number of tasks. For larger data sets, we compare the accuracy and efficiency of our real-time algorithm with other online algorithms proposed for related problems. We show how those other algorithms cannot generate as good of an assignment because they do not consider the dynamism and/or the spatiotemporal characteristics of SC.
 
 %With spatial crowdsourcing, the goal is to efficiently outsource a set of spatiotemporal tasks (i.e., tasks related to time and location) to a set of workers, which requires the workers to perform the tasks by physically traveling to those locations.  Hence, spatial crowdsourcing strategies must be designed to take advantage of large population of human workers for ad-hoc spatiotemporal tasks -- they must consider the environment's dynamism (i.e., tasks and workers come and go) and scale.
 
@@ -65,7 +76,7 @@ Spatial crowdsourcing engages individuals, groups, and communities in the act of
 
 %Spatial crowdsourcing (\textit{SC}) engages individuals, groups, and communities in the act of collecting, analyzing, and disseminating spatiotemporal information. This new paradigm of data collection has shown to be useful when traditional means fail (e.g., due to disaster), are censored or do not scale in time and space. The main enablers of spatial crowdsourcing are mobile devices. With spatial crowdsourcing, the goal is to efficiently outsource a set of spatiotemporal tasks (i.e., tasks related to time and location) to a set of workers, which requires the workers to perform the tasks by \textit{physically traveling} to those locations.
 
-In this paper, we take a closer look at task assignment in SC. We formally define the problem, prove it is NP-Complete and for the first time propose an algorithms which gives the globally optimum assignment. Then we study the online version of the problem where information regarding each task (\textbackslash worker) is known, only when the task (\textbackslash worker) becomes available. For this we propose an auction-based framework where workers bid on every arriving task and the server decides on which worker to assign the task to. We introduce a real-time algorithm for assigning tasks to workers. This requires simultaneously \textit{assigning} and \textit{scheduling} tasks. Through various experiments, we compare the results of the real-time algorithm with the globally optimal assignment for small number of tasks. For larger data sets, we compare our real-time algorithm with algorithms proposed for similar problems. We show how other algorithms are not able to generate as good assignments since they do not consider the dynamism that exist in SC.
+%In this paper, we take a closer look at task assignment in SC. We formally define the problem, prove it is NP-Complete and for the first time propose an algorithms which gives the globally optimum assignment. Then we study the online version of the problem where information regarding each task (\textbackslash worker) is known, only when the task (\textbackslash worker) becomes available. For this we propose an auction-based framework where workers bid on every arriving task and the server decides on which worker to assign the task to. We introduce a real-time algorithm for assigning tasks to workers. This requires simultaneously \textit{assigning} and \textit{scheduling} tasks. Through various experiments, we compare the results of the real-time algorithm with the globally optimal assignment for small number of tasks. For larger data sets, we compare our real-time algorithm with algorithms proposed for similar problems. We show how other algorithms are not able to generate as good assignments since they do not consider the dynamism that exist in SC.
 
 \end{abstract}
 
