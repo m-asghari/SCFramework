@@ -1,6 +1,6 @@
 <DataSpecification>
-	<Grid minx="0" miny="0" maxx="360" maxy="360" w="60" l="60"/>
-	<Tasks size="100" releaseMode="PerMinute">
+	<Grid minx="0" miny="0" maxx="360" maxy="360" w="120" l="120"/>
+	<Tasks size="1000" releaseMode="PerMinute">
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.20">
 				<Settings>
@@ -50,12 +50,12 @@
 		<ReleaseTime>
 			<Distribution name="Poisson" prob="1">
 				<Settings>
-					<mean value="2"/>
+					<mean value="20"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
 		<Duration>
-			<Distribution name="Uniform" prob="0.25">
+			<Distribution name="Uniform" prob="0.5">
 				<Settings>
 					<min value="200"/>
 					<max value="300"/>
@@ -77,7 +77,7 @@
 			</Distribution>
 		</Value>
 	</Tasks>
-	<Workers releaseMode="PerMinute" available="8">
+	<Workers releaseMode="PerMinute" available="10">
 		<Location>
 			<Distribution name="Uniform2D" prob="-1">
 				<Settings>
@@ -91,14 +91,14 @@
 		<ReleaseTime>
 			<Distribution name="Poisson" prob="1">
 				<Settings>
-					<mean value="0.66"/>
+					<mean value="3"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
 		<Duration>
 			<Distribution name="Normal" prob="1">
 				<Settings>
-					<mean value="720"/>
+					<mean value="960"/>
 					<sd value="180"/>
 				</Settings>
 			</Distribution>
@@ -106,8 +106,8 @@
 		<MaxTasks>
 			<Distribution name="Uniform" prob="1">
 				<Settings>
-					<min value="8"/>
-					<max value="12"/>
+					<min value="5"/>
+					<max value="8"/>
 				</Settings>
 			</Distribution>
 		</MaxTasks>

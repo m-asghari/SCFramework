@@ -124,7 +124,7 @@ public final class Result{
 		Log.Add(0, "Max Traveled Distance (Per Task): %.2f", maxTraveledDistancePerTask);
 		Log.Add(0, "Avg Worker Utility: %.2f", avgWorkerUtility);
 		String summary = String.format("%d,%d,%.2f,%.2f,%.2f,%.2f", 
-				assignedTasks, completedTasks, totalTraveledDistance, avgTraveledDistancePerTask,
+				assignedTasks, completedTasks, eligibleWorkerAvg, avgTraveledDistancePerTask,
 				runTimeDecideAvg, runTimeSelectAvg); 
 		Log.Add(0, summary);
 		return summary;
@@ -146,7 +146,7 @@ public final class Result{
 		sb.append(algorithm);
 		for (Task t : tasks) {
 			Double sum = 0.0;
-			for (int ft : t.assignmentStat.workerFreeTimes) {
+			for (long ft : t.assignmentStat.workerFreeTimes) {
 				sum += ft;
 			}
 			sb.append(String.format(",%.2f", sum / t.assignmentStat.workerFreeTimes.size()));

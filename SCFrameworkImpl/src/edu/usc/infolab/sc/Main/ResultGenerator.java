@@ -13,6 +13,7 @@ import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
 public class ResultGenerator {
+	private static final String RND = "Random";
 	private static final String RNK = "Ranking";
 	private static final String NN = "NearestNeighbor";
 	private static final String BI = "BestInsersion";
@@ -28,12 +29,13 @@ public class ResultGenerator {
 		private static final long serialVersionUID = 1L;
 
 		{
+			put(RND, new ArrayList<Result>());
 			put(RNK, new ArrayList<Result>());
 			put(NN, new ArrayList<Result>());
 			put(BI, new ArrayList<Result>());
 			put(MFT, new ArrayList<Result>());
-			put(ADHOC, new ArrayList<Result>());
-			put(JSD, new ArrayList<Result>());
+			//put(ADHOC, new ArrayList<Result>());
+			//put(JSD, new ArrayList<Result>());
 			put(EMD, new ArrayList<Result>());
 		}
 	};
@@ -46,7 +48,12 @@ public class ResultGenerator {
 			String method = GetMethod(file.getName());
 			if (method != null) {
 				//System.out.println(file.getName());
-				String id = file.getName().substring(9, file.getName().indexOf("."));
+				String id = "";
+				try {
+					id = file.getName().substring(9, file.getName().indexOf("."));
+				}
+				catch (Exception e) {
+				}
 				Pair<ArrayList<Task>, ArrayList<Worker>> entities = ReadFileContents(file);
 				ArrayList<Task> tasks = new ArrayList<Task>(entities.First);
 				ArrayList<Worker> workers = new ArrayList<Worker>(entities.Second);
@@ -64,44 +71,74 @@ public class ResultGenerator {
 		try {
 			fw = new FileWriter(new File(dir, "ResultGenerator_Results.csv"));
 			bw = new BufferedWriter(fw);
-			int lines = res.get("Ranking").size();
+			int lines = res.get(BI).size();
 			for (int i = 0; i < lines; i++) {
 				StringBuilder line = new StringBuilder();
+				Result rnd = res.get(RND).get(i);
 				Result rnk = res.get(RNK).get(i);
 				Result nn = res.get(NN).get(i);
 				Result bi = res.get(BI).get(i);
 				Result mft = res.get(MFT).get(i);
-				Result adhoc = res.get(ADHOC).get(i);
-				Result jsd = res.get(JSD).get(i);
+				//Result adhoc = res.get(ADHOC).get(i);
+				//Result jsd = res.get(JSD).get(i);
 				Result emd = res.get(EMD).get(i);
-				line.append(rnk.ID + ",");
+				line.append(emd.ID + ",");
+				line.append(emd.TaskCount + ",");
+				line.append(rnd.NumOfAssignedTasks + ",");
 				line.append(rnk.NumOfAssignedTasks + ",");
 				line.append(nn.NumOfAssignedTasks + ",");
-				line.append(bi.NumOfAssignedTasks + ",");
 				line.append(mft.NumOfAssignedTasks + ",");
-				line.append(adhoc.NumOfAssignedTasks + ",");
-				line.append(jsd.NumOfAssignedTasks + ",");
+				line.append(bi.NumOfAssignedTasks + ",");
+				//line.append(adhoc.NumOfAssignedTasks + ",");
+				//line.append(jsd.NumOfAssignedTasks + ",");
 				line.append(emd.NumOfAssignedTasks + ",");
+				line.append(rnd.NumOfCompletedTasks + ",");
+				line.append(rnk.NumOfCompletedTasks + ",");
+				line.append(nn.NumOfCompletedTasks + ",");
+				line.append(mft.NumOfCompletedTasks + ",");
+				line.append(bi.NumOfCompletedTasks + ",");
+				//line.append(adhoc.NumOfCompletedTasks + ",");
+				//line.append(jsd.NumOfCompletedTasks + ",");
+				line.append(emd.NumOfCompletedTasks + ",");
+				line.append(rnd.DecideEligibilityRunTime + ",");
 				line.append(rnk.DecideEligibilityRunTime + ",");
 				line.append(nn.DecideEligibilityRunTime + ",");
-				line.append(bi.DecideEligibilityRunTime + ",");
 				line.append(mft.DecideEligibilityRunTime + ",");
-				line.append(adhoc.DecideEligibilityRunTime + ",");
-				line.append(jsd.DecideEligibilityRunTime + ",");
+				line.append(bi.DecideEligibilityRunTime + ",");
+				//line.append(adhoc.DecideEligibilityRunTime + ",");
+				//line.append(jsd.DecideEligibilityRunTime + ",");
 				line.append(emd.DecideEligibilityRunTime + ",");
+				line.append(rnd.SelectWorkerRunTime + ",");
 				line.append(rnk.SelectWorkerRunTime + ",");
 				line.append(nn.SelectWorkerRunTime + ",");
-				line.append(bi.SelectWorkerRunTime + ",");
 				line.append(mft.SelectWorkerRunTime + ",");
-				line.append(adhoc.SelectWorkerRunTime + ",");
-				line.append(jsd.SelectWorkerRunTime + ",");
+				line.append(bi.SelectWorkerRunTime + ",");
+				//line.append(adhoc.SelectWorkerRunTime + ",");
+				//line.append(jsd.SelectWorkerRunTime + ",");
 				line.append(emd.SelectWorkerRunTime + ",");
+				line.append(rnd.TotalTime + ",");
+				line.append(rnk.TotalTime + ",");
+				line.append(nn.TotalTime + ",");
+				line.append(mft.TotalTime + ",");
+				line.append(bi.TotalTime + ",");
+				//line.append(adhoc.TotalTime + ",");
+				//line.append(jsd.TotalTime + ",");
+				line.append(emd.TotalTime + ",");
+				line.append(rnd.EligibleWorkers + ",");
+				line.append(rnk.EligibleWorkers + ",");
+				line.append(nn.EligibleWorkers + ",");
+				line.append(mft.EligibleWorkers + ",");
+				line.append(bi.EligibleWorkers + ",");
+				//line.append(adhoc.EligibleWorkers + ",");
+				//line.append(jsd.EligibleWorkers + ",");
+				line.append(emd.EligibleWorkers + ",");
+				line.append(rnd.AvgTraveledDistancePerTask + ",");
 				line.append(rnk.AvgTraveledDistancePerTask + ",");
 				line.append(nn.AvgTraveledDistancePerTask + ",");
-				line.append(bi.AvgTraveledDistancePerTask + ",");
 				line.append(mft.AvgTraveledDistancePerTask + ",");
-				line.append(adhoc.AvgTraveledDistancePerTask + ",");
-				line.append(jsd.AvgTraveledDistancePerTask + ",");
+				line.append(bi.AvgTraveledDistancePerTask + ",");
+				//line.append(adhoc.AvgTraveledDistancePerTask + ",");
+				//line.append(jsd.AvgTraveledDistancePerTask + ",");
 				line.append(emd.AvgTraveledDistancePerTask + "\n");
 				bw.write(line.toString());
 			}
@@ -120,6 +157,11 @@ public class ResultGenerator {
 		for (Task t : tasks) {
 			if (t.assignmentStat.assigned == 1)
 				result.NumOfAssignedTasks++;
+			if (t.assignmentStat.completed == 1) {
+				result.NumOfCompletedTasks++;
+				result.EligibleWorkers += t.assignmentStat.eligibleWorkers;
+				result.TotalTime += t.assignmentStat.totalTime;	
+			}
 			result.DecideEligibilityRunTime += t.assignmentStat.decideEligibilityTime;
 			result.SelectWorkerRunTime += t.assignmentStat.selectWorkerTime;
 		}
@@ -128,7 +170,10 @@ public class ResultGenerator {
 		}
 		result.DecideEligibilityRunTime /= tasks.size();
 		result.SelectWorkerRunTime /= tasks.size();
-		result.AvgTraveledDistancePerTask /= result.NumOfAssignedTasks;
+		result.TotalTime /= result.NumOfCompletedTasks;
+		result.EligibleWorkers /= result.NumOfCompletedTasks;
+		result.AvgTraveledDistancePerTask /= result.NumOfCompletedTasks;
+		result.TaskCount = tasks.size();
 		return result;
 	}
 
@@ -145,17 +190,19 @@ public class ResultGenerator {
 				String[] params = newLine.split(",");
 				Task t = new Task();
 				t.assignmentStat.assigned = Integer.parseInt(params[0]);
-				t.releaseFrame = Integer.parseInt(params[1]);
-				t.retractFrame = Integer.parseInt(params[2]);
-				t.value = Integer.parseInt(params[3]);
-				t.assignmentStat.decideEligibilityTime = Integer.parseInt(params[4]);
-				t.assignmentStat.selectWorkerTime = Integer.parseInt(params[5]);
-				t.assignmentStat.availableWorkers = Integer.parseInt(params[6]);
-				t.assignmentStat.eligibleWorkers = Integer.parseInt(params[7]);
-				if (params.length > 8) {
-					String[] times = params[8].split(";");
+				t.assignmentStat.completed = Integer.parseInt(params[1]);
+				t.releaseFrame = Integer.parseInt(params[2]);
+				t.retractFrame = Integer.parseInt(params[3]);
+				t.value = Integer.parseInt(params[4]);
+				t.assignmentStat.decideEligibilityTime = Integer.parseInt(params[5]);
+				t.assignmentStat.selectWorkerTime = Integer.parseInt(params[6]);
+				t.assignmentStat.totalTime = Integer.parseInt(params[7]);
+				t.assignmentStat.availableWorkers = Integer.parseInt(params[8]);
+				t.assignmentStat.eligibleWorkers = Integer.parseInt(params[9]);
+				if (params.length > 10) {
+					String[] times = params[10].split(";");
 					for (int j = 0; j < times.length; j++) {
-						t.assignmentStat.workerFreeTimes.add(Integer.parseInt(times[j]));
+						t.assignmentStat.workerFreeTimes.add(Long.parseLong(times[j]));
 					}
 				}
 				tasks.add(t);
@@ -183,7 +230,6 @@ public class ResultGenerator {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		
 		return null;
 	}

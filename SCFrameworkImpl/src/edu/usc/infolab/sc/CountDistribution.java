@@ -99,13 +99,24 @@ public class CountDistribution {
 		Node.Reset();
 		HashMap<Integer, Node> pNodes = new HashMap<Integer, Node>();
 		HashMap<Integer, Node> nNodes	= new HashMap<Integer, Node>();
+		Double pdiff = 0.0;
+		Double ndiff = 0.0;
+		int lastNCell = -1;
 		for (int cell = 0; cell < Q.grid.size(); cell++) {
 			Double diff = (P.Prob(cell) - Q.Prob(cell)) * 100;
 			if (diff > 0) {
 				pNodes.put(cell, new Node(diff));
+				pdiff += diff;
 			} else if (diff < 0) {
 				nNodes.put(cell, new Node(diff));
+				lastNCell = cell;
+				ndiff += diff;
 			}
+		}
+		if (pdiff + ndiff != 0) {
+			//System.out.println(String.format("pidff = %.10f, ndiff = %.10f", pdiff, ndiff));
+			Double diff = pdiff + ndiff;
+			nNodes.get(lastNCell).b -= diff;
 		}
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		nodes.addAll(pNodes.values());

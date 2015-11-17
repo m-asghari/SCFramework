@@ -68,14 +68,29 @@ public class Worker extends SpatialEntity{
 		this.remainingTasks = new ArrayList<Task>(tasks);
 	}
 	
-	public boolean ComputeSchedule(Task t, int currentFrame) {
-		ArrayList<Task> tasksOrder = new ArrayList<Task>();
-		tasksOrder = CanPerform(t, currentFrame);
-		if (tasksOrder != null) {
-			SetSchedule(tasksOrder);
-			return true;
+	public Pair<Task, Task> ComputeSchedule(Task t, int currentFrame) {
+		Pair<Task, Task> retValue = new Pair<Task, Task>(null, null);
+		ArrayList<Task> potentialTasks = new ArrayList<>(this.remainingTasks);
+		potentialTasks.add(t);
+		Pair<ArrayList<Task>, Double> res = CanPerform(new ArrayList<Task>(), potentialTasks, currentFrame, null, Double.MAX_VALUE);
+		if (res.First != null && res.First.size() == potentialTasks.size()) {
+			this.SetSchedule(res.First);
+			return new Pair<Task, Task>(t, null);
 		}
-		return false;
+		double bestCompleteTime = this.GetCompleteTime(currentFrame);
+		ArrayList<Task> bestOrder = new ArrayList<Task>(this.remainingTasks);
+		for (int i = 0; i < this.remainingTasks.size(); i++) {
+			ArrayList<Task> temp = new ArrayList<Task>(potentialTasks);
+			temp.remove(i);
+			Pair<ArrayList<Task>, Double> tempRes = this.CanPerform(new ArrayList<Task>(), temp, currentFrame, null, Double.MAX_VALUE);
+			if (tempRes.First != null && tempRes.Second.compareTo(bestCompleteTime) < 0) {
+				bestOrder = new ArrayList<Task>(tempRes.First);
+				bestCompleteTime = tempRes.Second;
+				retValue = new Pair<Task, Task>(t, remainingTasks.get(i));
+			}
+		}		
+		this.SetSchedule(bestOrder);
+		return retValue;
 	}
 
 	public PTSs GetPTSSet() {
@@ -132,12 +147,16 @@ public class Worker extends SpatialEntity{
 	}
 	
 	
-	// Output: If worker still has room to accept more tasks. Used for non-SC online assignment.
-	public ArrayList<Task> CanPerform() {
+	public boolean CanReach(Task task, int currentFrame) {
 		if (assignedTasks.size() == maxNumberOfTasks) {
-			return null;
+			return false;
 		}
-		return new ArrayList<Task>();
+		
+		/*double dist = this.location.distance(task.location);
+		if (dist > (double)(retractFrame - currentFrame) || dist || (double)(task.retractFrame - currentFrame)) {
+			return false;
+		}*/
+		return true;
 	}
 	
 	// Input: One task
