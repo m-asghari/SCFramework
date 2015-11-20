@@ -1,14 +1,24 @@
 package edu.usc.infolab.sc.data.real;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 import edu.usc.infolab.sc.Grid;
+import edu.usc.infolab.sc.Pair;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 
@@ -62,22 +72,19 @@ public class FlickrProcessor extends RealDataProcessor {
 	
 	private boolean firstLine;
 	
-	//private final String listRegex = "\"\\{[^\\{]*\\}\"";
-	//private final String emptyList = "";
-	
-	private double maxLat = 34.314944;
-	private double minLat = 33.537819;
-	private double maxLng = -117.487827;
-	private double minLng = -118.957248;
+	private final Pair<String, String> titleField = 
+			new Pair<String, String>("\",\".*\",\"\\{" , "\", ,\"\\{");
+	private final Pair<String, String> tagsField = 
+			new Pair<String, String>(",\"\\{.*\\}\",", ", ,");
 	
 	private final long durationThreshold 
-			= 3L	/* hours*/ 
+			= 5L	/* hours*/ 
 			* 60	/* minutes/hour */
 			* 60	/* seconds/minute */;
 			//* 1000	/* milliseconds/second*/; 
 	
-	public FlickrProcessor(String source, String dest) {
-		super(source, dest);
+	public FlickrProcessor(String source, String dest, City city) {
+		super(source, dest, city);
 		firstLine = true;
 	}
 
@@ -89,12 +96,12 @@ public class FlickrProcessor extends RealDataProcessor {
 		}
 		
 		line = line
-				.replaceFirst("\",\".*\",\"\\{" , "\", ,\"\\{") //remove title field
-				.replaceFirst(",\"\\{.*\\}\",", ", ,"); //remove tags field
+				.replaceFirst(titleField.First, titleField.Second) //remove title field
+				.replaceFirst(tagsField.First, tagsField.Second); //remove tags field
 		
 		try {
 			Image img = new Image(line.split(","));
-			if (InRange(img)) {
+			if (InRange(city, img)) {
 				bw.write(img.toString());
 				bw.flush();
 			}			
@@ -105,7 +112,7 @@ public class FlickrProcessor extends RealDataProcessor {
 	}
 
 	@Override
-	public void GenerateSCInput() {
+	public void GenerateSCInput(int num) {
 		try {
 			FileReader fr = new FileReader(parsedData);
 			BufferedReader br = new BufferedReader(fr);
@@ -114,36 +121,105 @@ public class FlickrProcessor extends RealDataProcessor {
 			ArrayList<Worker> workers = new ArrayList<Worker>();
 			
 			String line = "";
+			Random rand = new Random();
+			ArrayList<Task> plotting_tasks = new ArrayList<Task>();
 			while ((line = br.readLine()) != null) {
 				Image img = new Image(line.split(","));
-				Point2D.Double loc = FitToGrid(img.lat, img.lng);
-				int frame1 = CalendarToFrame(img.dateTaken);
-				int frame2 = CalendarToFrame(img.dateUploaded);
-				int releaseFrame = (frame1 > frame2) ? frame2 : frame1;
-				int retrarcFrame = (frame1 > frame2) ? frame1 : frame2;
-				int duration = retrarcFrame - releaseFrame;
-				if (duration < durationThreshold) {
+				
+				Task pt = new Task();
+				pt.location = new Point2D.Double(img.lat - city.minLat, img.lng - city.minLng);
+				plotting_tasks.add(pt);
+				
+				Point2D.Double loc = FitToGrid(city, img.lat, img.lng);
+				//int frame1 = CalendarToFrame(img.dateTaken);
+				//int frame2 = CalendarToFrame(img.dateUploaded);
+				//int releaseFrame = (frame1 > frame2) ? frame2 : frame1;
+				//int retrarcFrame = (frame1 > frame2) ? frame1 : frame2;
+				//int duration = retrarcFrame - releaseFrame;
+				//if (durationThreshold > duration) {
+				int releaseFrame = CalendarToFrame(img.dateTaken);
+				if (rand.nextDouble() < 0.85) {
 					//Task
 					Task t = new Task();
 					t.location = loc;
 					t.releaseFrame = releaseFrame;
-					t.retractFrame = retrarcFrame;
+					//t.retractFrame = retrarcFrame;
+					if (rand.nextDouble() < 0.25) {
+						t.retractFrame = releaseFrame + (rand.nextInt(101) + 200);
+					}
+					else {
+						t.retractFrame = releaseFrame + (rand.nextInt(91) + 50);
+					}
 					t.value = 1;
 					tasks.add(t);
 				}
 				else {
 					//Worker
+					Worker w = new Worker();
+					//w.location = loc;
+					w.location = new Point2D.Double(
+							rand.nextDouble() * (gridMaxLat - gridMinLat),
+							rand.nextDouble() * (gridMaxLng - gridMinLng));
+					w.releaseFrame = releaseFrame;
+					//w.retractFrame = retrarcFrame;
+					w.retractFrame = releaseFrame + (int)(rand.nextGaussian() * 180 + 720);
+					w.maxNumberOfTasks = 4 + rand.nextInt(3);
+					workers.add(w);
 				}
 			}
 			br.close();
 			fr.close();
 			
-			Collections.sort(tasks);
-			SaveData(grid, tasks, workers, "res//Flickr//Output.xml");
+			
+			
+			for (int test = 0; test < num; test++) {
+				ArrayList<Task> sampled_tasks = new ArrayList<Task>();
+				for (int i = 0; i < 15000; i++) {
+					int idx = rand.nextInt(tasks.size());
+					sampled_tasks.add(tasks.get(idx));
+				}
+				PlotTasks(plotting_tasks, city, 600);
+				
+				ArrayList<Worker> sampled_workers = new ArrayList<Worker>();
+				for (int i = 0; i < 3000; i++) {
+					int idx = rand.nextInt(workers.size());
+					sampled_workers.add(workers.get(idx));
+				}
+				
+				Collections.sort(sampled_tasks);
+				Collections.sort(sampled_workers);
+				System.out.println(String.format("#Tasks: %d, #Workers: %d", sampled_tasks.size(), sampled_workers.size()));
+				SaveData(grid, sampled_tasks, sampled_workers, String.format("res//Flickr//flickr_realData_%s_%d_%d.xml", city.name, sampled_tasks.size(), test));
+			}
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String GetStats(){
+		try {
+			FileReader fr = new FileReader(parsedData);
+			BufferedReader br = new BufferedReader(fr);
+			
+			int taskCount = 0;
+			ArrayList<String> workerIDs = new ArrayList<String>();
+			
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				taskCount++;
+				Image img = new Image(line.split(","));
+				if (!workerIDs.contains(img.user)) {
+					workerIDs.add(img.user);
+				}
+			}
+			return String.format("City: %s, #tasks: %d, #workers: %d", city.name, taskCount, workerIDs.size());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 	
 	private int CalendarToFrame(Calendar cal) {
@@ -163,22 +239,41 @@ public class FlickrProcessor extends RealDataProcessor {
 			new Point2D.Double(gridMinLat,gridMinLng), 
 			new Point2D.Double(gridMaxLat, gridMaxLng),
 			(int)((gridMaxLat-gridMinLat)/3), (int)((gridMaxLng-gridMinLng)/3));	
-	private Point2D.Double FitToGrid(double lat, double lng) {
-		double newLat = (((gridMaxLat-gridMinLat)*(lat-minLat))/(maxLat-minLat)) + gridMinLat;
-		double newLng = (((gridMaxLng-gridMinLng)*(lng-minLng))/(maxLng-minLng)) + gridMinLng;
+	private Point2D.Double FitToGrid(City city, double lat, double lng) {
+		double newLat = (((lat - city.minLat)/(city.maxLat-city.minLat))*(gridMaxLat-gridMinLat))+(gridMinLat);
+		double newLng = (((lng - city.minLng)/(city.maxLng-city.minLng))*(gridMaxLng-gridMinLng))+(gridMinLng);
 		return new Point2D.Double(newLat, newLng);
 	}
 	
-	private boolean InRange(Image img) { 
-		if (img.lat > maxLat)
+	private boolean InRange(City city, Image img) { 
+		if (img.lat > city.maxLat)
 			return false;
-		if (img.lat < minLat)
+		if (img.lat < city.minLat)
 			return false;
-		if (img.lng > maxLng)
+		if (img.lng > city.maxLng)
 			return false;
-		if (img.lng < minLng)
+		if (img.lng < city.minLng)
 			return false;
 		return true;
+	}
+	
+	private void PlotTasks(ArrayList<Task> tasks, City city, int scale) {
+		BufferedImage bufferedImage = new BufferedImage(
+				(int)((city.maxLat - city.minLat)*scale),
+				(int)((city.maxLng - city.minLng)*scale),
+				BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
+		
+		g.setColor(Color.RED);
+		for (int i = 0; i < 5000 && i < tasks.size(); i++) {
+			tasks.get(i).Draw(g, scale);
+		}
+		try {
+			ImageIO.write(bufferedImage, "JPG", new File(String.format("%s_tasks_dist.jpg", city.name)));
+		}
+		catch (IOException ioe) {
+			ioe.printStackTrace();
+		}		
 	}
 
 	@Override

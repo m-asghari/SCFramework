@@ -35,11 +35,18 @@ public class Main {
 	
 	public static void main(String[] args) {
 		String input = "SkewedTasks_4";
-		Initialize(5, input);
+		Initialize(0, input);
 		
-		RunMultipleTests(input, 5);
+		//RunMultipleTests(input, 20);
 		//ChangeRateOfTasks(input);
 		//ChangeNumberOfTasks(input);
+		/*String[] cities = new String[]{"LA", "NY", "London", "Paris", "Beijing"};
+		for (String city : cities) {
+			for (int i = 0; i < 20; i++) {
+				RunOnlineAlgorithms(String.format("res\\Flickr\\flickr_realData_%s_15000_%d.xml", city, i));
+			}
+		}*/
+		ChangeSkewnessLevel(input);
 
 		
 		Finalize();
@@ -116,6 +123,18 @@ public class Main {
 					String algoResults = RunOnlineAlgorithms(input);
 					Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
 				}
+			}
+		}
+	}
+	
+	protected static void ChangeSkewnessLevel(String config) {
+		double[] levels = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
+		for (double level : levels) {
+			for (int test = 0; test < 10; test++) {
+				String input = GenerateNewInput(test, config, 1000, 3, 20, level);
+				System.out.println(String.format("Starting test %d for skewness %.2f", test, level));
+				String algoResults = RunOnlineAlgorithms(input);
+				Result.Add(GENERAL, "%.2f,%s", level, algoResults);
 			}
 		}
 	}
@@ -319,6 +338,23 @@ public class Main {
 		Poisson tasksReleaseDist = new Poisson(new PoissonConfig(tasksRate));
 		Poisson workerReleaseDist = new Poisson(new PoissonConfig(workerRate));
 		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, tasksReleaseDist, workerReleaseDist);
+		return inputFile.getPath();
+	}
+	
+	private static String GenerateNewInput(int test, String config, int tasksSize, double taskRate, double workerRate, double skewness) {
+		java.util.Random rand = new java.util.Random();
+		int numOfGausClusters = 4;
+		double[] probs = new double[numOfGausClusters];
+		double sum = 0;
+		for (int i = 0; i < numOfGausClusters; i++) {
+			probs[i] = rand.nextDouble();
+			sum += probs[i];
+		}
+		for (int i = 0; i < numOfGausClusters; i++) {
+			probs[i] = (probs[i] * skewness) / sum;
+		}
+		File inputFile = new File(config, String.format("input%03d_%05d_s%s.xml", test, tasksSize, String.format("%.1f", skewness).replace(".", "")));
+		DataGenerator.GenerateData(String.format("%s.xml", config), inputFile.getPath(), tasksSize, probs);
 		return inputFile.getPath();
 	}
 	

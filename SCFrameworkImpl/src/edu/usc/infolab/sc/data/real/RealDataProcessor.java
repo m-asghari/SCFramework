@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import edu.usc.infolab.sc.data.DateSetGenerator;
 
 public abstract class RealDataProcessor extends DateSetGenerator {
+	protected City city;
 	
 	private String rawData;
 	private FileReader fr;
@@ -17,9 +18,10 @@ public abstract class RealDataProcessor extends DateSetGenerator {
 	protected FileWriter fw;
 	protected BufferedWriter bw;
 	
-	public RealDataProcessor(String source, String dest) {
+	public RealDataProcessor(String source, String dest, City city) {
 		this.rawData = source;
 		this.parsedData = dest;
+		this.city = city;
 	}
 	
 	public void ParseRawData() {
@@ -53,7 +55,7 @@ public abstract class RealDataProcessor extends DateSetGenerator {
 		}
 	}
 	
-	public abstract void GenerateSCInput();
+	public abstract void GenerateSCInput(int num);
 	
 	protected abstract void ParseRow(String line);
 	

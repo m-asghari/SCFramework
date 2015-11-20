@@ -300,6 +300,34 @@ public class DataGenerator {
 		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
 	}
 	
+	public static void GenerateData(String inputFile, String outputFile, int tasksSize, double[] skewnessProbs) {
+		Document input = IO.ReadXML(inputFile);
+		Element dataSpec = input.getDocumentElement();
+		
+		Element gridElement = (Element) dataSpec.getElementsByTagName("Grid").item(0);
+		Grid grid = new Grid(gridElement);
+		
+		Element iTasks = (Element) dataSpec.getElementsByTagName("Tasks").item(0);
+		ReleaseMode tasksReleaseMode = GetReleaseMode(iTasks);
+		TaskGenerator tg = new TaskGenerator(iTasks, grid);
+		double sum = 0;
+		for (int i = 0; i < skewnessProbs.length && i < tg.location.dists.size() - 1; i++) {
+			tg.location.dists.get(i).prob = skewnessProbs[i];
+			sum += skewnessProbs[i];
+		}
+		tg.location.dists.get(tg.location.dists.size()-1).prob = 1 - sum;
+		
+		Element iWorkers = (Element) dataSpec.getElementsByTagName("Workers").item(0);
+		ReleaseMode workersReleaseMode = GetReleaseMode(iWorkers);
+		WorkerGenerator wg = new WorkerGenerator(iWorkers, grid);
+		int availableWorkers = 0;
+		if (workersReleaseMode == ReleaseMode.Available) {
+			availableWorkers = Integer.parseInt(iWorkers.getAttribute("available"));
+		}
+		
+		GenerateData(grid, tg, tasksReleaseMode, tasksSize, wg, workersReleaseMode, availableWorkers, outputFile);
+	}
+	
 	/*public static void GenerateData(String inputFile, String outputFile, int tasksSize, int availableWorkers) {
 		Document input = IO.ReadXML(inputFile);
 		Element dataSpec = input.getDocumentElement();
