@@ -1,123 +1,200 @@
 \section{Experiments}
+\label{sec:experiments}
 
 \subsection{Dataset}
 \label{subsec:dataset}
-Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. For this reason, we generate a realistic streaming workload based on the ideas in \cite{Tang07}. To generate a workload suitable for SC systems we have to model three different sets of parameters:\\
-\textbf{Temporal Parameters:} In \cite{Basu15}, it's shown that in crowdsourcing environments, workers and tasks arrive following a Poisson process\textcolor{red}{\textbf{ref to Poisson process}}. For our experiments, unless stated otherwise, tasks and workers arrive based on a Poisson process with an arrival rate of $\mu_t = 250/hour$ and $\mu_w = 40/hour$ respectively.\\
-\textbf{Spatial Parameters:} Former studies on the SC framework \cite{Kazemi12, Kazemi13, Deng13} have used datasets such as Gowalla\footnote{\url{snap.stanford.edu/data/loc-gowalla.html}} and Yelp\footnote{\url{www.yelp.com/data_challenge/}}  to model the location of the tasks in an SC environment. As shown in \textcolor{red}{\textbf{ref Hien's paper}}, the location of the tasks are not uniformly distributed. Rather, the spatial distribution of tasks are skewed, meaning that the density of the tasks in certain areas is higher. To model the same effect in our workload, 80\% of the tasks are located within 6 Gaussian clusters. The mean and standard deviation of the clusters are selected randomly. The locations of the remaining 20\% of the tasks are uniformly selected. Also, we assume the workers are uniformly distributed in the entire area under study.\\
-\textbf{Static Parameters:} In addition to the spatiotemporal parameters discussed here, there exists a few other parameters that are generated as follows:\\
-\emph{Workload Size:} Unless stated otherwise, each experiment runs on 10K tasks. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
-\emph{Grid Size:} We assume the simulation is run in a $36 \times 36\ mile^2$ area. For the algorithms requiring a grid, the entire area is divided into a $10 \times 10$ grid with equally sized cells.\\
-\emph{$w_{max}$:} The maximum number of tasks a worker can perform is a uniformly random number from the closed interval $\left[8,12 \right]$.
+Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. However, we were able to use a large collection of geo-tagged images from Flickr \cite{Thomee15} as an input to Auction-SC. The dataset consists of \textasciitilde 15 million images with attributes such as location, time taken, time uploaded, the user who took the picture, etc.
 
-\subsection{Online Vs. Offline}
-In the first set of experiments, we compare how the results of different online algorithms compare with the optimal solution computed using the offline clairvoyant algorithm explained in \cref{sec:exactalgo}. Because of the high complexity of the offline algorithm, we were not able to run tests with large workloads. The experiments in this section were conducted using workload with 100 tasks.
+We correspond each image with a spatial task considering that the task was to take a photo at a specific location. We set the deadline of the task to the time the image was taken and the duration of the task to the interval between the time the image was taken and the time it was uploaded. Each user in the dataset corresponds to a worker. The original location of the worker is randomly selected. The worker is available in the interval between the first time he took a photo and the last time he uploaded one. We ran 5 separate instances, each of which with images of a different metropolitan area. \cref{tab:flickr_stats} shows the total number of tasks (and workers) for each city. 
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| l || c | c |} \hline
+			&	\# of Tasks	&	\# of Workers	\\ \hline
+Los Angeles	&	219,332		&		19,081		\\ \hline
+New York	&	390,229		&		17,603		\\ \hline
+London		& 	366,034		&		18,480		\\ \hline
+Paris		&	237,344		&		14,275		\\ \hline
+Beijing		&	23,335		&		1,598		\\ \hline
+\end{tabular}
+\caption{\small{Number of tasks/worker for each city in Flickr dataset}}
+\label{tab:flickr_stats}
+\end{center}
+\end{table}
+
+We also generated a synthetic dataset with realistic streaming workload based on the methodology proposed in \cite{Tang07}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
+
+\vspace{0.1in}
+\noindent \textbf{Temporal Parameters:} In \cite{Basu15}, it is shown that in crowdsourcing environments, workers and tasks arrive following Poisson processes \cite{Stoyan87}.The default Poisson arrival rates for tasks and workers are $\mu_t = 20/min$ and $\mu_w = 3/min$ respectively. Subsequently, the duration of the tasks and workers were randomly sampled from closed range of $\left[1,4 \right]$ hours and $\left[1,8 \right]$ hours respectively.
+
+\vspace{0.1in}
+\noindent \textbf{Spatial Parameters:} \cref{fig:la_flickr} shows the spatial distribution of tasks from our real world dataset in Los Angeles. As depicted the tasks are not uniformly distributed in space. The spatial distribution is rather skewed, meaning that the density of the tasks in certain areas is higher. To model the same behavior in our synthetic workload, we created 6 two dimensional Gaussian clusters with randomly selected means and standard deviations. Eighty percent of the tasks are sampled within the clusters and the rest are uniformly distributed.
+
+\vspace{0.1in}
+\noindent \textbf{Static Parameters:} In addition to the spatiotemporal parameters, we consider two other parameters. The default \emph{workload size} of each experiment is 10K tasks. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
+The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniformly random number from the closed interval $\left[8,12 \right]$.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.4]{figures/la_flickr.jpg}
+	\caption{Spatial Distribution of Tasks in Flickr}\label{fig:la_flickr}
+\end{figure}
+
+\subsection{Online vs. Offline}
+\vspace{0.1in}
+In the first set of experiments, we compare how the results of the real-time algorithms compare with the optimal solution computed using the offline clairvoyant algorithm explained in \cref{sec:exactalgo}. Because of the high complexity of the offline algorithm, we are not able to run tests with large workloads and thus we use workloads with 100 tasks. The experimental results in \cref{fig:off_vs_on} show that the best real-time algorithm perform \textasciitilde 60\% of the optimal solution. Our results are consistent with studies that compute a \emph{competitive ratio} \cite{Sleator85} of $1 - e^{-1}$ for the online matching problem with random inputs \cite{Goel08}.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width = 0.6\columnwidth]{figures/off_vs_on.jpg}
-	\vspace{-0.1in}
-	\caption{Online Vs. Offline}\label{fig:off_vs_on}
+	\caption{Comparison of Offline and Real-time approaches}\label{fig:off_vs_on}
 \end{figure}
 
-The experimental results in \cref{fig:off_vs_on} show that the online algorithms perform within \%55-65 of the optimal solution. These experimental results are consistent with studies that indicate in the online assignment problem with random inputs, greedy algorithms achieve a competitive ratio of $1 - \frac{1}{e}$ \textcolor{red}{\textbf{provide ref}}.
+\vspace{0.2in}
+\subsection{Assignment Quality}
+In this section we evaluate the quality of the assignments using different real-time non-clairvoyant algorithms. First, we compare them using the Flickr and the synthetic datasets. Subsequently, using the synthetic datasets, we show how the spatial and temporal settings of the problem can affect the performance of the real-time assignment quality.
 
-\subsection{Performance}
-In this section we evaluate the performance of different online non-clairvoyant algorithms explained in \cref{sec:onlinealgo}. First we compare them using the default parameters of \cref{subsec:dataset}. After that we show how the spatial and temporal aspects of the problem can affect the performance of the real-time assignments.
+\begin{figure}[h]
+    \centering
+    \subfigure[Flickr]{
+        \label{fig:quality_real}
+        \includegraphics[width = 0.45\columnwidth]{figures/quality_real.jpg}
+    }
+    \subfigure[Synthetic]{
+        \label{fig:quality_syn}
+        \includegraphics[width = 0.45\columnwidth]{figures/quality_syn.jpg}
+    }
+    \caption{Assignment Quality of Real-Time Approaches}
+    \label{fig:quality}
+\end{figure}
+
+\cref{fig:quality} compares the assignment quality of different real-time algorithms. As we can see, both SC approaches outperforms the best non-SC algorithm by more than 25\%. The main reason as explained in \cref{sec:onlinealgo} is that, the SC rules performs scheduling when assigning tasks to workers. Furthermore, the BD approach outperforms BI by at most 10\%. This is not surprising as BD tends to "move" workers to areas where future tasks are more likely to appear, thus achieving higher assignment in long term. Among the non-SC approaches NN outperforms other rules by almost 2 times more completed tasks. The reason MFT does not outperform baseline approaches (Rnd and Rnk) can be explained by what we call a \emph{radical move}. A \emph{radical move} is when the SC-Server assigns a task to a worker which requires it to move a relatively long distance to reach the location of that task. Since we do not consider any spatial proximity to the task with MFT, there is a high chance to end up with assignments resulting in radical moves. With NN and BI the general idea is to prevent radical moves as much as possible. With BD, although radical moves occur, but only if the worker moves to areas where there will be more tasks to complete. 
+
+\begin{figure}[h]
+    \centering
+    \subfigure[Rnd]{
+        \label{fig:rnd_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/rnd.jpg}
+    }
+    \subfigure[Rnk]{
+        \label{fig:rnk_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/rnk.jpg}
+    }
+    \subfigure[MFT]{
+        \label{fig:mft_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/mft.jpg}
+    }
+    \subfigure[NN]{
+        \label{fig:nn_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/nn.jpg}
+    }
+    \subfigure[BI]{
+        \label{fig:bi_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/bi.jpg}
+    }
+    \subfigure[BD]{
+        \label{fig:emd_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/emd.jpg}
+    }
+    \caption{\small{Assignment Profile-Varying Worker/Task Arrival Rates}}
+    \label{fig:tw_rate}
+\end{figure}
+
+In order to study the effect of temporal parameters in SC, we ran several experiments using different pairs of task arrival rate ($t_{rate}$ and worker arrival rate ($w_{rate}$). In \cref{fig:tw_rate} we show the effect of increasing $t_{rate}$ and $w_{rate}$ on the quality of the assignment. The level of grayness corresponds to the percentage of completed tasks with black and white representing 100\% and 0\% respectively. As we can see with small number of workers, as we increase the task arrival rate, the percentage of completed tasks decreases where at the top left corner of each plot we get close to 0\%. On the other hand in \cref{fig:nn_comp,fig:bi_comp,fig:emd_comp} for NN, BI and BD, with small number of incoming tasks, as we increase $w_{rate}$ eventually all tasks will be completed. \cref{fig:tw_rate} clearly shows that NN, BI and BD outperform Rnd, Rnk and MFT independent of the $t_{rate}$ and $w_{rate}$.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width = 0.6\columnwidth]{figures/accuracy.jpg}
-	\vspace{-0.1in}
-	\caption{Accuracy of online algorithms}\label{fig:accuracy}
+	\subfigure[BI Vs. NN]{
+        \label{fig:bi_nn}
+        \includegraphics[width = 0.45\columnwidth]{figures/bi_nn.jpg}
+    }
+    \subfigure[BD Vs. NN]{
+        \label{fig:emd_nn}
+        \includegraphics[width = 0.45\columnwidth]{figures/emd_nn.jpg}
+    }
+    \subfigure[BD Vs. BI]{
+        \label{fig:emd_bi}
+        \includegraphics[width = 0.45\columnwidth]{figures/emd_bi.jpg}
+    }
+	\caption{\small{Assignment Difference-Varying Worker/Task Arrival Rates}}\label{fig:rate_comp}
 \end{figure}
 
-\cref{fig:accuracy} compares the performance of different online algorithms. As we can see, our proposed EMD algorithm can assign \%10-15 more tasks compared to other approaches. The main reason as explained in \cref{sec:onlinealgo} is that, the EMD algorithm utilizes a very limited knowledge of the location of future tasks. It tends to send workers to areas where there's a higher chance of a task showing up in the future. This will increase the likelihood of a worker being close to those potential tasks once they arrive.
+To better evaluate the leading real-time approaches, NN, BI and BD, in \cref{fig:rate_comp} we performed a pair-wise comparison by taking their task completion rates. For example, \cref{fig:bi_nn} shows the difference between BI and NN. We observe that these three approaches perform similarly in the two extreme cases discussed in \cref{fig:tw_rate}, i.e., high task-low worker nad low task-high worker. BI and BD outperform NN up to 30\% when the problem is more complex, i.e., outside the extreme cases. An interesting observation in \cref{fig:bi_nn,fig:emd_nn} is that BI and BD outperform NN by a much larger margin at scale (higher $t_{rate}$ and $w_{rate}$). The reason is that with higher higher $t_{rate}$ and $w_{rate}$ more workers are moving around and more tasks come and leave so in general the spatiotemporal dynamism of the system increases. BI and BD cope with the dynamism by guaranteeing a task gets assigned to worker that can complete it. On the contrary, NN ignores the schedule of the worker during assignment and this becomes more important as there is more dynamism in the system.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width = 0.9\columnwidth]{figures/accuracy_trate.jpg}
-	\vspace{-0.1in}
-	\caption{Effect of task arrival rate}\label{fig:trate}
+	\includegraphics[scale=0.25]{figures/bi_abi.jpg}
+	\caption{Assignment Difference of BI Vs. ApproxBI}\label{fig:bi_abi}
 \end{figure}
 
-In \cref{fig:trate} and \cref{fig:wrate} we show the effect of increasing the arrival rate of tasks and workers respectively. These results show when there are too many tasks (high task arrival rates) we eventually get to a point where all workers are executing at their full capacity and cannot accept more tasks. On the other end, when we have too many workers (high worker arrival rate) every task can be assigned to at least one worker. However, when we are not in either of the two extremes, the EMD algorithm outperforms other approaches by up to \%15.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width = 0.9\columnwidth]{figures/accuracy_wrate.jpg}
-	\vspace{-0.1in}
-	\caption{Effect of worker arrival rate}\label{fig:wrate}
-\end{figure}
-
-\cref{fig:trate,fig:wrate} showed the effects of temporal parameters in the performance of online SC algorithms. In \cref{fig:skewness} we show how the spatial skewness of tasks can affect the performance of online approaches. As explained in \cref{subsec:dataset}, our workload generator places \%80 of the tasks within 6 Gaussian clusters. In these set of experiments, we change the percentage of tasks located within the 6 random Gaussian clusters. Overall, as we increase the spatial skewness of tasks, all approaches perform better. The reason is that workers that end up being in the clusters, can complete a large number of tasks. The EMD algorithm tends to take more advantage since it's designed to send the workers from areas with fewer tasks to these high density clusters.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width = 0.9\columnwidth]{figures/accuracy_skewness.jpg}
-	\vspace{-0.1in}
-	\caption{Effect of spatial skewness of tasks}\label{fig:skewness}
-\end{figure}
+We mentioned earlier that with the SC-rules, the workers perform an exhaustive search to find out if they can fit a new task into their schedule. As workers accept new tasks, they also complete some other tasks so as we observed in our experiments, performing an exhaustive search did not cause any scalability issues. Nevertheless, one might want to replace the exhaustive search with an approximate algorithm with polynomial run-time. in ApproxBI, we use the algorithm in \cite{Rosenkrantz74} that runs in $O(n^2)$. \cref{fig:bi_abi} shows the change affects the quality of the assignment by less than 5\%. The difference caused by ApproxBI is that the workers that are eligible for a task using BI, may not be able to fit the task in their schedules using ApproxBI due to the approximation. As a result, using ApproxBI the server may not be able to assign some tasks even if they can be completed using BI. Fortunately, as shown in \cref{fig:bi_abi}, that does not happen very often regardless of $t_{rate}$ and $w_{rate}$.
 
 \subsection{Scalability}
-The last set of experiments tend to measure the scalability of the proposed framework in \cref{sec:onlinealgo} on various aspects. First we show that the size of the workload is irrelevant in the performance of the online algorithms. Following that we show the affect of task/worker arrival rate in our framework.
+The last set of experiments focus on measuring the scalability of two system architectures, i.e., centralized and Auction-SC (decentralized). We compare the scalability of the real-time Auction-SC algorithms with the equivalent implementation of the same algorithms on a single centralized SC-Server. 
 
-The first set of experiments in this part focus on the size of the workload; i.e., the total number of tasks. Increasing the workload size, will only increase the duration of the simulation.
-
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{| l || c | c | c | c | c |} \hline
-Workload Size	&	Rnk		&	NN		&	BI		&	MFT		&	EMD		\\ \hline
-1K				&	70.44	&	74.64	&	74.6	&	74.56	&	76.52	\\ \hline
-10K				&	70.62	&	74.12	&	74.02	&	76.32	&	78.78	\\ \hline
-100K			& 	69.95	&	73.13	&	73.13	&	76.55	&	78.52	\\ \hline
-1M				&	70.22	&	74.41	&	74.58	&	77.18	&	79.12	\\ \hline
-\end{tabular}
-\vspace{-0.1in}
-\caption{\small{\% of assigned tasks for different workload sizes}}
-\label{tab:size_perc}
-\end{center}
-\end{table}
-\vspace{-0.3in}
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{| l || c | c | c | c | c |} \hline
-Workload Size	&	Rnk		&	NN		&	BI		&	MFT		&	EMD		\\ \hline
-1K				&	0.38	&	0.34	&	0.42	&	0.49	&	12.28	\\ \hline
-10K				&	0.40	&	0.34	&	0.43	&	0.41	&	10.72	\\ \hline
-100K			& 	0.46	&	0.34	&	0.43	&	0.53	&	12.47	\\ \hline
-1M				&	0.45	&	0.35	&	0.44	&	0.51	&	12.92	\\ \hline
-\end{tabular}
-\vspace{-0.1in}
-\caption{\small{average time (ms) required to assign a single task}}
-\label{tab:size_time}
-\end{center}
-\end{table}
-\vspace{-0.3in}
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{| l || c | c | c | c | c |} \hline
-Workload Size	&	Rnk		&	NN		&	BI		&	MFT		&	EMD		\\ \hline
-1K				&	51.58	&	35.75	&	35.50	&	50.09	&	53.94	\\ \hline
-10K				&	53.80	&	35.13	&	35.00	&	51.80	&	54.98	\\ \hline
-100K			& 	53.03	&	35.17	&	34.94	&	51.10	&	54.37	\\ \hline
-1M				&	54.39	&	35.58	&	35.38	&	51.27	&	55.79	\\ \hline
-\end{tabular}
-\vspace{-0.1in}
-\caption{\small{average traveled distance (mile) per completed task}}
-\label{tab:size_dist}
-\end{center}
-\end{table}
-
-\cref{tab:size_perc,tab:size_time,tab:size_dist} show the percentage of assigned tasks, average run-time to assign a task and average traveled distance per completed task do not change significantly even if the workload size is increased by orders of magnitude.
-
-In practice, our proposed framework for the online algorithms acts similar to a \emph{complex event processing (CEP)} engine \cite{Luckham01}. We can measure the scalability of such systems by their throughput; the number of tasks processed per second. The results in \cref{tab:size_time} are averaged over the tasks that we assigned to a worker. For tasks that could not be assigned to workers, the run-time is less, specially in the case of EMD the difference is significant ($\sim 0.4 ms$). To measure the throughput of such systems, the best way is to measure the queuing delay of tasks once they arrive \cite{Wu06}. In \cref{fig:qdelay} we see the average queuing delay of tasks after running the framework for 1 hour. As we can see, with the EMD we start observing queuing delays once we get to \textasciitilde 200 tasks/sec. While this is still an acceptable number for most current applications, it's less scalable than other approaches.
+In practice, a real-time SC system (either Auction-SC or centralized) works similar to a \emph{complex event processing (CEP)} engine \cite{Luckham01}. We can measure the scalability of such systems by their throughput: the number of tasks processed per second , or equivalently, the processing time per task, shown in \cref{fig:runtime}. Because of the decentralized architecture of Auction-SC, in \cref{fig:runtime} we see that the average processing time of a single task does not change as the arrival rate of workers increases. On the contrary, with the centralized architecture, the average processing time of a single task increases linearly as we increase the number of workers and in several orders of magnitude higher than Auction-SC approaches. Although BD consumes more time than other real-time algorithms, but only takes \textasciitilde 3 milliseconds.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width = 0.9\columnwidth]{figures/queue_delay.jpg}
-	\vspace{-0.1in}
-	\caption{Average queuing delay}\label{fig:qdelay}
+    \centering
+    \subfigure[\emph{\small{wRate = 1 worker/min}}]{
+        \label{fig:runtime_50}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_50.jpg}
+    }
+    \subfigure[\emph{\small{wRate = 2 worker/min}}]{
+        \label{fig:runtime_100}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_100.jpg}
+    }
+    \subfigure[\emph{\small{wRate = 4 worker/min}}]{
+        \label{fig:runtime_200}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_200.jpg}
+    }
+    \subfigure[\emph{\small{wRate = 8 worker/min}}]{
+        \label{fig:runtime_400}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_400.jpg}
+    }
+       \vspace{-0.15in}
+    \caption{Average processing time for a single task}
+    \label{fig:runtime}
 \end{figure}
 
-We end this section with a discussion on the effect of worker arrival rate on the scalability of the online approaches. In our proposed framework each worker can compute its own bid independently. Therefore, this process is done in parallel and increasing the number of workers will not affect the duration of the bid computation phase. Once all the workers submit their bids to the SC server, the server has to select the winner by either finding the minimum or maximum bid depending on which approach it's using. This will only add \emph{log|W|} to the processing time which is negligible. Hence, increasing the arrival rate of the workers will not have an affect on the scalability of our proposed framework regardless of which approach is being used.
+For a \emph{CEP} engine, it is also common to measure the queuing delay of events \cite{Wu06} once they arrive in the system as a metric for how scalable the systems is. In \cref{fig:queue} we compare the average queuing delay of tasks between running the two architectures after running for 1 hour. We can see that the centralized system suffers from queuing delays with less than 10 tasks/second. On the other hand, with Auction-SC, even for BD, we do not observe queuing delays for up to 500 tasks/second. \cref{fig:queue_auc} also shows that BD incurs higher delay than BI but results in higher completion rates, as in \cref{fig:quality,fig:rate_comp}. Users of Auction-SC can choose between BD and BI to balance their needs for assignment quality and efficiency.
+
+\begin{figure}[h]
+    \centering
+    \subfigure[\emph{\small{Centralized}}]{
+        \label{fig:queue_cent}
+        \includegraphics[width = 0.65\columnwidth]{figures/queue_cent.jpg}
+    }
+    \subfigure[\emph{\small{Auction-SC}}]{
+        \label{fig:queue_auc}
+        \includegraphics[width = 0.65\columnwidth]{figures/queue_auc.jpg}
+    }
+    \vspace{-0.15in}
+    \caption{Average queuing delay}
+    \label{fig:queue}
+\end{figure}
+
+To summarize the results of our experiments, we showed that when SC bidding rules are used, the quality of the assignment is much higher as compared to when a non-SC rule is used. The consideration of scheduling at the time a task is being assigned is the main reason for the better assignments. When running on a single centralized SC-Server, neither one of bidding rules can scale. The time required to process a single task increases linearly as more workers are added to the system. Scalability on a centralized single server suffers more when SC bidding rules are used due to their higher computation complexity. However, with Auction-SC we solve the scalability problem by splitting the scheduling and assignment responsibilities between workers and the SC-Server. Consequently, Auction-AC can afford to execute complex SC bidding rules, resulting in a very high quality assignment. \cref{tab:summary} shows the summary of our experimental results.
+
+\begin{table*}
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    \multicolumn{2}{|>{\columncolor{kugray5}}c|}{}&\multicolumn{4}{c|}{non-SC bidding rules}&\multicolumn{2}{c|}{SC bidding rules}\\
+    \arrayrulecolor{kugray5}
+    \arrayrulecolor{black}
+    \cline{3-8}
+    \multicolumn{2}{|>{\columncolor{kugray5}}c|}{}&Rnd&Rnk&NN&MFT&BI&BD\\
+    \hline
+    \multirow{2}{*}{Centralized}&Scalability&Bad&Bad&Bad&Bad&Very Bad&Very Bad\\
+    \cline{2-8}
+                         		&Assignment Quality&Very Bad&Very Bad&Bad&Very Bad&Very Good&Very Good\\
+    \hline
+    \multirow{2}{*}{Auction-SC}&Scalability&Very Good&Very Good&Very Good&Very Good&Good&Good\\
+    \cline{2-8}
+                         		&Assignment Quality&Very Bad&Very Bad&Bad&Very Bad&Very Good&Very Good\\
+    \hline
+  \end{tabular}
+  \caption{Summary of Experimental Results}
+  \label{tab:summary}
+\end{table*}
