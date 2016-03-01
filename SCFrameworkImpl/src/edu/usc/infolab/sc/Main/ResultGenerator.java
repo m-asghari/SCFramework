@@ -21,6 +21,7 @@ public class ResultGenerator {
 	private static final String ADHOC = "AdHoc";
 	private static final String JSD = "JSD";
 	private static final String EMD = "EMD";
+	private static final String LALS = "LALS";
 
 	private static HashMap<String, ArrayList<Result>> results = new HashMap<String, ArrayList<Result>>() {
 		/**
@@ -37,6 +38,7 @@ public class ResultGenerator {
 			//put(ADHOC, new ArrayList<Result>());
 			//put(JSD, new ArrayList<Result>());
 			put(EMD, new ArrayList<Result>());
+			put(LALS, new ArrayList<Result>());
 		}
 	};
 
@@ -82,6 +84,7 @@ public class ResultGenerator {
 				//Result adhoc = res.get(ADHOC).get(i);
 				//Result jsd = res.get(JSD).get(i);
 				Result emd = res.get(EMD).get(i);
+				Result lals = res.get(LALS).get(i);
 				line.append(emd.ID + ",");
 				line.append(emd.TaskCount + ",");
 				line.append(rnd.NumOfAssignedTasks + ",");
@@ -92,6 +95,7 @@ public class ResultGenerator {
 				//line.append(adhoc.NumOfAssignedTasks + ",");
 				//line.append(jsd.NumOfAssignedTasks + ",");
 				line.append(emd.NumOfAssignedTasks + ",");
+				line.append(lals.NumOfAssignedTasks + ",");
 				line.append(rnd.NumOfCompletedTasks + ",");
 				line.append(rnk.NumOfCompletedTasks + ",");
 				line.append(nn.NumOfCompletedTasks + ",");
@@ -100,6 +104,7 @@ public class ResultGenerator {
 				//line.append(adhoc.NumOfCompletedTasks + ",");
 				//line.append(jsd.NumOfCompletedTasks + ",");
 				line.append(emd.NumOfCompletedTasks + ",");
+				line.append(lals.NumOfCompletedTasks + ",");
 				line.append(rnd.DecideEligibilityRunTime + ",");
 				line.append(rnk.DecideEligibilityRunTime + ",");
 				line.append(nn.DecideEligibilityRunTime + ",");
@@ -108,6 +113,7 @@ public class ResultGenerator {
 				//line.append(adhoc.DecideEligibilityRunTime + ",");
 				//line.append(jsd.DecideEligibilityRunTime + ",");
 				line.append(emd.DecideEligibilityRunTime + ",");
+				line.append(lals.DecideEligibilityRunTime + ",");
 				line.append(rnd.SelectWorkerRunTime + ",");
 				line.append(rnk.SelectWorkerRunTime + ",");
 				line.append(nn.SelectWorkerRunTime + ",");
@@ -116,6 +122,7 @@ public class ResultGenerator {
 				//line.append(adhoc.SelectWorkerRunTime + ",");
 				//line.append(jsd.SelectWorkerRunTime + ",");
 				line.append(emd.SelectWorkerRunTime + ",");
+				line.append(lals.SelectWorkerRunTime + ",");
 				line.append(rnd.TotalTime + ",");
 				line.append(rnk.TotalTime + ",");
 				line.append(nn.TotalTime + ",");
@@ -124,6 +131,7 @@ public class ResultGenerator {
 				//line.append(adhoc.TotalTime + ",");
 				//line.append(jsd.TotalTime + ",");
 				line.append(emd.TotalTime + ",");
+				line.append(lals.TotalTime + ",");
 				line.append(rnd.EligibleWorkers + ",");
 				line.append(rnk.EligibleWorkers + ",");
 				line.append(nn.EligibleWorkers + ",");
@@ -132,6 +140,7 @@ public class ResultGenerator {
 				//line.append(adhoc.EligibleWorkers + ",");
 				//line.append(jsd.EligibleWorkers + ",");
 				line.append(emd.EligibleWorkers + ",");
+				line.append(lals.EligibleWorkers + ",");
 				line.append(rnd.AvgTraveledDistancePerTask + ",");
 				line.append(rnk.AvgTraveledDistancePerTask + ",");
 				line.append(nn.AvgTraveledDistancePerTask + ",");
@@ -140,6 +149,7 @@ public class ResultGenerator {
 				//line.append(adhoc.AvgTraveledDistancePerTask + ",");
 				//line.append(jsd.AvgTraveledDistancePerTask + ",");
 				line.append(emd.AvgTraveledDistancePerTask + "\n");
+				line.append(lals.AvgTraveledDistancePerTask + "\n");
 				bw.write(line.toString());
 			}
 			bw.close();

@@ -152,10 +152,10 @@ public class Worker extends SpatialEntity{
 			return false;
 		}
 		
-		/*double dist = this.location.distance(task.location);
-		if (dist > (double)(retractFrame - currentFrame) || dist || (double)(task.retractFrame - currentFrame)) {
+		double dist = this.location.distance(task.location);
+		if (dist > (double)(retractFrame - currentFrame) || dist > (double)(task.retractFrame - currentFrame)) {
 			return false;
-		}*/
+		}
 		return true;
 	}
 	
@@ -173,6 +173,26 @@ public class Worker extends SpatialEntity{
 			return bestResult.First;
 		else
 			return null;
+	}
+	
+	// Input: One task
+	// Output: If the worker can insert the input task to its current remainingTasks without reordering the current tasks, the output 
+	//			will be the corresponding schedule. otherwise the output is a null list. (This is an approximate algorithm based on the Insertion
+	//			heuristic.
+	public ArrayList<Task> ApproxCanPerform(Task task, int currentFrame) {
+		if (assignedTasks.size() == maxNumberOfTasks) {
+			return null;
+		}
+		ArrayList<Task> bestOrder = null;
+		Double bestTime = Double.MAX_VALUE;
+		for (int pos = 0; pos <= remainingTasks.size(); pos++) {
+			ArrayList<Task> tasks = new ArrayList<Task>(remainingTasks);
+			tasks.add(pos, task);
+			if (CanComplete(tasks, currentFrame).compareTo(bestTime) < 0) {
+				bestOrder = new ArrayList<Task>(tasks);
+			}			
+		}
+		return bestOrder;
 	}
 	
 	int count = 0;
@@ -226,7 +246,7 @@ public class Worker extends SpatialEntity{
 	// Input: Ordered list of tasks.
 	// Output: Completion time if the worker is able to complete the list of tasks in given order.
 	//			otherwise, the output is Double.MAX_VALUE.
-	private Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
+	public Double CanComplete(ArrayList<Task> tasks, int currentFrame) {
 		StringBuilder sb = new StringBuilder();
 		for (Task t : tasks) sb.append(String.format("t%d, ", t.id));
 		Log.Add(6, "Worker: %d, currentFrame: %d, inputTasks: %s", this.id, currentFrame, sb.toString());

@@ -70,4 +70,9 @@ public abstract class SpatialEntity implements Comparable<SpatialEntity>{
 		sb.append(String.format("Retract: %d\n", retractFrame));
 		return sb.toString();
 	}	
+	
+	@Override
+	public SpatialEntity clone() {
+		return this;
+	}
 }

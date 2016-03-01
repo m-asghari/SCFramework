@@ -14,6 +14,7 @@ import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
+import edu.usc.infolab.sc.Algorithms.Batched.LALS;
 import edu.usc.infolab.sc.Algorithms.Clairvoyant.Exact;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistributionAdhoc;
 import edu.usc.infolab.sc.Algorithms.Online.BestDistributionEMD;
@@ -46,8 +47,9 @@ public class Main {
 				RunOnlineAlgorithms(String.format("res\\Flickr\\flickr_realData_%s_15000_%d.xml", city, i));
 			}
 		}*/
-		ChangeSkewnessLevel(input);
-
+		//ChangeSkewnessLevel(input);
+		//RunMultipleBatchedVsOnlineTests(input, 20);
+		ChangeRateOfTasksAndWorkers(input);
 		
 		Finalize();
 	}
@@ -59,7 +61,23 @@ public class Main {
 		Result.Add(GENERAL, algoResults);
 	}
 	
-	protected static void RunMultipleTests(String config, int testSize) {
+	protected static void RunSingleBatched(String config) {
+		String input = GenerateNewInput(config);
+		System.out.println("Starting test");
+		String algoResults = RunLALS(input);
+		Result.Add(GENERAL, algoResults);
+	}
+	
+	protected static void RunMultipleBatchedVsOnlineTests(String config, int testSize) {
+		for (int test = 0; test < testSize; test++) {
+			String input = GenerateNewInput(test, config);
+			System.out.println(String.format("Starting test %d", test));
+			String algoResults = RunBatchedVsOnline(input);
+			Result.Add(GENERAL, algoResults);			
+		}
+	}
+	
+	protected static void RunMultipleOnlineTests(String config, int testSize) {
 		for (int test = 0; test < testSize; test++) {
 			String input = GenerateNewInput(test, config);
 			System.out.println(String.format("Starting test %d", test));
@@ -120,7 +138,8 @@ public class Main {
 				for (int test = 0; test < 5; test++) {
 					String input = GenerateNewInput(test, config, Math.max(1000, (int)tRate*10), tRate, wRate);
 					System.out.println(String.format("Starting test %d for tRate %.2f and wRate %.2f", test, tRate, wRate));
-					String algoResults = RunOnlineAlgorithms(input);
+					//String algoResults = RunOnlineAlgorithms(input);
+					String algoResults = RunBatchedVsOnline(input);
 					Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
 				}
 			}
@@ -148,6 +167,18 @@ public class Main {
 		
 		Exact exactAlgo = new Exact(tasks, workers);
 		int endTime = exactAlgo.Run();
+		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
+	}
+	
+	protected static String RunLALS(String input) {
+		InputParser ip = new InputParser(input);
+		
+		HashMap<Integer, Task> tasks = ip.GetTasks();
+		HashMap<Integer, Worker> workers = ip.GetWorkers();
+		
+		LALS lalsAlgo = new LALS(tasks, workers);
+		int endTime = lalsAlgo.Run();
+		SaveToFile(input+".LALS.txt", new ArrayList<Task>(tasks.values()), new ArrayList<Worker>(workers.values()));
 		return Result.GenerateReport(new ArrayList<Worker>(workers.values()), new ArrayList<Task>(tasks.values()), endTime);
 	}
 	
@@ -303,6 +334,12 @@ public class Main {
 		return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
 		//return String.format("%s,%s,%s", nnResults, biResults, bdResults);
 		//return "";
+	}
+	
+	private static String RunBatchedVsOnline(String input) {
+		String biResults = RunBestInsertion(input);
+		String lalsResults = RunLALS(input);
+		return String.format("%s,%s", biResults, lalsResults);
 	}
 	
 	private static String GenerateNewInput(String config) {
