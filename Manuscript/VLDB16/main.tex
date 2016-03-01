@@ -57,23 +57,22 @@
 
 \newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
-\title{AuctionSC -- An Auction-Based Framework for\\ Real-Time Task Assignment and Scheduling in\\ Spatial Crowdsourcing}
+\title{Auction-SC -- An Auction-Based Framework for\\ Real-Time Task Assignment in Spatial Crowdsourcing}
 \begin{document}
 \sloppy
 
 \numberofauthors{1}
-\author{Author list removed due to double blind policy}
-%\author{{Mohammad Asghari, Liyue Fan, Cyrus Shahabi}\\
-%\\
-%\fontsize{10}{10}\selectfont\rmfamily\itshape
-%Integrated Media Systems Center, University of Southern California\\
-%\fontsize{9}{9}\selectfont\ttfamily\upshape
-%\{masghari, liyuefan, shahabi\}@usc.edu\\
-%}
+%\author{Author list removed due to double blind policy}
+\author{{Mohammad Asghari, Cyrus Shahabi, Liyue Fan}\\
+\fontsize{10}{10}\selectfont\rmfamily\itshape
+University of Southern California, Los Angeles, CA, USA\\
+\fontsize{9}{9}\selectfont\ttfamily\upshape
+\{masghari, shahabi, liyuefan\}@usc.edu\\
+}
 
 \maketitle
 \begin{abstract}
-A new platform, termed spatial crowdsourcing (SC), is emerging that enables a requester to commission workers to physically travel to some specified locations to perform a set of spatial tasks (i.e., tasks related to a geographical location and time).  For spatial crowdsourcing to scale to millions of workers and tasks, it should be able to efficiently assign tasks to workers, considering various spatiotemporal constraints and optimization objectives. In this paper, we take a fundamental look at task assignment and scheduling in SC. We formally define the problem, prove it is NP-Complete and for the first time propose a clairvoyant offline algorithm that gives the globally optimal assignment. Subsequently, we study the more practical online version of the problem where information regarding each task (or worker) is known only when the task (or the worker) becomes available. Due to the time complexity of the task assignment, the previous studies tackle the online problem by batching tasks' and workers' arrivals and departures, and then perform assignment (and scheduling) periodically (e.g., every 10 minutes) for each batch. Instead, we split the assignment and scheduling responsibilities between the server and the workers via an auction-based framework where workers bid on every arriving task and the server determines the highest bidder, resulting in a real-time online algorithm for assigning and scheduling tasks. Through several experiments, we evaluate the accuracy of the real-time algorithm by comparing it with the clairvoyant algorithm for small number of tasks. For larger real-world and synthetic data sets, we compare the accuracy and efficiency of our real-time algorithm with centralized online algorithms proposed for similar problems. We show how other algorithms cannot generate as good of an assignment because they cannot consider the dynamism and/or the spatiotemporal characteristics of SC due to time restrictions.
+A new platform, termed spatial crowdsourcing (SC), is emerging that enables a requester to commission workers to physically travel to some specified locations to perform a set of spatial tasks (i.e., tasks related to a geographical location and time). For spatial crowdsourcing to scale to millions of workers and tasks, it should be able to efficiently assign tasks to workers, which in turn consists of both matching tasks to workers and computing a schedule for each worker. Due to the time complexity of the assignment, previous approaches either delay assignment (i.e., by batching tasks) or cannot scale assuming a centralized server.  Instead, \textcolor{red}{we achieve real-time assignments} via an auction-based framework where workers bid on every arriving task and the server determines the highest bidder, resulting in a real-time distributed online algorithm for matching and scheduling tasks. As a benchmark to evaluate the results of our online framework, we introduce a clairvoyant offline algorithm that gives the globally optimal assignment. Through several experiments, we evaluate the accuracy of the real-time algorithm by comparing it with the clairvoyant algorithm for small number of tasks. For larger real-world and synthetic datasets, we compare the accuracy and efficiency of our real-time algorithm with centralized online algorithms proposed for similar problems. We show how other algorithms cannot generate as good of an assignment because they fail manage the dynamism and/or take advantage of the spatiotemporal characteristics of SC.
 
 \end{abstract}
 
@@ -93,10 +92,10 @@ A new platform, termed spatial crowdsourcing (SC), is emerging that enables a re
 
 \input{sec_conclusion}
 
-begin{scriptsize}
+\begin{scriptsize}
 \bibliographystyle{IEEEtran}
 \bibliography{spatialcrowdsourcing}
-end{scriptsize}
+\end{scriptsize}
 
 %\input{sec_appendix}
 
