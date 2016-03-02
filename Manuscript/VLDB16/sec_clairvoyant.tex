@@ -5,23 +5,23 @@
 
 %In order to solve the TASC problem, the server requires a global knowledge of all the current and incoming spatial tasks and workers. In such case, the server can assign tasks to workers such that the value of the matching is maximized. However, the server does not have such global knowledge. The server will become aware of a task (worker) and all its corresponding information once the task (worker) becomes available. Due to this lack of future knowledge, finding a globally optimal solution is not feasible.\\
 
-In order to have a benchmark to evaluate our real-time algorithms, in this section, we define a clairvoyant off-line algorithm. We assume there exists a clairvoyant which has a global knowledge of tasks and workers. In this case, the clairvoyant can assign tasks to workers such that the value of the matching is maximized. We propose a two step algorithm which finds the optimal solution to TASC problem. In the first step we find all potential subsets of tasks that a single worker is able to complete. Having the output of step 1, in the next step we find a matching with maximum value. In the following, we describe different steps of the algorithm and later discuss the complexity of the algorithm. We also show how to adapt the algorithm to address a more general spatial crowdsourcing framework. This adaption does not deteriorate the performance of the algorithm, and in most cases even improves it.
+In order to have a benchmark to evaluate our real-time algorithms, in this section, we define a clairvoyant off-line algorithm. We assume there exists a clairvoyant which has a global knowledge of tasks and workers. In this case, the clairvoyant can assign tasks to workers such that the value of the assignment is maximized. We propose a two step algorithm which finds the optimal solution to the TASC problem. In the first step we find all potential subsets of tasks that a single worker is able to complete. Having the output of step 1, in the next step we find an assignment with maximum value. In the following, we describe different steps of the algorithm and later discuss the complexity of it. We also show how to adapt the algorithm to address other spatial crowdsourcing frameworks. This adaption does not deteriorate the performance of the algorithm, and in most cases the performance is even improved.
 
 \subsection{Discovering Potential Task Subsets}
 \label{subsec:FindPTS}
 In the first step of the algorithm we focus on finding all task subsets that a worker \emph{w} is be able to complete. We can define a Potential Task Subset as:
 
-\begin{definition} [Potential Task Subset]
+\begin{definition} [Potential Task Subset (PTS)]
 \label{def:PTS}
-We call $PTS \subset T$ a potential task subset for worker w iff there exists a route that starts from w.l and for every $t \in PTS$ the path visits t.l at time $\delta$ such that $t.r \leq \delta < t.d$. Also the path should not start earlier than w.s and end before w.e. We define the value of PTS as:
+We call $PTS \subset T$ a potential task subset for worker w iff there exists a valid schedule s for worker w such that $t \in PTS$ implies that s contains t. We define the value of PTS as:
 \begin{equation*}
 Value(PTS) = \sum_{t \in PTS} t.v
 \end{equation*}
 \end{definition}
 
-For each worker \emph{w}, we define \emph{w.PTS} as the set of all such potential task subsets.
+\noindent For each worker \emph{w}, we define \emph{w.PTS} as the set of all such potential task subsets.
 
-In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether it is a PTS for the worker or not. It is trivial to see that such approach requires $O(n!)$ permutations which makes it computationally expensive. Therefore, we utilize a branch and bound algorithm similar to the one introduced in \cite{Deng13}. We use the following propositions for pruning purposes in our branch and bound algorithm.
+In order to find all PTSs for a single worker, a straightforward method is to go through all subsets of \emph{T} and check whether or not it is a PTS for the worker. It is trivial to see that such approach requires $O(n!)$ permutations. Therefore, we utilize a branch and bound algorithm and use the following propositions for pruning the search space.
 
 \begin{proposition}
 \label{prop:overlap}
@@ -75,11 +75,11 @@ We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a dep
 	\IF{$t$ doesn't temporally overlap with $w$}
 		\STATE continue
 	\ENDIF
-	\STATE $s = pts \cup t$
-	\IF{IsPotentialSubset($s, w$)}
-		\STATE $PTSs = PTSs \cup s$
+	\STATE $pts' = pts \cup t$
+	\IF{ExistsValidSchedule($pts', w$)}
+		\STATE $PTSs = PTSs \cup pts'$
 		\IF{$\left\vert{s}\right\vert < w.max$ and $T_{copy} \neq \emptyset$}
-			\STATE $S =$ Search\_Branch($s, T_{copy}, w$)
+			\STATE $S =$ Search\_Branch($pts', T_{copy}, w$)
 			\STATE $PTSs = PTSs \cup S$
 		\ENDIF
 	\ENDIF
@@ -88,41 +88,43 @@ We model the entire solution space as a tree (\cref{fig:PTS_tree}) and use a dep
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[t]
-\caption{IsPotentialSubset($s, w$)}
-\label{algo:IsPTS}
-\begin{algorithmic}[1]
-\REQUIRE $s$ is the input set
-\ENSURE $true$ if $s$ is a PTS for $w$ and $false$ otherwise
-\FOR{$P$ in PermutationsOf($s$)}
-	\STATE $possible = true$
-	\STATE $loc = w.l$
-	\STATE $time = w.s$
-	\FOR{$i=1$ to $\left\vert{P}\right\vert$}
-		\STATE $nextTime = $max($P[i].r, time +$ dist($w.l, P[i].l$)
-		\IF{$nextTime < P[i].d$ and $nextTime < w.e$}
-			\STATE $loc = P[i].l$
-			\STATE $time = nextTime$
-		\ELSE
-			\STATE $possible = false$
-			\STATE break
-		\ENDIF
-	\ENDFOR
-	\IF{$!possible$}
-		\STATE continue
-	\ELSE
-		\RETURN $true$
-	\ENDIF
-\ENDFOR
-\RETURN $false$
-\end{algorithmic}
-\end{algorithm}
+\cref{algo:SearchBranch} finds all the PTSs under a specific branch of the search space. The current subset, $pts$, is expanded with a new task, $t$, if $w$ temporally overlaps with $t$ (lines 4-8). If the new subset $pts'$ is a PTS itself we continue the search for more PTSs in the sub-tree rooted at $pts'$ (lines  9-15). The subset $pts'$ is a PTS only if a valid schedule for worker $w$ exists that contains every $t \in pts'$. Finally in \cref{algo:FindPTS} for each worker we search for PTSs starting the search at the root of the tree.
 
-\cref{algo:SearchBranch} finds all the PTSs under a specific branch of the search space. The current subset ($pts$) is expanded with a new task ($t$) if $w$ temporally overlaps with $t$ (lines 4-8). If the new subset $s$ is a PTS itself we continue the search for more PTSs in the sub-tree rooted at $s$ (lines  9-15). \cref{algo:IsPTS} checks if a subset $s$ can be a PTS for $w$. According to \cref{def:PTS}, the desired path should start from the current location of $w$ and no sooner than the time the worker becomes available (lines  1-2). We consider all permutations of $s$ and check if a permutation satisfies all the temporal constraints of \cref{def:PTS} (lines 5-14). The subset $s$ is a PTS only if a permutation is found to satisfy all the constraints. Finally in \cref{algo:FindPTS} for each worker we search for PTSs starting the search at the root of the tree.
+%\begin{algorithm}[t]
+%\caption{IsPotentialSubset($s, w$)}
+%\label{algo:IsPTS}
+%\begin{algorithmic}[1]
+%\REQUIRE $s$ is the input set
+%\ENSURE $true$ if $s$ is a PTS for $w$ and $false$ otherwise
+%\FOR{$P$ in PermutationsOf($s$)}
+%	\STATE $possible = true$
+%	\STATE $loc = w.l$
+%	\STATE $time = w.s$
+%	\FOR{$i=1$ to $\left\vert{P}\right\vert$}
+%		\STATE $nextTime = $max($P[i].r, time +$ dist($w.l, P[i].l$)
+%		\IF{$nextTime < P[i].d$ and $nextTime < w.e$}
+%			\STATE $loc = P[i].l$
+%			\STATE $time = nextTime$
+%		\ELSE
+%			\STATE $possible = false$
+%			\STATE break
+%		\ENDIF
+%	\ENDFOR
+%	\IF{$!possible$}
+%		\STATE continue
+%	\ELSE
+%		\RETURN $true$
+%	\ENDIF
+%\ENDFOR
+%\RETURN $false$
+%\end{algorithmic}
+%\end{algorithm}
+
+%\cref{algo:SearchBranch} finds all the PTSs under a specific branch of the search space. The current subset ($pts$) is expanded with a new task ($t$) if $w$ temporally overlaps with $t$ (lines 4-8). If the new subset $s$ is a PTS itself we continue the search for more PTSs in the sub-tree rooted at $s$ (lines  9-15). \cref{algo:IsPTS} checks if a subset $s$ can be a PTS for $w$. According to \cref{def:PTS}, the desired path should start from the current location of $w$ and no sooner than the time the worker becomes available (lines  1-2). We consider all permutations of $s$ and check if a permutation satisfies all the temporal constraints of \cref{def:PTS} (lines 5-14). The subset $s$ is a PTS only if a permutation is found to satisfy all the constraints. Finally in \cref{algo:FindPTS} for each worker we search for PTSs starting the search at the root of the tree.
 			
-\subsection{Finding the Maximal Matching}
+\subsection{Finding the Maximal Assignment}
 \label{subsec:FindMM}
-Having found all PTSs for each worker in step 1, the next step of the algorithm focuses on finding the matching with the maximum value. For this purpose, we construct a graph such that each PTS from step 1 is a vertex in the graph. We call this graph the \emph{PTS-Graph}. Subsequently we show that the \emph{maximum weighted clique} in the PTS-Graph corresponds to the matching with the maximum value.
+Having found all PTSs for each worker in step 1, the next step of the algorithm focuses on finding the assignment with the maximum value. For this purpose, we construct a graph such that each PTS from step 1 is a node in the graph. We call this graph the \emph{PTS-Graph}. Subsequently we show that the \emph{maximum weighted clique} in the PTS-Graph corresponds to the assignment with the maximum value.
 
 The PTS-Graph is a multi-layered graph such that for each worker we add a layer to the graph. Withing each layer $l$, for each PTS inside $w_l.PTS$ we add a node to layer $l$. The weight of this node is equal to the value of the corresponding PTS. We use an arbitrary ordering to name the nodes within each layer of the PTS-Graph. Assuming layer $l$ contains $m$ nodes, we name them $n_{l1}$ through $n_{lm}$. Also, we define the set of edges of the PTS-Graph as:
 \begin{equation*}
@@ -141,32 +143,34 @@ where $PTS_{lm}$ refers to the corresponding PTS of node $n_{lm}$. In other word
 
 Given the PTS-Graph $G(V, E)$, we associate an assignment of tasks to workers with a set of vertices $N \subset V$ as follows: if $n_{lm} \in N$, then every task $t \in PTS_{lm}$ is assigned to $w_l$.
 
-\begin{definition} [Clique]
-\label{def:clique}
-For undirected graph G=(V,E), a \emph{Clique} in G is a subset $S \subset V$ of vertices, such that $\{x,y\} \in E$ for all distinct $x,y \in S$.
-\end{definition}
+%\begin{definition} [Clique]
+%\label{def:clique}
+%For undirected graph G=(V,E), a \emph{Clique} in G is a subset $S \subset V$ of vertices, such that $\{x,y\} \in E$ for all distinct $x,y \in S$.
+%\end{definition}
 
-A clique is said to be \emph{maximal} if its vertices are not a subset of the vertices of a larger clique, and \emph{maximum} if there are no larger cliques in the graph.
+%A clique is said to be \emph{maximal} if its vertices are not a subset of the vertices of a larger clique, and \emph{maximum} if there are no larger cliques in the graph.
+
+We claim that the optimal assignment corresponds to the nodes of the \textit{Maximum Weight Clique} in PTS-Graph.
 
 \begin{definition} [Maximum Weight Clique]
 \label{def:maxClique}
 For undirected graph G=(V,E) where each $v \in V$ is assigned a value $w(v)$, the \emph{Maximum Weight Clique} is the clique for which the sum over the weight of all vertices in the clique, is larger than any other clique in the graph.
 \end{definition}
 
-It is worth noting that a maximum weight clique is not necessarily a maximum clique but it definitely is a maximal clique.
+%It is worth noting that a maximum weight clique is not necessarily a maximum clique but it definitely is a maximal clique.
 
 \begin{theorem}
 \label{th:maxClique}
-If C* is a maximum weighted clique in the PTS-Graph, then the assignment of tasks to workers corresponding to C*, M*, is a maximum value matching for the TASC problem.
+If C* is a maximum weighted clique in the PTS-Graph, then the assignment of tasks to workers corresponding to C*, A*, is a maximum value assignment for the TASC problem.
 \end{theorem}
 
 \begin{proof}
-Based on how we generated the PTS graph, no two vertices in C* can contain the same task in their corresponding PTS. Therefore, any task t is assigned to at most one worker. Next we need to show no other matching M can have a larger value than M*. If such matching M existed, then the clique C corresponding to M, has a larger weight than C* which conflicts the fact that C* is the maximum weighted clique.
+Based on how we generated the $PTS$ graph, no two vertices in $C^*$ can contain the same task in their corresponding $PTS$. Therefore, any task $t$ is assigned to at most one worker. Next we need to show no other assignment $A$ can have a larger value than $A^*$. If such assignment $A$ existed, then the clique $C$ corresponding to $A$, has a larger weight than $C^*$ which conflicts the fact that $C^*$ is the maximum weighted clique.
 \end{proof}
 
 There exists a vast body of literature on solving the maximum weight clique problem \cite{Kovalyov07}. Here we briefly explain one of these algorithms and refer the interested readers to \cite{Ostergard01}.
 
-In \cref{algo:MWC} we start with an arbitrary node ordering. \"{O}steg\r{a}d \cite{Ostergard01} suggests a node ordering where $v_1$ is the node with the largest total sum of the weights of its adjacent vertices and so on. \cref{algo:MWC} computes a value $C(k), 1 \leq k \leq n$ which determines the largest weight of a clique, only considering nodes $\left\{v_k, v_{k+1}, ..., v_n\right\}$. If $w(i)$ denotes the weight of $v_i$, then we have $C(n) = w(i)$ and other values for $C()$ are computed in a backtrack search. For $1 \leq k \leq n-1, C(k) > C(k+1)$ only when a corresponding clique exists and contains $v_k$. If such clique does not exist then $C(k) = C(k+1)$. In order to find such $C(k)$ clique, a branch and bound approach is used to search all possible cliques. Details of the branch and bound algorithm can be found in \cite{Ostergard01}.
+In \cref{algo:MWC} we start with an arbitrary node ordering. \"{O}steg\r{a}d \cite{Ostergard01} suggests a node ordering where $v_1$ is the node with the largest total sum of the weights of its adjacent nodes and so on so forth. \cref{algo:MWC} computes a value $C(k), 1 \leq k \leq n$ which determines the largest weight of a clique, only considering nodes $\left\{v_k, v_{k+1}, ..., v_n\right\}$. If $w(i)$ denotes the weight of $v_i$, then we have $C(n) = w(i)$ and other values for $C()$ are computed in a backtrack search. For $1 \leq k \leq n-1, C(k) > C(k+1)$ only when a corresponding clique exists and contains $v_k$. If such clique does not exist then $C(k) = C(k+1)$. In order to find such $C(k)$ clique, a branch and bound approach is used to search all possible cliques. Details of the branch and bound algorithm can be found in \cite{Ostergard01}.
 
 \begin{algorithm}
 \caption{MaximumWeightClique($V, E$)}
@@ -190,7 +194,7 @@ In \cref{algo:MWC} we start with an arbitrary node ordering. \"{O}steg\r{a}d \ci
 \subsection{Complexity Analysis}
 \label{subsec:exactcomplexity}
 
-Here we analyze the time complexity of our proposed exact algorithm. For simplicity we assume $\left\vert T \right\vert = n$, $\left\vert W \right\vert = m$ and $\left\vert w.max \right\vert = p$. We start with \cref{algo:IsPTS}. The size of set $s$ is at most equal to $p$, hence the number of permutations of $s$ is $O(p!)$. Also the for-loop in line 5 runs at most $p$ times which makes the overall complexity of \cref{algo:IsPTS} $O(p^{p+1})$. For \cref{algo:SearchBranch} we can assume that we are running the IsPotentialPTS() method for each node of the search space tree(\cref{fig:PTS_tree}) once. At level $i$ of the search space tree we have at most $C(n,i)$. Also for each node in level $i$ the size of the task subsets is $i$. Hence, the IsPotentialSubset() method runs in $O(i^{i+1})$. Therefore the amortized time complexity of \cref{algo:SearchBranch} is:
+We analyze the time complexity of our proposed exact algorithm as follows. For simplicity we assume $\left\vert T \right\vert = n$, $\left\vert W \right\vert = m$ and $\left\vert w.max \right\vert = p$. For \cref{algo:SearchBranch} we can assume that we are running the \textit{ExistsValidSchedule()} method for each node of the search space tree(\cref{fig:PTS_tree}) at most once. At level $i$ of the search space tree we have at most $C(n,i)$ nodes. Also for each node in level $i$ the size of the task subsets is $i$. Hence, a naive implementation for the ExistsValidSchedule() method runs in $O(i^{i+1})$. Therefore the amortized time complexity of \cref{algo:SearchBranch} is:
 
 \begin{equation*}
 \mathlarger{\mathlarger{\sum}}_{i = 1}^{p} \dbinom{n}{i} O(i^{i+1}) = O(n^{n-p}p^{p+1})
@@ -198,6 +202,6 @@ Here we analyze the time complexity of our proposed exact algorithm. For simplic
 
 Since we run the SearchBranch method for each worker once, we can conclude that the time complexity of \cref{algo:FindPTS} is $O(mn^{n-p}p^{p+1})$.
 
-In \cref{algo:MWC} we implement the FindMaxClique() method, we use a branch and bound algorithm described in \cite{Ostergard01}. The time complexity of this algorithm is $O(n^n)$ for a graph of size $n$. Therefore, for a graph of size $n$, the overall time complexity of \cref{algo:MWC} is $O(n^{n+1})$.
+In \cref{algo:MWC} we implement the FindMaxClique() method, utilizing a branch and bound algorithm described in \cite{Ostergard01}. The time complexity of this algorithm is $O(n^n)$ for a graph of size $n$. Therefore, for a graph of size $n$, the overall time complexity of \cref{algo:MWC} is $O(n^{n+1})$.
 
-We end the section with a discussion on how generalizing the spatial crowdsourcing framework can affect the algorithm introduced in this section. In \cite{Kazemi13} it is assumed that each task requires a certain level of \emph{confidence} and only workers with a \emph{trust} level higher than that are able to perform the task. Moreover, in some spatial crowdsouring frameworks \cite{Kazemi12,Kazemi13,Deng13}, workers define a spatial range and only perform task within this range. Constraints like these only remove a subset of tasks from the list of tasks a certain worker is able to execute. Consequently, the search space of \cref{algo:FindPTS} gets reduced and we end up with few numbers of PTSs per worker. This in turn reduces the size of the PTS-Graph in \cref{subsec:FindMM}.
+We end the section with a discussion on how generalizing the spatial crowdsourcing framework can affect the algorithm introduced in this section. In \cite{Kazemi13} it is assumed that each task requires a certain level of \emph{confidence} and only workers with a \emph{trust} level higher than that are able to perform the task. Moreover, in some spatial crowdsouring frameworks \cite{Kazemi12,Kazemi13,Deng13}, workers define a spatial range and only perform task within this region. Constraints like these only remove a subset of tasks from the list of tasks a certain worker is able to perform. Consequently, the search space of \cref{algo:FindPTS} gets reduced and we end up with fewer numbers of PTSs per worker. This in turn, reduces the size of the PTS-Graph in \cref{subsec:FindMM}.
