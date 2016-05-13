@@ -1,0 +1,100 @@
+\documentclass{sig-alternate}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\graphicspath{.}
+
+\usepackage{appendix}
+
+% use this package if you need more space
+\usepackage{times}
+
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{relsize}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{paralist}
+\usepackage{tabularx}
+
+%Theorem, Lemma, etc.
+\usepackage[capitalise]{cleveref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{example}{Example}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+% Floats
+\usepackage{float}
+\renewcommand{\textfraction}{0.00}
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\setcounter{totalnumber}{100}
+\setcounter{bottomnumber}{100}
+\setcounter{topnumber}{100}
+
+% URLs
+\usepackage{url}
+
+% 
+\usepackage{multirow}
+\usepackage{colortbl}
+\definecolor{kugray5}{RGB}{224,224,224}
+
+% Captions
+\usepackage{caption}
+%\setlength{\belowcaptionskip}{-5pt}
+%\setlength{\abovecaptionskip}{-1pt}
+\captionsetup{font=bf}
+
+\newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
+
+\title{Auction-SC -- An Auction-Based Framework for\\ Real-Time Task Assignment in Spatial Crowdsourcing}
+\begin{document}
+\sloppy
+
+\numberofauthors{1}
+\author{Author list removed due to double blind policy}
+%\author{{Mohammad Asghari, Cyrus Shahabi, Liyue Fan}\\
+%\fontsize{10}{10}\selectfont\rmfamily\itshape
+%University of Southern California, Los Angeles, CA, USA\\
+%\fontsize{9}{9}\selectfont\ttfamily\upshape
+%\{masghari, shahabi, liyuefan\}@usc.edu\\
+%}
+
+\maketitle
+\begin{abstract}
+A new platform, termed spatial crowdsourcing (SC), is emerging that enables a requester to commission workers to physically travel to some specified locations to perform a set of spatial tasks (i.e., tasks related to a geographical location and time). For spatial crowdsourcing to scale to millions of workers and tasks, it should be able to efficiently assign tasks to workers, which in turn consists of both matching tasks to workers and computing a schedule for each worker. The two current approaches for task assignment in spatial crowdsourcing, batched assignment and centralized online assignment, cannot scale as either task matching or task scheduling will become a bottleneck.  Instead, we propose a distributed online assignment approach utilizing an auction-based framework where workers bid on every arriving task and the server determines the highest bidder, resulting in splitting the assignment responsibility between workers (for scheduling) and the server (for matching) and thus eliminating all bottlenecks. Through several experiments on both real-world and synthetic datasets, we compare the accuracy and efficiency of our real-time algorithm with centralized online algorithms proposed for similar problems. We show how other algorithms cannot generate as good of an assignment because they fail to manage the dynamism and/or take advantage of the spatiotemporal characteristics of SC.
+
+\end{abstract}
+
+\input{sec_introduction}
+
+\input{sec_problemdef}
+
+\input{sec_related}
+
+%\input{sec_clairvoyant}
+
+\input{sec_nonclairvoyant}
+
+\input{sec_experiments}
+
+\input{sec_conclusion}
+
+\begin{scriptsize}
+\bibliographystyle{IEEEtran}
+\bibliography{spatialcrowdsourcing}
+\end{scriptsize}
+
+%\input{sec_appendix}
+
+\end{document}
