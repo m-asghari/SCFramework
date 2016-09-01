@@ -2,7 +2,6 @@ package edu.usc.infolab.sc.Algorithms.Batched;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,10 +19,7 @@ public abstract class BatchedAlgorithm extends Algorithm {
 		super(tasks, workers);
 		upcomingTasks_ = new ArrayList<>(tasks.values());
 		upcomingWorkers_ = new ArrayList<>(workers.values());
-		// TODO Auto-generated constructor stub
-	}
-
-	
+	}	
 	
 	@Override
 	public int Run() {
@@ -32,9 +28,7 @@ public abstract class BatchedAlgorithm extends Algorithm {
 		
 		Collections.sort(upcomingTasks_);
 		Collections.sort(upcomingWorkers_);
-		
-		ArrayList<Task> task_copy = new ArrayList<>(upcomingTasks_);
-		
+				
 		ArrayList<Worker> availableWorkers = new ArrayList<Worker>();
 		while (!upcomingTasks_.isEmpty()) {
 			ArrayList<Task> currentBatch = new ArrayList<Task>();
@@ -42,6 +36,7 @@ public abstract class BatchedAlgorithm extends Algorithm {
 			while (true) {
 				if (!upcomingTasks_.isEmpty() && upcomingTasks_.get(0).releaseFrame <= batchEnd) {
 					cutOff = upcomingTasks_.get(0).releaseFrame;
+					upcomingTasks_.get(0).assignmentStat.delayedStart = batchEnd - upcomingTasks_.get(0).releaseFrame;
 					currentBatch.add(upcomingTasks_.remove(0));
 				}
 				else {
@@ -83,16 +78,6 @@ public abstract class BatchedAlgorithm extends Algorithm {
 					}
 				}
 			}
-		}
-				
-		// TODO Auto-generated method stub
-		int asnd = 0;
-		int nasnd = 0;
-		for (Task t : task_copy) {
-			if (t.assignmentStat.assigned == 1)
-				asnd++;
-			else
-				nasnd++;
 		}
 		return 0;
 	}

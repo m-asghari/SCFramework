@@ -38,6 +38,7 @@ public class BestDistributionEMD extends BestDistribution {
 				maxTime = time;
 		}
 		task.assignmentStat.selectWorkerTime = maxTime;
+		task.assignmentStat.communicationTime += (int) Math.ceil((grid.size() * Integer.SIZE * 2) / 300.0);
 		return selectedWorker;
 	}
 

@@ -27,7 +27,7 @@ public class SweetSpotMain {
 				new HashMap<Pair<Double, Double>, ArrayList<Double>>();
 		
 		try {
-			FileReader fr = new FileReader("Results\\Current Results\\ChangeRateOfTasksAndWorkers\\RawData.csv");
+			FileReader fr = new FileReader("Results\\VLDB16\\BatchedVsOnline\\RawData.csv");
 			BufferedReader br = new BufferedReader(fr);
 			
 			String line = "";
@@ -61,7 +61,7 @@ public class SweetSpotMain {
 			sb.append(",");*/
 			for (double wRate : wRates) {
 				ArrayList<Double> res = values.get(new Pair<Double, Double>(tRate, wRate));
-				sb.append(((res.get(12)/res.get(0))) *100);
+				sb.append((((res.get(3) - res.get(4))/res.get(0))) *100);
 				sb.append(",");
 			}
 			sb.deleteCharAt(sb.lastIndexOf(","));
@@ -70,7 +70,7 @@ public class SweetSpotMain {
 		
 		try {
 			FileWriter fw = new FileWriter("C:\\Users\\Mohammad\\Documents\\MATLAB\\"
-					+ "emd.csv");
+					+ "bi_lals.csv");
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(sb.toString());
 			bw.close();

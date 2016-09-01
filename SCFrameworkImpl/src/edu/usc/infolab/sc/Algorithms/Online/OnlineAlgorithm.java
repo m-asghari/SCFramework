@@ -60,6 +60,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 	}*/
 	
+	
 	//protected ArrayList<FrameStats> _framesStats;
 	//protected FrameStats _frameStats;
 	private File _frameImgDir;

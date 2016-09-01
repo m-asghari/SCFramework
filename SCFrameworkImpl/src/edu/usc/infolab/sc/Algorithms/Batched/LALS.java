@@ -24,7 +24,6 @@ public class LALS extends BatchedAlgorithm {
 	
 	public LALS(HashMap<Integer, Task> tasks, HashMap<Integer, Worker> workers) {
 		super(tasks, workers);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -85,6 +84,7 @@ public class LALS extends BatchedAlgorithm {
 		for (Node n : tNodes) {
 			for (Node m : wNodes) {
 				if (forbiddenPairs.contains(new Pair<Task, Worker>(n.t, m.w)))
+					// perhaps switch to continue
 					break;
 				double dist = m.w.Distance(n.t);
 				if (dist < m.w.retractFrame - currentTime && dist < n.t.retractFrame - currentTime) {
@@ -116,13 +116,11 @@ public class LALS extends BatchedAlgorithm {
 		}
 		return Status.SUCCESS;
 	}
-	
-	private int assignedCntr = 0;
+
 	private void Schedule(Worker w, ArrayList<Task> tasks, int currentTime) {
 		ArrayList<Task> schedule = null;
 		for (Task t : tasks) {
 			if ((schedule = w.ApproxCanPerform(t, currentTime)) != null) {
-				assignedCntr++;
 				t.assignmentStat.assigned = 1;
 				t.assignmentStat.completed = 1;
 				t.AssignTo(w);
