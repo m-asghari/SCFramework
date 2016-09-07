@@ -27,9 +27,10 @@ public class LALS extends BatchedAlgorithm {
 	}
 
 	@Override
-	protected void ProcessBatch(ArrayList<Task> tasks, ArrayList<Worker> workers, int currentTime) {
+	protected int ProcessBatch(ArrayList<Task> tasks, ArrayList<Worker> workers, int currentTime) {
+		int assignedTasks = 0;
 		if (tasks.size() == 0 || workers.size() == 0)
-			return;
+			return assignedTasks;
 		forbiddenPairs = new ArrayList<Pair<Task,Worker>>();
 		PopulatePartitions(tasks, workers, currentTime);
 		 
@@ -40,21 +41,30 @@ public class LALS extends BatchedAlgorithm {
 			for (Task t : tPartitions.get(p)) {
 				if (t.assignmentStat.assigned == 0) {
 					unassignedTasks.add(t);
+				} else {
+					assignedTasks++;
 				}
 			}
 		}
 		
 		while (true) {
-			if (GALS(unassignedTasks, workers, currentTime) == Status.TERMINATE)
+			if (GALS(unassignedTasks, workers, currentTime) == Status.TERMINATE) {
+				for (Task t : unassignedTasks) {
+					System.out.println("LALS - ProcessBatch - UnassignedTasks: id: " + t.id);
+				}
 				break;
+			}
+				
 			Iterator<Task> it = unassignedTasks.iterator();
 			while (it.hasNext()) {
 				Task t = it.next();
-				if (t.assignmentStat.assigned == 1)
+				if (t.assignmentStat.assigned == 1) {
 					it.remove();
+					assignedTasks++;
+				}				
 			}
 		}
-		//System.out.print(String.format("Assigned: %d\n", assignedCntr));
+		return assignedTasks;
 	}
 
 	private Status GALS(ArrayList<Task> tasks, ArrayList<Worker> workers, int currentTime) {
@@ -84,8 +94,7 @@ public class LALS extends BatchedAlgorithm {
 		for (Node n : tNodes) {
 			for (Node m : wNodes) {
 				if (forbiddenPairs.contains(new Pair<Task, Worker>(n.t, m.w)))
-					// perhaps switch to continue
-					break;
+					continue;
 				double dist = m.w.Distance(n.t);
 				if (dist < m.w.retractFrame - currentTime && dist < n.t.retractFrame - currentTime) {
 					bGraph.addEdge(n, m, 1);
@@ -140,12 +149,12 @@ public class LALS extends BatchedAlgorithm {
 		ArrayList<Worker> CurW = new ArrayList<Worker>(workers);
 		ArrayList<Task> CurT = new ArrayList<Task>(tasks);
 		
-		Iterator<Task> it = tasks.iterator();
-		while (it.hasNext()) {
-			Task t = it.next();
-			if (t.retractFrame < startTime)
-				it.remove();
-		}
+		//Iterator<Task> it = tasks.iterator();
+		//while (it.hasNext()) {
+		//	Task t = it.next();
+		//	if (t.retractFrame < startTime)
+		//		it.remove();
+		//}
 		
 		while (true) {
 			ArrayList<Worker> PWS = new ArrayList<Worker>();
@@ -166,6 +175,9 @@ public class LALS extends BatchedAlgorithm {
 								workload++;
 							}
 						}
+					}
+					if (WS.isEmpty()) {
+						System.out.println("LALS - PopulatePartition: id: " + t.id);
 					}
 				}
 				TS = new ArrayList<Task>();

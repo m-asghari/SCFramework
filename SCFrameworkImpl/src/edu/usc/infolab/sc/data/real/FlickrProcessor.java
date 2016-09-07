@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -76,13 +75,7 @@ public class FlickrProcessor extends RealDataProcessor {
 			new Pair<String, String>("\",\".*\",\"\\{" , "\", ,\"\\{");
 	private final Pair<String, String> tagsField = 
 			new Pair<String, String>(",\"\\{.*\\}\",", ", ,");
-	
-	private final long durationThreshold 
-			= 5L	/* hours*/ 
-			* 60	/* minutes/hour */
-			* 60	/* seconds/minute */;
-			//* 1000	/* milliseconds/second*/; 
-	
+		
 	public FlickrProcessor(String source, String dest, City city) {
 		super(source, dest, city);
 		firstLine = true;
@@ -214,6 +207,9 @@ public class FlickrProcessor extends RealDataProcessor {
 					workerIDs.add(img.user);
 				}
 			}
+			
+			br.close();
+			fr.close();
 			return String.format("City: %s, #tasks: %d, #workers: %d", city.name, taskCount, workerIDs.size());
 		}
 		catch (Exception e) {

@@ -13,7 +13,7 @@ import edu.usc.infolab.sc.DataSetGenerators.IO;
 
 public abstract class DateSetGenerator {
 		
-	public void SaveData(Grid grid, ArrayList<Task> tasks, ArrayList<Worker> workers, String outputFile) {
+	public static void SaveData(Grid grid, ArrayList<Task> tasks, ArrayList<Worker> workers, String outputFile) {
 		Document output = IO.GetEmptyDoc();
 		Element data = output.createElement("Data");
 		output.appendChild(data);

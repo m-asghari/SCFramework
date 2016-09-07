@@ -49,7 +49,9 @@ public class Main {
 		}*/
 		//ChangeSkewnessLevel(input);
 		//RunMultipleBatchedVsOnlineTests(input, 20);
-		ChangeRateOfTasksAndWorkers(input);
+		//ChangeRateOfTasksAndWorkers(input);
+		String result = RunBatchedVsOnline("gowalla_realData_LA.xml");
+		Result.Add(GENERAL, result);
 		
 		Finalize();
 	}
@@ -337,7 +339,8 @@ public class Main {
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
-		String biResults = RunBestInsertion(input);
+		//String biResults = RunBestInsertion(input);
+		String biResults = "";
 		String lalsResults = RunLALS(input);
 		return String.format("%s,%s", biResults, lalsResults);
 	}
