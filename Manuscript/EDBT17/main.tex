@@ -2,6 +2,7 @@
 
 \usepackage{graphicx}
 \usepackage{subfigure}
+\usepackage{epstopdf} %converting to PDF
 \graphicspath{.}
 
 \usepackage{appendix}
@@ -71,6 +72,7 @@
 %}
 
 \maketitle
+
 \begin{abstract}
 A new platform, termed spatial crowdsourcing (SC), is emerging that enables a requester to commission workers to physically travel to some specified locations to perform a set of spatial tasks (i.e., tasks related to a geographical location and time). For spatial crowdsourcing to scale to millions of workers and tasks, it should be able to efficiently assign tasks to workers, which in turn consists of both matching tasks to workers and computing a schedule for each worker. The two current approaches for task assignment in spatial crowdsourcing, batched assignment and centralized online assignment, cannot scale as either task matching or task scheduling will become a bottleneck.  Instead, we propose a distributed online assignment approach utilizing an auction-based framework where workers bid on every arriving task and the server determines the highest bidder, resulting in splitting the assignment responsibility between workers (for scheduling) and the server (for matching) and thus eliminating all bottlenecks. Through several experiments on both real-world and synthetic datasets, we compare the accuracy and efficiency of our real-time algorithm with centralized online algorithms proposed for similar problems. We show how other algorithms cannot generate as good of an assignment because they fail to manage the dynamism and/or take advantage of the spatiotemporal characteristics of SC.
 
