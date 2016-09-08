@@ -50,7 +50,7 @@ public class Main {
 		//ChangeSkewnessLevel(input);
 		//RunMultipleBatchedVsOnlineTests(input, 20);
 		//ChangeRateOfTasksAndWorkers(input);
-		String result = RunBatchedVsOnline("gowalla_realData_LA.xml");
+		String result = RunBatchedVsOnline("foursquare_realData_LA.xml");
 		Result.Add(GENERAL, result);
 		
 		Finalize();

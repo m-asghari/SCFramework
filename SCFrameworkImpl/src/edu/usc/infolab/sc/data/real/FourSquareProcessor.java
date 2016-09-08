@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import edu.usc.infolab.sc.Grid;
 import edu.usc.infolab.sc.Task;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.data.DateSetGenerator;
 
-public class GowallaProcessor extends DateSetGenerator{
+public class FourSquareProcessor extends DateSetGenerator {
 	private static final String LA = "LA";
 	private static final String NY = "NY";
 	private static final String London = "London";
@@ -39,12 +39,17 @@ public class GowallaProcessor extends DateSetGenerator{
 		}
 	};
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	private static HashMap<String, Double> venueLats = new HashMap<String, Double>();
+	private static HashMap<String, Double> venueLngs = new HashMap<String, Double>();
+	
+	
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
 
 	
 	public static void main(String[] args) {
 		String[] cityNames = new String[]{LA, NY, London, Paris, Beijing};
 		try {
+			populateVenueLatLngs();
 			for (String cityName : cityNames) {
 				City city = cities.get(cityName);
 				ArrayList<String> cityData = filterCheckIns(city);
@@ -59,19 +64,49 @@ public class GowallaProcessor extends DateSetGenerator{
 		}
 	}
 	
+	private static void populateVenueLatLngs() throws IOException{
+		FileReader fr = new FileReader("res//Foursquare//POIs.txt");
+		BufferedReader br = new BufferedReader(fr);
+		int counter = 0;
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			counter++;
+			String[] fields = line.split("\t");
+			if (fields.length < 4 || fields[0] == "" || fields[1] == "" || fields[2] == "") continue;
+			venueLats.put(fields[0], Double.parseDouble(fields[1]));
+			venueLngs.put(fields[0], Double.parseDouble(fields[2]));
+			if (counter % 200 == 0) {
+				System.out.println(String.format("Processed %d venues", counter));
+			}
+		}
+		br.close();
+		fr.close();
+	}
+	
 	private static ArrayList<String> filterCheckIns(City city) throws IOException {
 		ArrayList<String> filteredCheckIns = new ArrayList<String>();
-		FileReader fr = new FileReader("res//Gowalla//Checkins.txt");
+		FileReader fr = new FileReader("res//Foursquare//Checkins.txt");
 		BufferedReader br = new BufferedReader(fr);
 		int counter = 0;
 		String line = "";
 		while ((line = br.readLine()) != null) {
 			String[] fields = line.split("\t");
-			if (fields.length < 4 || fields[0] == "" || fields[1] == "" || fields[2] == "" || fields[3] == "") continue;
-			double lat = Double.parseDouble(fields[2]);
-			double lng = Double.parseDouble(fields[3]);
+			if (fields.length < 4 || fields[0] == "" || fields[1] == "" || fields[2] == "") continue;
+			String venueID = fields[1];
+			double lat = venueLats.get(venueID);
+			double lng = venueLngs.get(venueID);
 			if (lat <= city.maxLat && lat >= city.minLat && lng <= city.maxLng && lng >= city.minLng) {
-				filteredCheckIns.add(line);
+				StringBuilder sb = new StringBuilder();
+				sb.append(fields[0]);
+				sb.append("\t");
+				sb.append(Double.toString(lat));
+				sb.append("\t");
+				sb.append(Double.toString(lng));
+				sb.append("\t");
+				sb.append(fields[2]);
+				sb.append("\t");
+				sb.append(fields[3]);
+				filteredCheckIns.add(sb.toString());
 				counter++;
 			}
 		}
@@ -98,12 +133,13 @@ public class GowallaProcessor extends DateSetGenerator{
 		for (String data : cityData) {
 			String[] fields = data.split("\t");
 			int userId = Integer.parseInt(fields[0]);
-			Calendar time = Calendar.getInstance();
-			time.setTime(sdf.parse(fields[1]));
-			double lat = Double.parseDouble(fields[2]);
-			double lng = Double.parseDouble(fields[3]);
+			double lat = Double.parseDouble(fields[1]);
+			double lng = Double.parseDouble(fields[2]);			
 			Point2D.Double gridPoint = FitToGrid(city, lat, lng);
-			
+			Calendar time = Calendar.getInstance();
+			time.setTime(sdf.parse(fields[3]));
+			int offset = Integer.parseInt(fields[4]);
+			time.add(Calendar.MINUTE, offset);
 			
 			// Add Task
 			Task newTask = new Task();
@@ -168,7 +204,7 @@ public class GowallaProcessor extends DateSetGenerator{
 		Collections.sort(sampled_tasks);
 		Collections.sort(sampled_workers);
 		
-		SaveData(grid, sampled_tasks, sampled_workers, String.format("res//Gowalla//gowalla_realData_%s.xml", city.name));
+		SaveData(grid, sampled_tasks, sampled_workers, String.format("res//Foursquare//foursquare_realData_%s.xml", city.name));
 	}
 	
 	private static Point2D.Double findMeanPoint(ArrayList<Point2D.Double> locations) {

@@ -83,7 +83,7 @@ public abstract class BatchedAlgorithm extends Algorithm {
 			Calendar start = Calendar.getInstance();
 			int assignedTasks = ProcessBatch(currentBatch, availableWorkers, cutOff);
 			Calendar end = Calendar.getInstance();
-			long processTimes = (end.getTimeInMillis() - start.getTimeInMillis()) / 1000;
+			long processTimes = (end.getTimeInMillis() - start.getTimeInMillis()) / 6000;
 			batchStats.processingTime = processTimes;
 			batchStats.assignmentRate = (double)assignedTasks/batchStats.numOfTasks;
 			batchStart = cutOff;
