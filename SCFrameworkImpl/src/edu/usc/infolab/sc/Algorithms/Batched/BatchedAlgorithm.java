@@ -1,17 +1,32 @@
 package edu.usc.infolab.sc.Algorithms.Batched;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import edu.usc.infolab.sc.Task;
+import edu.usc.infolab.sc.Utils;
 import edu.usc.infolab.sc.Worker;
 import edu.usc.infolab.sc.Algorithms.Algorithm;
 
 public abstract class BatchedAlgorithm extends Algorithm {
+	private class BatchStats {
+		int numOfTasks;
+		long processingTime;
+		double assignmentRate;
+		double avgDelay;
+		
+		public BatchStats() {
+			numOfTasks = 0;
+			processingTime = -1;
+			assignmentRate = -1;
+			avgDelay = 0;
+		}
+	}
 	private ArrayList<Task> upcomingTasks_;
 	private ArrayList<Worker> upcomingWorkers_;
 	
@@ -20,34 +35,35 @@ public abstract class BatchedAlgorithm extends Algorithm {
 		super(tasks, workers);
 		upcomingTasks_ = new ArrayList<>(tasks.values());
 		upcomingWorkers_ = new ArrayList<>(workers.values());
-		// TODO Auto-generated constructor stub
-	}
-
-	
+	}	
 	
 	@Override
 	public int Run() {
+		ArrayList<BatchStats> batchStatsList = new ArrayList<BatchStats>();
 		int batchStart = 0;
 		int batchEnd = 500;
 		
 		Collections.sort(upcomingTasks_);
 		Collections.sort(upcomingWorkers_);
-		
-		ArrayList<Task> task_copy = new ArrayList<>(upcomingTasks_);
-		
+				
 		ArrayList<Worker> availableWorkers = new ArrayList<Worker>();
 		while (!upcomingTasks_.isEmpty()) {
 			ArrayList<Task> currentBatch = new ArrayList<Task>();
 			int cutOff = -1;
+			BatchStats batchStats = new BatchStats();
 			while (true) {
 				if (!upcomingTasks_.isEmpty() && upcomingTasks_.get(0).releaseFrame <= batchEnd) {
 					cutOff = upcomingTasks_.get(0).releaseFrame;
+					upcomingTasks_.get(0).assignmentStat.delayedStart = batchEnd - upcomingTasks_.get(0).releaseFrame;
+					batchStats.numOfTasks++;
+					batchStats.avgDelay += (batchEnd - upcomingTasks_.get(0).releaseFrame);
 					currentBatch.add(upcomingTasks_.remove(0));
 				}
 				else {
 					break;
 				}
 			}
+			batchStats.avgDelay /= batchStats.numOfTasks;
 			
 			Iterator<Worker> availableIt = availableWorkers.iterator();
 			while (availableIt.hasNext()) {
@@ -65,11 +81,14 @@ public abstract class BatchedAlgorithm extends Algorithm {
 			}
 			
 			Calendar start = Calendar.getInstance();
-			ProcessBatch(currentBatch, availableWorkers, cutOff);
+			int assignedTasks = ProcessBatch(currentBatch, availableWorkers, cutOff);
 			Calendar end = Calendar.getInstance();
-			long processTimes = (end.getTimeInMillis() - start.getTimeInMillis()) / 1000;
+			long processTimes = (end.getTimeInMillis() - start.getTimeInMillis()) / 6000;
+			batchStats.processingTime = processTimes;
+			batchStats.assignmentRate = (double)assignedTasks/batchStats.numOfTasks;
 			batchStart = cutOff;
-			batchEnd += (processTimes < 60) ? 60 : processTimes;
+			batchEnd += (processTimes < 15) ? 15 : processTimes;
+			batchStatsList.add(batchStats);
 			
 			for (int time = 0; time < processTimes; time++) {
 				for (Iterator<Worker> it = availableWorkers.iterator(); it.hasNext();) {
@@ -83,19 +102,30 @@ public abstract class BatchedAlgorithm extends Algorithm {
 					}
 				}
 			}
+			
 		}
-				
-		// TODO Auto-generated method stub
-		int asnd = 0;
-		int nasnd = 0;
-		for (Task t : task_copy) {
-			if (t.assignmentStat.assigned == 1)
-				asnd++;
-			else
-				nasnd++;
-		}
+		SaveBatchStats(batchStatsList);
 		return 0;
 	}
+	
+	private void SaveBatchStats(ArrayList<BatchStats> batchStatsList) {
+		try {
+			FileWriter fw = new FileWriter(String.format("BatchStats//BatchStats_%s.csv", Utils.PathFileFormatter.format(Calendar.getInstance().getTime())));
+			BufferedWriter bw = new BufferedWriter(fw);
+			
+			int i = 1;
+			for (BatchStats batchStats : batchStatsList) {
+				bw.write(String.format("%d, %d, %d, %.2f, %.2f", i++, batchStats.numOfTasks, batchStats.processingTime, batchStats.assignmentRate, batchStats.avgDelay));
+			}
+			bw.close();
+			fw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 
-	protected abstract void ProcessBatch(ArrayList<Task> tasks, ArrayList<Worker> workers, int startTime);
+	protected abstract int ProcessBatch(ArrayList<Task> tasks, ArrayList<Worker> workers, int startTime);
 }

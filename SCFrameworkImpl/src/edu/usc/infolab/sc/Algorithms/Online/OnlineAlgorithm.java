@@ -60,6 +60,7 @@ public abstract class OnlineAlgorithm extends Algorithm{
 		}
 	}*/
 	
+	
 	//protected ArrayList<FrameStats> _framesStats;
 	//protected FrameStats _frameStats;
 	private File _frameImgDir;
@@ -132,6 +133,9 @@ public abstract class OnlineAlgorithm extends Algorithm{
 			}
 			else {
 				unassignedTasks.add(upcomingTasks.get(0));
+			}
+			if (upcomingTasks.size() % 200 == 0) {
+				System.out.println(String.format("Remaining Tasks: %d", upcomingTasks.size()));
 			}
 			Calendar endTaskTotalRuntime = Calendar.getInstance();
 			upcomingTasks.get(0).assignmentStat.totalTime = endTaskTotalRuntime.getTimeInMillis() - startTaskTotalRuntime.getTimeInMillis();

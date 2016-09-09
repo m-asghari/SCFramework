@@ -1,9 +1,11 @@
 package edu.usc.infolab.sc;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Utils {
+	public final static SimpleDateFormat PathFileFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	// Later try to replace this with a method that generates permutations one at a time
 	// so we can stop once we have a hit!

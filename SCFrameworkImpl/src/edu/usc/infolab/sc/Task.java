@@ -14,6 +14,8 @@ public class Task extends SpatialEntity{
 		public ArrayList<Long> workerFreeTimes;
 		public long decideEligibilityTime;
 		public long selectWorkerTime;
+		public long communicationTime;
+		public long delayedStart;
 		public long totalTime;
 		public ArrayList<Integer> decTimes;
 		
@@ -31,6 +33,8 @@ public class Task extends SpatialEntity{
 			this.availableWorkers = 0;
 			this.decideEligibilityTime = 0;
 			this.selectWorkerTime = 0;
+			this.communicationTime = 1;
+			this.delayedStart = 0;
 			this.totalTime = 0;
 			workerFreeTimes = new ArrayList<Long>();
 		}
