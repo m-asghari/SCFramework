@@ -50,7 +50,7 @@ public class Main {
 		//ChangeSkewnessLevel(input);
 		//RunMultipleBatchedVsOnlineTests(input, 20);
 		//ChangeRateOfTasksAndWorkers(input);
-		String result = RunBatchedVsOnline("foursquare_realData_LA.xml");
+		String result = RunBatchedVsOnline("gowalla_realData_LA.xml");
 		Result.Add(GENERAL, result);
 		
 		Finalize();
@@ -339,10 +339,11 @@ public class Main {
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
-		//String biResults = RunBestInsertion(input);
-		String biResults = "";
+		String biResults = RunBestInsertion(input);
+		//String biResults = "";
+		String bdResults = RunBestDistributionEMD(input);
 		String lalsResults = RunLALS(input);
-		return String.format("%s,%s", biResults, lalsResults);
+		return String.format("%s,%s,%s", biResults, bdResults, lalsResults);
 	}
 	
 	private static String GenerateNewInput(String config) {

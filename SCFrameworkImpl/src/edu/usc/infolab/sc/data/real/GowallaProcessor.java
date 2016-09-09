@@ -112,11 +112,12 @@ public class GowallaProcessor extends DateSetGenerator{
 			int retractFrame = CalendarToFrame(time);
 			int releaseFrame = 0;
 			newTask.retractFrame = retractFrame;
-			if (rand.nextDouble() < 0.25) {
+			/*if (rand.nextDouble() < 0.25) {
 				releaseFrame = retractFrame - (rand.nextInt(101) + 200);
 			} else {
 				releaseFrame = retractFrame - (rand.nextInt(91) + 50);
-			}
+			}*/
+			releaseFrame = retractFrame - (rand.nextInt(45) + 45);
 			releaseFrame = (releaseFrame >= 0) ? releaseFrame : 0;
 			newTask.releaseFrame = releaseFrame;
 			newTask.value = 1;
