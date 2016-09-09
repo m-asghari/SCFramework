@@ -1,9 +1,9 @@
 \section{Auction-SC Framework}
 \label{sec:onlinealgo}
 
-In practice, an SC system works similar to a \emph{complex event processing (CEP)} engine \cite{Luckham01} where new tasks arrive at the SC-Server as an input stream. With a real-world SC scenario, the SC-Server will find out about a task and its properties only when it is released. The complexity of the many-to-many matching in addition to the need for immediacy (e.g., Uber) render the batch scheme impractical for real-world scenarios. Furthermore, in an online centralized SC-Server scheduling multiple workers becomes the bottleneck and hence, real-time assignment is not guaranteed. \textcolor{red}{For example, in a New York City, during rush hours, there are as many as 10+ ride requests per second \cite{NYCTaxi}. Through experiments, we show a centralized SC-Server is not able to process such throughput in real-time.}
+In practice, an SC system works similar to a \emph{complex event processing (CEP)} engine \cite{Luckham01} where new tasks arrive at the SC-Server as an input stream. With a real-world SC scenario, the SC-Server will find out about a task and its properties only when it is released. The complexity of the many-to-many matching in addition to the need for immediacy (e.g., Uber) render the batch scheme impractical for real-world scenarios. Furthermore, in an online centralized SC-Server scheduling multiple workers becomes the bottleneck and hence, real-time assignment is not guaranteed.
 
-In this section we introduce Auction-SC which has neither shortcomings and generates real-time online assignments by splitting the matching and scheduling responsibilities between the server and the workers, respectively. \textcolor{red}{This allows Auction-SC to scale up orders of magnitude higher than a centralized SC-Server.}First we explain the auction framework and how tasks are dispatched to workers. Next, we discuss how workers compute their bids and at the end we provide a cost analysis of this framework.
+In this section we introduce Auction-SC which has neither shortcomings and generates real-time online assignments by splitting the matching and scheduling responsibilities between the server and the workers, respectively. This allows Auction-SC to scale up orders of magnitude higher than a centralized SC-Server (see \cref{subsec:exp_scale}. First we explain the auction framework and how tasks are dispatched to workers. Next, we discuss how workers compute their bids and at the end we provide a cost analysis of this framework.
 
 \subsection{Task Dispatchment in Auction-SC}
 
@@ -143,25 +143,25 @@ We assume the SC-Server maintains $S_W$ and $S_T$ and shares it with the eligibl
 \begin{algorithmic}[1]
 \REQUIRE \emph{P} and \emph{Q} as two grid distributions
 \ENSURE \emph{cost} is EMD cost between distributions \emph{P} and \emph{Q}
-\STATE $pNodes = \emptyset$
-\STATE $nNodes = \emptyset$
-\FOR{$cell = 0$ to $P.size$}
+\STATE $suppliers = \emptyset$
+\STATE $consumers = \emptyset$
+\FOR{$cell = 0$ to $P.size$}\label{ln:for1_s}
 	\STATE $diff = P(cell).prob - Q(cell).prob$
 	\IF{$ diff > 0$}
-		\STATE $pNodes \leftarrow$ new Node($diff, P(cell).center$)
+		\STATE $suppliers \leftarrow$ new Node($diff, P(cell).center$)
 	\ELSE
-		\STATE $NNodes \leftarrow$ new Node($diff, P(cell).center$)
+		\STATE $consumers \leftarrow$ new Node($diff, P(cell).center$)
 	\ENDIF
-\ENDFOR
+\ENDFOR\label{ln:for1_e}
 \STATE $edges = \emptyset$
-\FOR{$p$ in $pNodes$}
-	\FOR{$n$ in $nNodes$}
-		\STATE $c =$ dist($p.center, n.center$)
-		\STATE $edge \leftarrow$ new Edge($p, n, c$)
+\FOR{$s$ in $suppliers$}\label{ln:for2_s}
+	\FOR{$c$ in $consumers$}
+		\STATE $d =$ dist($s.center, c.center$)
+		\STATE $edges \leftarrow$ new Edge($s, c, d$)
 	\ENDFOR
-\ENDFOR
-\STATE $emdGraph =$ new Graph($pNodes, nNodes, edges$)
-\STATE $flowGraph = emdGraph$.FindMinFlow()
+\ENDFOR\label{ln:for2_e}
+\STATE $emdGraph =$ new Graph($suppliers, consumers, edges$)
+\STATE $flowGraph = emdGraph$.FindMinFlow()\label{ln:min_flow}
 \STATE $cost = 0$
 \FOR{$e$ in $flowGraph.edges$}
 	\STATE $cost += (e.flow \times e.cost)$
@@ -170,7 +170,7 @@ We assume the SC-Server maintains $S_W$ and $S_T$ and shares it with the eligibl
 \end{algorithmic}
 \end{algorithm}
 
-\cref{algo:emd} outlines the process of finding the EMD cost between two distributions $P$ and $Q$. 
+\cref{algo:emd} outlines the process of finding the EMD cost between two distributions $P$ and $Q$. First we divide the cells our spatial distributions into a \textit{supplier} set and a \textit{consumer set} (Lines~\ref{ln:for1_s}-\ref{ln:for1_e}). Then we connect each supplier node to every consumer node such that the distance between the two nodes is equal to the distance of their corresponding cells (Line~\ref{ln:for2_s}-\ref{ln:for2_e}). The \textit{FindMinFlow()} method in Line~\ref{ln:min_flow} executes the linear programming problem discussed earlier.
 
 \subsection{Cost Analysis}
 
@@ -187,4 +187,4 @@ On the other hand, In a centralized approach, the SC-Server does all the computa
 \begin{equation*}
 \left| M_{Centralized} \right| = \bar{\alpha}.n + 2|T|\bar{n_e}
 \end{equation*}
-\noindent Similar to Auction-SC, $\bar{\alpha}.n$ is the total number of messages sent to the server to change the workers' cells. We can see the number of messages transmitted in a centralized server is similar to those with Auction-SC. Thus, when compared to a centralized architecture, Auction-SC does not increase the throughput of the network.
+\noindent Similar to Auction-SC, $\bar{\alpha}.n$ is the total number of messages sent to the server to change the workers' cells. We can see the number of messages transmitted in a centralized server is similar to those with Auction-SC. Thus, when compared to a centralized architecture, Auction-SC does not increase the throughput of the network. It should be mentioned that in the BD approach, since $S_W$ and $S_T$ should be broadcast to eligible workers, it incurs a slightly higher communication cost and as it can be seen in the experiments, BD becomes less scalable than BI.
