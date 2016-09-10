@@ -45,6 +45,8 @@ Now we can formally define the Task Assignment in Spatial Crowdsourcing (TASC) a
 Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $d: \left( W \cup T \right) \times T \rightarrow \mathbb{R}$ where $d \left( \left\langle a,b \right\rangle \right)$ is the distance between $a$ and $b$, the goal of the TASC$\left\langle W, T, d \right\rangle$ problem is to find a valid matching $M$ with maximum value.
 \end{definition}
 
+In a real life scenario, the SC-Server only finds out about the tasks once they are submitted. Similarly, the server does not know when future workers will become available. Consequently, the SC-Server cannot plan for future tasks/workers ahead of time. Therefore, in this paper we study the \textit{OnlineTASC} problem, where the server processes an incoming task only after it is submitted by the requester. 
+
 It is important to note that with task assignment in SC, the goal is to find a \textit{valid matching}. This means that in addition to finding a \textit{matching} between tasks and workers, the SC-Server has to also find a \textit{schedule} for each worker to perform the tasks. Throughout this paper we use the terms \textit{matching phase} and \textit{scheduling phase} to refer to the two different aspects of task assignment in SC. \cref{tab:notation} lists the notations we frequently use in this paper.\\
 
 \begin{table}
@@ -68,13 +70,28 @@ $w.max$		&	maximum number of tasks worker $w$ \\
 
 \subsection{Complexity Analysis}
 
+Previous studies have shown the TASC problem is NP-Hard \cite{Kazemi13, Deng15}. However, the focus of this study is the OnlineTASC problem and hence, in this section we briefly discuss the complexity of OnlineTASC.\\
+
+In order to analyze online algorithms, where each request is processed without being able to see the future, we use a method named \textit{competitive analysis}\cite{Sleator85}. With this method, the performance of an online algorithm is compared to the performance of an optimal offline algorithm that has knowledge of future events. For the TASC problem, we measure the performance of each algorithm based on the number of assigned task. Assuming we show the performance of algorithm $\mathcal{A}$ on input $\mathcal{I}$ as $\vert \mathcal{A}\left( \mathcal{I} \right) \vert$ we can define \textit{competitive ration} of an algorithm as:
+
+\begin{definition} [Competitive Ratio]
+For an online algorithm $\mathcal{A}$, we say $\mathcal{A}$ is c-competitive for some $c > 0$, if and only if:
+\begin{equation*}
+c = \min\limits_{\mathcal{I} \in \mathbb{I}} \left\lbrace \frac{\vert \mathcal{A}\left( \mathcal{I} \right) \vert}{\vert \mathcal{A}^{*} \left( \mathcal{I} \right) \vert} \right\rbrace
+\end{equation*}
+where $\mathcal{A}^{*}$ is the optimal offline algorithm and $\mathbb{I}$ is the set of all possible inputs.
+\end{definition}
+
+Now we can prove the following theorem regarding the complexity of OnlineTASC.
+
 \begin{theorem}
 \label{th:comp_ratio}
 There does not exist a deterministic online algorithm for the TASC problem that is \textit{c-competitive} ($c > 0$). 
 \end{theorem}
 
 \begin{proof}
-Suppose there exists an algorithm $\mathcal{A}$ that is \textit{c-competitive}. We assume there exist a Clairvoyant which knows every decision $\mathcal{A}$ makes. For simplicity, we assume there is only one worker at point $(0, 0)$. The input starts with $r_1$ with a pick-up location at $(w, 0)$ and $r_2$ with pick-up location at $(-w, 0)$ (we assume all requests have a maximum wait time of $w$). The algorithm can make three choices for the driver. (1) move toward $r_1$, (2) move towards $r_2$ and (3) stay still. If choice 1 is selected, the Clairvoyant can generate the input such that at time $t = 1$, $n$ more request are submitted with pick-up location at $(-w-1, 0)$ and drop-off locations similar to $r_2$. Similar arguments can be made if choice 2 or 3 are selected by the algorithm. A globally optimal solution can complete $n+1$ requests while $\mathcal{A}$ can at most complete one request. By adding more drivers far away in a similar situation, the Clairvoyant can make $\mathcal{A}$'s solution unboundedly worse than the optimal solution. Therefore, we contradicted the assumption that $\mathcal{A}$ is \textit{c-competitive}.
+Suppose there exists an algorithm $\mathcal{A}$ that is \textit{c-competitive} for some $c \geq 0$. To prove no such algorithm exists, all we need to do is to prove there is at least one possible input ($\mathcal{I}$), for which $\frac{\vert \mathcal{A}(\mathcal{I}) \vert}{\vert \mathcal{A}^{*}(\mathcal{I}) \vert}$ is unboundedly small. We assume there exist an adversary which knows every decision $\mathcal{A}$ makes and creates an input knowing what decisions $\mathcal{A}$ is going to make. For simplicity, we only consider points on the x-axis and assume there is only one worker at point $x=0$ in the beginning.\\
+The input starts with $t_1$ such that $t_1 = \left\langle 5, \left[0, 5 \right] \right\rangle$ (\cref{fig:prooft0}; a task at point $5$ with release time $0$ and deadline $5$). The algorithm can make two choices for the worker. (1) move toward $t_1$ or (2) stay still (In theory it can also make to worker  and move away from $t_1$ which in the context of this proof would be similar to case (2)). If choice 1 is selected, the adversary can generate the input such that at time $t = 2$, tasks $t_2, ... t_n$ are submitted such as $\left\langle -4, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft21}). Since at the release time of $t2, ..., t_n$ the worker is at point $x=2$, it does not have enough time to get to $t_2, ..., t_n$ before their deadline. However, an optimal offline algorithm would know about $t_2, ..., t_n$ in advance and plan accordingly. In other words, $\vert \mathcal{A} \vert = 1$ where $\vert \mathcal{A}^{*} \vert = n - 1$ and the ratio could be unboundedly small by increasing $n$. Therefore, we contradicted the assumption that $\mathcal{A}$ is \textit{c-competitive}. A similar argument can be made if choice 2 was selected by the algorithm by releasing tasks $t_2, ...,t_n$ such as $\left\langle 7, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft22}).
 \end{proof}
 
 \begin{figure}[h]
@@ -95,6 +112,9 @@ Suppose there exists an algorithm $\mathcal{A}$ that is \textit{c-competitive}. 
     \caption{Adversary Generated Input}
     \label{fig:quality}
 \end{figure}
+
+Even though \cref{th:comp_ratio} states that there exists no algorithm for OnlineTASC with theoretical bounds, in the following sections we propose algorithms for OnlineTASC that generate close to optimal results when applied to both real-world and synthetic data.
+
 %The equivalent decision problem for TASC is to decide if there exists a matching $M$ with value $K$ and is denoted as TASC$\left\langle W, T, d, K \right\rangle$. In this section we use a slightly modified version of the well known Hamiltonian Path Problem. We call it the Minimum Length Hamiltonian Path Problem (Min-Ham-Path) and define it as follows:
 
 %\begin{definition}[Min-Ham-Path]
