@@ -35,22 +35,10 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "SkewedTasks_4";
+		String input = "gowalla_realData_LA";
 		Initialize(0, input);
 		
-		//RunMultipleTests(input, 20);
-		//ChangeRateOfTasks(input);
-		//ChangeNumberOfTasks(input);
-		/*String[] cities = new String[]{"LA", "NY", "London", "Paris", "Beijing"};
-		for (String city : cities) {
-			for (int i = 0; i < 20; i++) {
-				RunOnlineAlgorithms(String.format("res\\Flickr\\flickr_realData_%s_15000_%d.xml", city, i));
-			}
-		}*/
-		//ChangeSkewnessLevel(input);
-		//RunMultipleBatchedVsOnlineTests(input, 20);
-		//ChangeRateOfTasksAndWorkers(input);
-		String result = RunBatchedVsOnline("gowalla_realData_LA.xml");
+		String result = RunBatchedVsOnline("gowalla_realData_LA//gowalla_realData_LA.xml");
 		Result.Add(GENERAL, result);
 		
 		Finalize();
@@ -334,15 +322,15 @@ public class Main {
 		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistributionEMD(input);
 		return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
-		//return String.format("%s,%s,%s", nnResults, biResults, bdResults);
-		//return "";
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
 		String biResults = RunBestInsertion(input);
 		//String biResults = "";
-		String bdResults = RunBestDistributionEMD(input);
-		String lalsResults = RunLALS(input);
+		//String bdResults = RunBestDistributionEMD(input);
+		String bdResults = "";
+		//String lalsResults = RunLALS(input);
+		String lalsResults = "";
 		return String.format("%s,%s,%s", biResults, bdResults, lalsResults);
 	}
 	
@@ -400,19 +388,18 @@ public class Main {
 	}
 	
 	private static void Initialize(int level, String config) {
-		try {
 			String srcFileName = String.format("%s.xml", config);
 			File dir = Utils.CreateEmptyDirectory(config);
-			FileUtils.copyFile(new File(srcFileName), new File(dir, srcFileName));
+			try {
+				FileUtils.copyFile(new File(srcFileName), new File(dir, srcFileName));
+			} catch (Exception e ) {
+				e.printStackTrace();
+			}
 			
 			File f = new File(dir, config);
 			Log.Initialize(level, f.getPath());
 			Result.InitNewWriter(GENERAL, String.format("%s_%s", f.getPath(), GENERAL));
 			Result.InitNewWriter(ASSIGNMENT_STAT, String.format("%s_%s", f.getPath(), ASSIGNMENT_STAT));
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
 	}
 	
 	private static void SaveToFile(String name, ArrayList<Task> tasks, ArrayList<Worker> workers) {
