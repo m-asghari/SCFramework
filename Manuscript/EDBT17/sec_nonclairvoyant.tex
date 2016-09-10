@@ -23,6 +23,14 @@ In this section we introduce Auction-SC which has neither shortcomings and gener
 
 Auction methods have been effectively used for assignment problems in dynamic multi-agent environments \cite{Mehta05,Lagoudakis04}. The main advantage of auction methods are their simplicity and the fact that they allow for a decentralized implementation. Auction-SC considers workers as bidders and tasks as goods. Furthermore, the SC-Server plays the role of a central auctioneer in Auction-SC. At a very high level, in Auction-SC, once a new tasks is submitted to the SC-Server (auctioneer), the server presents the task to the workers (bidders). Depending on the \textit{bidding rule}, which is common among all workers, each worker computes its own bid and submits the bid to the server. The bidding process is performed as a \textit{sealed-bid auction} where workers simultaneously submit bids and no other workers knows how much the other workers have bid. The SC-Server selects the worker with either the lowest or highest bid (depending on the bidding rule) as the winner and matches the task with the worker.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/scenario}
+    \vspace{-0.15in}
+    \caption{Task Dispatching in Auction-SC}
+    \label{fig:dispatch}
+\end{figure}
+
 Broadcasting every incoming task to all available workers incurs a large communication cost on the system. Auction-SC lowers the communication cost by only sending any incoming task to \textit{eligible workers} that are define as:
 
 \begin{definition} [Eligible Worker]
@@ -91,10 +99,10 @@ Having $S_W$ and $S_T$, we need a metric to determine the closeness of these two
     \centering
     \subfigure[Distribution 1]{
         \label{fig:sdist1}
-        \includegraphics[scale=0.35]{figures/sDist1.jpg} }
+        \includegraphics[width=0.65\columnwidth]{figures/sDist1} }
     \subfigure[Distribution 2]{
         \label{fig:sdist2}
-        \includegraphics[scale=0.35]{figures/sDist2.jpg}
+        \includegraphics[width=0.65\columnwidth]{figures/sDist2}
     }
     \vspace{-0.1in}
     \caption{Two spatial distributions for tasks and workers}
