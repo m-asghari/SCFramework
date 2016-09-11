@@ -115,7 +115,7 @@ public abstract class BatchedAlgorithm extends Algorithm {
 			
 			int i = 1;
 			for (BatchStats batchStats : batchStatsList) {
-				bw.write(String.format("%d, %d, %d, %.2f, %.2f", i++, batchStats.numOfTasks, batchStats.processingTime, batchStats.assignmentRate, batchStats.avgDelay));
+				bw.write(String.format("%d, %d, %d, %.2f, %.2f\n", i++, batchStats.numOfTasks, batchStats.processingTime, batchStats.assignmentRate, batchStats.avgDelay));
 			}
 			bw.close();
 			fw.close();

@@ -49,9 +49,7 @@ public class Main {
 		}*/
 		//ChangeSkewnessLevel(input);
 		//RunMultipleBatchedVsOnlineTests(input, 20);
-		//ChangeRateOfTasksAndWorkers(input);
-		String result = RunBatchedVsOnline("foursquare_realData_LA.xml");
-		Result.Add(GENERAL, result);
+		ChangeRateOfTasksAndWorkers(input);
 		
 		Finalize();
 	}
@@ -134,10 +132,20 @@ public class Main {
 		}
 	}
 	
+	private static double[] tRates = new double[]{
+			1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 20, 30, 40, 50, 60, 70, 80, 90,
+			100, 200, 300, 400, 500
+	};
+	private static double[] wRates = new double[]{
+			0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 
+			1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 20, 30, 40, 50
+	};
 	protected static void ChangeRateOfTasksAndWorkers(String config) {
-		for (double tRate = 1; tRate < 1000; tRate += Math.pow(10, Math.floor(Math.log10(tRate)))) {
-			for (double wRate = 0.1; wRate < 100; wRate += Math.pow(10, Math.floor(Math.log10(wRate)))) {
-				for (int test = 0; test < 5; test++) {
+		for (double tRate : tRates) {
+			for (double wRate : wRates) {
+				for (int test = 0; test < 1; test++) {
 					String input = GenerateNewInput(test, config, Math.max(10000, (int)tRate*10), tRate, wRate);
 					System.out.println(String.format("Starting test %d for tRate %.2f and wRate %.2f", test, tRate, wRate));
 					//String algoResults = RunOnlineAlgorithms(input);
@@ -340,9 +348,9 @@ public class Main {
 	
 	private static String RunBatchedVsOnline(String input) {
 		//String biResults = RunBestInsertion(input);
-		String biResults = "";
+		String onlineResults = RunOnlineAlgorithms(input);
 		String lalsResults = RunLALS(input);
-		return String.format("%s,%s", biResults, lalsResults);
+		return String.format("%s,%s", onlineResults, lalsResults);
 	}
 	
 	private static String GenerateNewInput(String config) {

@@ -49,9 +49,9 @@ public class LALS extends BatchedAlgorithm {
 		
 		while (true) {
 			if (GALS(unassignedTasks, workers, currentTime) == Status.TERMINATE) {
-				for (Task t : unassignedTasks) {
-					System.out.println("LALS - ProcessBatch - UnassignedTasks: id: " + t.id);
-				}
+				//for (Task t : unassignedTasks) {
+				//	System.out.println("LALS - ProcessBatch - UnassignedTasks: id: " + t.id);
+				//}
 				break;
 			}
 				
@@ -176,9 +176,9 @@ public class LALS extends BatchedAlgorithm {
 							}
 						}
 					}
-					if (WS.isEmpty()) {
-						System.out.println("LALS - PopulatePartition: id: " + t.id);
-					}
+					//if (WS.isEmpty()) {
+					//	System.out.println("LALS - PopulatePartition: id: " + t.id);
+					//}
 				}
 				TS = new ArrayList<Task>();
 				for (Worker w : WS) {
