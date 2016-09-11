@@ -56,20 +56,29 @@
 %\setlength{\abovecaptionskip}{-1pt}
 \captionsetup{font=bf}
 
+% Author Block
+\newcommand*{\myaffaddr}[1]{#1} % No op here. Customize it for different styles.
+\newcommand*{\myaffmark}[1][*]{\textsuperscript{#1}}
+\newcommand*{\myemail}[1]{\texttt{#1}}
+
 \newcommand{\TODO}[1]{{\bfseries\color{red}TODO: #1}}
 
 \title{Auction-SC -- An Auction-Based Framework for\\ Real-Time Task Assignment in Spatial Crowdsourcing}
+
+
+
 \begin{document}
 \sloppy
 
-\numberofauthors{1}
+%\numberofauthors{1}
 %\author{Author list removed due to double blind policy}
-\author{{Mohammad Asghari, Cyrus Shahabi, Liyue Fan}\\
-\fontsize{10}{10}\selectfont\rmfamily\itshape
-University of Southern California, Los Angeles, CA, USA\\
-\fontsize{9}{9}\selectfont\ttfamily\upshape
-\{masghari, shahabi, liyuefan\}@usc.edu\\
+\author{{Mohammad Asghari\myaffmark[1], Liyue Fan\myaffmark[2], Cyrus Shahabi\myaffmark[1]}\\
+\myaffaddr{\myaffmark[1]University of Southern California, Los Angeles, CA, USA}\\
+\myaffaddr{\myaffmark[2]State University of New York at Albany, NY, USA}\\
+\myemail{\{\myaffmark[1]masghari, shahabi\}@usc.edu}    \myemail{\myaffmark[2]lfan4@albany.edu}\\
 }
+
+
 
 \maketitle
 
