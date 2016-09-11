@@ -342,8 +342,6 @@ public class Main {
 		String biResults = RunBestInsertion(input);
 		String bdResults = RunBestDistributionEMD(input);
 		return String.format("%s,%s,%s,%s,%s,%s", rndResults, rnkResults, nnResults, biResults, mftResults, bdResults);
-		//return String.format("%s,%s,%s", nnResults, biResults, bdResults);
-		//return "";
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
@@ -407,19 +405,18 @@ public class Main {
 	}
 	
 	private static void Initialize(int level, String config) {
-		try {
 			String srcFileName = String.format("%s.xml", config);
 			File dir = Utils.CreateEmptyDirectory(config);
-			FileUtils.copyFile(new File(srcFileName), new File(dir, srcFileName));
+			try {
+				FileUtils.copyFile(new File(srcFileName), new File(dir, srcFileName));
+			} catch (Exception e ) {
+				e.printStackTrace();
+			}
 			
 			File f = new File(dir, config);
 			Log.Initialize(level, f.getPath());
 			Result.InitNewWriter(GENERAL, String.format("%s_%s", f.getPath(), GENERAL));
 			Result.InitNewWriter(ASSIGNMENT_STAT, String.format("%s_%s", f.getPath(), ASSIGNMENT_STAT));
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
 	}
 	
 	private static void SaveToFile(String name, ArrayList<Task> tasks, ArrayList<Worker> workers) {
