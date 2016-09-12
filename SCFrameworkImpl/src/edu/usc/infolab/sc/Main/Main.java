@@ -35,11 +35,21 @@ public class Main {
 	private static final String ASSIGNMENT_STAT = "ASSIGNMENT_STAT";
 	
 	public static void main(String[] args) {
-		String input = "gowalla_realData_LA";
+		String input = "SkewedTasks_4";
 		Initialize(0, input);
 		
-		String result = RunBatchedVsOnline("gowalla_realData_LA//gowalla_realData_LA.xml");
-		Result.Add(GENERAL, result);
+		//RunMultipleTests(input, 20);
+		//ChangeRateOfTasks(input);
+		//ChangeNumberOfTasks(input);
+		/*String[] cities = new String[]{"LA", "NY", "London", "Paris", "Beijing"};
+		for (String city : cities) {
+			for (int i = 0; i < 20; i++) {
+				RunOnlineAlgorithms(String.format("res\\Flickr\\flickr_realData_%s_15000_%d.xml", city, i));
+			}
+		}*/
+		//ChangeSkewnessLevel(input);
+		//RunMultipleBatchedVsOnlineTests(input, 20);
+		ChangeRateOfTasksAndWorkers(input);
 		
 		Finalize();
 	}
@@ -122,10 +132,20 @@ public class Main {
 		}
 	}
 	
+	private static double[] tRates = new double[]{
+			1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 20, 30, 40, 50, 60, 70, 80, 90,
+			100, 200, 300, 400, 500
+	};
+	private static double[] wRates = new double[]{
+			0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 
+			1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 20, 30, 40, 50
+	};
 	protected static void ChangeRateOfTasksAndWorkers(String config) {
-		for (double tRate = 1; tRate < 1000; tRate += Math.pow(10, Math.floor(Math.log10(tRate)))) {
-			for (double wRate = 0.1; wRate < 100; wRate += Math.pow(10, Math.floor(Math.log10(wRate)))) {
-				for (int test = 0; test < 5; test++) {
+		for (double tRate : tRates) {
+			for (double wRate : wRates) {
+				for (int test = 0; test < 1; test++) {
 					String input = GenerateNewInput(test, config, Math.max(10000, (int)tRate*10), tRate, wRate);
 					System.out.println(String.format("Starting test %d for tRate %.2f and wRate %.2f", test, tRate, wRate));
 					//String algoResults = RunOnlineAlgorithms(input);
@@ -325,13 +345,10 @@ public class Main {
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
-		String biResults = RunBestInsertion(input);
-		//String biResults = "";
-		//String bdResults = RunBestDistributionEMD(input);
-		String bdResults = "";
-		//String lalsResults = RunLALS(input);
-		String lalsResults = "";
-		return String.format("%s,%s,%s", biResults, bdResults, lalsResults);
+		//String biResults = RunBestInsertion(input);
+		String onlineResults = RunOnlineAlgorithms(input);
+		String lalsResults = RunLALS(input);
+		return String.format("%s,%s", onlineResults, lalsResults);
 	}
 	
 	private static String GenerateNewInput(String config) {
