@@ -1,6 +1,6 @@
 <DataSpecification>
 	<Grid minx="0" miny="0" maxx="360" maxy="360" w="120" l="120"/>
-	<Tasks size="1000" releaseMode="PerMinute">
+	<Tasks size="10000" releaseMode="PerMinute">
 		<Location>
 			<Distribution name="BivariateNormal" prob="0.20">
 				<Settings>
@@ -50,7 +50,7 @@
 		<ReleaseTime>
 			<Distribution name="Poisson" prob="1">
 				<Settings>
-					<mean value="20"/>
+					<mean value="100"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>
@@ -91,7 +91,7 @@
 		<ReleaseTime>
 			<Distribution name="Poisson" prob="1">
 				<Settings>
-					<mean value="3"/>
+					<mean value="10"/>
 				</Settings>
 			</Distribution>
 		</ReleaseTime>

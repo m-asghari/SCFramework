@@ -3,7 +3,6 @@ package edu.usc.infolab.sc.Main;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -49,15 +48,16 @@ public class Main {
 		}*/
 		//ChangeSkewnessLevel(input);
 		//RunMultipleBatchedVsOnlineTests(input, 20);
-		ChangeRateOfTasksAndWorkers(input);
 		
+		ChangeRateOfTasksAndWorkers(input);
 		Finalize();
 	}
 	
 	protected static void RunSingleTests(String config) {
 		String input = GenerateNewInput(config);
 		System.out.println("Starting test");
-		String algoResults = RunOnlineAlgorithms(input);
+		//String algoResults = RunOnlineAlgorithms(input);
+		String algoResults = RunBatchedVsOnline(input);
 		Result.Add(GENERAL, algoResults);
 	}
 	
@@ -105,16 +105,15 @@ public class Main {
 	}
 	
 	protected static void ChangeRateOfTasks(String config) {
-		double rate = 60;
-		while (rate <= 300000 ) {
-			for (int test = 0; test < 5; test++) {
-				String input = GenerateNewInput(test, config, 1000, rate);
-				System.out.println(String.format("Starting test %d for rate %.2f", test, rate));
-				String algoResults = RunOnlineAlgorithms(input);
-				Result.Add(GENERAL, "%.2f,%s", rate, algoResults);
+		double[] tRates = new double[]{1, 5, 10, 25, 50, 75, 100, 250, 500};
+		for (double tRate : tRates) {
+			double wRate = tRate / 10;
+			for (int test = 0; test < 1; test++) {
+				String input = GenerateNewInput(test, config, Math.max(10000, (int)tRate*10), tRate, wRate);
+				System.out.println(String.format("Starting test %d for tRate %.2f and wRate %.2f", test, tRate, wRate));
+				String algoResults = RunBatchedVsOnline(input);
+				Result.Add(GENERAL, "%.2f,%s", tRate, algoResults);
 			}
-			
-			rate*=10;
 		}
 	}
 	
@@ -133,14 +132,10 @@ public class Main {
 	}
 	
 	private static double[] tRates = new double[]{
-			1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 20, 30, 40, 50, 60, 70, 80, 90,
-			100, 200, 300, 400, 500
+			200, 300, 400, 500
 	};
 	private static double[] wRates = new double[]{
-			0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 
-			1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 20, 30, 40, 50
+			10
 	};
 	protected static void ChangeRateOfTasksAndWorkers(String config) {
 		for (double tRate : tRates) {
@@ -345,10 +340,14 @@ public class Main {
 	}
 	
 	private static String RunBatchedVsOnline(String input) {
-		//String biResults = RunBestInsertion(input);
-		String onlineResults = RunOnlineAlgorithms(input);
+		String biResults = RunBestInsertion(input);
+		//String biResults = "";
+		String bdResults = RunBestDistributionEMD(input);
+		//String bdResults = "";
+		String nnResults = RunNearestNeighbor(input);
 		String lalsResults = RunLALS(input);
-		return String.format("%s,%s", onlineResults, lalsResults);
+		//String lalsResults = "";
+		return String.format("%s,%s,%s", biResults, bdResults, nnResults, lalsResults);
 	}
 	
 	private static String GenerateNewInput(String config) {
@@ -426,10 +425,10 @@ public class Main {
 			bw.write(String.format("%d", tasks.size()));
 			bw.write("\n");
 			for (Task t : tasks) {
-				String p1 = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,", 
+				String p1 = String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,", 
 						t.assignmentStat.assigned, t.assignmentStat.completed, 
 						t.releaseFrame, t.retractFrame, t.value, 
-						t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.totalTime, 
+						t.assignmentStat.decideEligibilityTime, t.assignmentStat.selectWorkerTime, t.assignmentStat.totalTime, t.assignmentStat.decideEligibilityTime, 
 						t.assignmentStat.availableWorkers, t.assignmentStat.eligibleWorkers);
 				StringBuilder sb = new StringBuilder();
 				for (Long i : t.assignmentStat.workerFreeTimes) {
