@@ -1,12 +1,13 @@
 \section{Experiments}
 \label{sec:experiments}
-Unlike regular crowdsourcing, there is no publicly available platform for running real-world spatial crowdsourcing campaigns. With platforms such as Amazon Mechanical Turk, workers do not perform spatial crowdsourcing tasks. For this reason, we simulated various spatial crowdsourcing campaigns on an Inter(R) Core(TM)2 Duo 3.16GHz PC with 4GB memory running Microsoft Windows 7.
+
+%Unlike regular crowdsourcing, there is no publicly available platform for running real-world spatial crowdsourcing campaigns. With platforms such as Amazon Mechanical Turk, workers do not perform spatial crowdsourcing tasks. For this reason, we simulated various spatial crowdsourcing campaigns on an Inter(R) Core(TM)2 Duo 3.16GHz PC with 4GB memory running Microsoft Windows 7.
 
 \subsection{Dataset}
 \label{subsec:dataset}
-Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. However, we were able to use a large collection of geo-tagged images from Flickr \cite{Thomee15} as an input to Auction-SC. The dataset consists of \textasciitilde 15 million images with attributes such as location, time taken, time uploaded, the user who took the picture, etc.
+Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. We evaluate our algorithms using real check-in data in Foursquare and Gowalla and convert them spatial tasks and workers in our system. We consider check-ins as a spatial task performed at the location the check-in happened. For each location, we consider all check-ins within a two hours duration. For each task, we set the release time and deadline to the first and last check-in time within the two hours duration. We consider each user as a spatial worker with start and end times equal to the user's first and last check-in during a day. We select the initial location of a worker as a random point within the bounding box of all checked-in locations of the corresponding user. We also measure the travel time with the Euclidean distance between two points divided by an average speed of $60 km/h$. We use the data from 5 metropolitan areas: New York, Los Angeles, Paris, London \& Beijing. 
 
-We correspond each image with a spatial task considering that the task was to take a photo at a specific location. We set the deadline of the task to the time the image was taken and the duration of the task to the interval between the time the image was taken and the time it was uploaded. Each user in the dataset corresponds to a worker. The original location of the worker is randomly selected. The worker is available during the interval between the first time he took a photo and the last time he uploaded one. We ran 5 separate instances, each of which with images in a different metropolitan area. \cref{tab:flickr_stats} shows the total number of tasks (and workers) for each city.
+\cref{tab:flickr_stats} shows the total number of tasks (and workers) for each city.
 
 \begin{table}[h]
 \begin{center}
@@ -24,19 +25,20 @@ Beijing		&	23,335		&		1,598		\\ \hline
 \end{center}
 \end{table}
 
-We also generated a synthetic dataset with realistic streaming workload based on the methodology proposed in \cite{Tang07}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
+We also generated a synthetic dataset with realistic streaming workload using \cite{To15}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
+%We also generated a synthetic dataset with realistic streaming workload based on the methodology proposed in \cite{Tang07}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
 
-\noindent \textbf{Temporal Parameters:} In \cite{Basu15}, it is shown that with crowdsourcing environments, workers and tasks arrive following Poisson processes \cite{Stoyan87}.The default Poisson arrival rates for tasks and workers are $\mu_t = 20/min$ and $\mu_w = 3/min$, respectively. Subsequently, the duration of the tasks and workers were randomly sampled from closed range of $\left[1,4 \right]$ hours and $\left[1,8 \right]$ hours, respectively.
+\noindent \textbf{Temporal Parameters:} In \cite{Basu15}, it is shown that with crowdsourcing environments, workers and tasks arrive following Poisson processes \cite{Stoyan87}.The default Poisson arrival rates for tasks and workers are \boldmath$\mu_t = 20/min$ and $\mu_w = 3/min$, respectively. Subsequently, the duration of the tasks and workers were randomly sampled from closed range of \boldmath{$\left[1,4 \right]$} \textbf{hours} and $\left[1,8 \right]$ \textbf{hours}, respectively.
 
-\noindent \textbf{Spatial Parameters:} \cref{fig:la_flickr} shows the spatial distribution of tasks from our real-world dataset in Los Angeles. As depicted, the tasks are not uniformly distributed in space. The spatial distribution is rather skewed, meaning that the density of the tasks at certain areas is higher. To model the same behavior with our synthetic workloads, we created 6 two dimensional Gaussian clusters with randomly selected means and standard deviations. Eighty percent of the tasks are sampled within the clusters and the rest are uniformly distributed.
+\noindent \textbf{Spatial Parameters:} \cref{fig:la_gowalla} shows the spatial distribution of tasks from our real-world dataset in Los Angeles. As depicted, the tasks are not uniformly distributed in space. The spatial distribution is rather skewed, meaning that the density of the tasks at certain areas is higher. To model the same behavior with our synthetic workloads, we created 6 two dimensional Gaussian clusters with randomly selected means and standard deviations. Eighty percent of the tasks are sampled within the clusters and the rest are uniformly distributed.
 
-\noindent \textbf{Static Parameters:} In addition to the spatiotemporal parameters, we consider two other parameters. The default \emph{workload size} of each experiment is 10K tasks. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
-The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniformly random number from the closed interval $\left[8,12 \right]$.
+\noindent \textbf{Static Parameters:} In addition to the spatiotemporal parameters, we consider two other parameters. The default \emph{workload size} of each experiment is \textbf{50K tasks}. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
+The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniformly random number from the closed interval \boldmath$\left[8,12 \right]$.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.35]{figures/la_flickr.jpg}
-	\caption{Spatial Distribution of Tasks in Flickr}\label{fig:la_flickr}
+	\caption{Spatial Distribution of Tasks in Gowalla}\label{fig:la_gowalla}
 \end{figure}
 
 %\subsection{Online vs. Offline}
@@ -47,6 +49,14 @@ The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniforml
 %	\includegraphics[width = 0.6\columnwidth]{figures/off_vs_on.jpg}
 %	\caption{Comparison of Offline and Real-time approaches}\label{fig:off_vs_on}
 %\end{figure}
+
+\subsection{Experiment Setup}
+\label{subsec:exp_setup}
+
+In our experiments, we evaluate two different aspects of our framework. First, we compare the assignment quality of the proposed algorithms, i.e., the percentage of tasks the are completed. We compare the assignment quality of Auction-SC with the batched assignment framework (BATCHED) from \cite{Deng15}. We also compare the assignment quality of SC bidding rules with non-SC bidding rules (\cref{subsec:bidding}). Following, we evaluate the scalability of Auction-SC. In addition to comparing the scalability of Auction-SC with BATCHED, we also show that a monolithic server is not able to scale as high as Auction-SC.
+
+
+
 
 \subsection{Assignment Quality}
 In this section we evaluate the quality of the assignments using different real-time non-clairvoyant algorithms. First, we compare them using the Flickr and the synthetic datasets. Subsequently, using the synthetic datasets, we show how the spatial and temporal settings of the problem can affect the performance of the real-time assignment quality.
