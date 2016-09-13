@@ -72,7 +72,7 @@ $w.max$		&	maximum number of tasks worker $w$ \\
 
 Previous studies have shown the TASC problem is NP-Hard \cite{Kazemi13, Deng15}. However, the focus of this study is the OnlineTASC problem and hence, in this section we briefly discuss the complexity of OnlineTASC.\\
 
-In order to analyze online algorithms, where each request is processed without being able to see the future, we use a method named \textit{competitive analysis}\cite{Sleator85}. With this method, the performance of an online algorithm is compared to the performance of an optimal offline algorithm that has knowledge of future events. For the TASC problem, we measure the performance of each algorithm based on the number of assigned task. Assuming we show the performance of algorithm $\mathcal{A}$ on input $\mathcal{I}$ as $\vert \mathcal{A}\left( \mathcal{I} \right) \vert$ we can define \textit{competitive ration} of an algorithm as:
+In order to analyze online algorithms, where each request is processed without being able to see the future, we use a method named \textit{competitive analysis}\cite{Sleator85}. With this method, the performance of an online algorithm is compared to the performance of an optimal offline algorithm that has knowledge of future events. For the TASC problem, we measure the performance of each algorithm based on the number of assigned task. Assuming we show the performance of algorithm $\mathcal{A}$ on input $\mathcal{I}$ as $\vert \mathcal{A}\left( \mathcal{I} \right) \vert$ we can define \textit{competitive ratio} of an algorithm as:
 
 \begin{definition} [Competitive Ratio]
 For an online algorithm $\mathcal{A}$, we say $\mathcal{A}$ is c-competitive for some $c > 0$, if and only if:

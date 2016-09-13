@@ -5,34 +5,35 @@
 
 \subsection{Dataset}
 \label{subsec:dataset}
-Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. We evaluate our algorithms using real check-in data in Foursquare and Gowalla and convert them spatial tasks and workers in our system. We consider check-ins as a spatial task performed at the location the check-in happened. For each location, we consider all check-ins within a two hours duration. For each task, we set the release time and deadline to the first and last check-in time within the two hours duration. We consider each user as a spatial worker with start and end times equal to the user's first and last check-in during a day. We select the initial location of a worker as a random point within the bounding box of all checked-in locations of the corresponding user. We also measure the travel time with the Euclidean distance between two points divided by an average speed of $60 km/h$. We use the data from 5 metropolitan areas: New York, Los Angeles, Paris, London \& Beijing. 
+Due to its commercial value, real-life SC systems such as Uber and TaskRabbit do not make their datasets available to public. We evaluate our algorithms using real check-in data in Foursquare\cite{Yang16} and Gowalla\cite{Cho11} and convert them to spatial tasks and workers in our system. We consider check-ins as a spatial task performed at the location the check-in happened. For each location, we consider all check-ins within a two hours duration. For each task, we set the release time and deadline to the first and last check-in time within the two hours duration. We consider each user as a spatial worker with start and end times equal to the user's first and last check-in during a day. We select the initial location of a worker as a random point within the bounding box of all checked-in locations of the corresponding user. We also measure the travel time with the Euclidean distance between two points divided by an average speed of $60 km/h$. We use the data from 5 metropolitan areas: New York, Los Angeles, Paris, London \& Beijing. 
 
 \cref{tab:flickr_stats} shows the total number of tasks (and workers) for each city.
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{| l || c | c |} \hline
-			&	\# of Tasks	&	\# of Workers	\\ \hline
-Los Angeles	&	219,332		&		19,081		\\ \hline
-New York	&	390,229		&		17,603		\\ \hline
-London		& 	366,034		&		18,480		\\ \hline
-Paris		&	237,344		&		14,275		\\ \hline
-Beijing		&	23,335		&		1,598		\\ \hline
+\begin{tabular}{| l || c | c || c | c |} \hline
+			& \multicolumn{2}{c||}{Gowalla}		&\multicolumn{2}{c|}{Foursquare}		\\ \hline
+			&	\# Tasks	&	\#  Workers		&	\#  Tasks	&	\#  Workers		\\ \hline
+Los Angeles	&	197,353		&		4,126		&	185,061		&		9,136		\\ \hline
+New York	&	118,406		&		3,987		&	577,124		& 		17,367		\\ \hline
+London		& 	60,180		&		2,294		&	186,755		&		9,711		\\ \hline
+Paris		&	18,932		&		1,829		&	105,998		&		6,095		\\ \hline
+Beijing		&	3,638		&		699			&	21,013		&		1,075		\\ \hline
 \end{tabular}
 \vspace{-0.1in}
-\caption{\small{Number of tasks/worker for each city in Flickr dataset}}
+\caption{\small{Number of tasks/worker for each city in real dataset}}
 \label{tab:flickr_stats}
 \end{center}
 \end{table}
 
-We also generated a synthetic dataset with realistic streaming workload using \cite{To15}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
+We also generate a synthetic datasets with realistic streaming workload using \cite{To15}. To generate a workload suitable for SC systems, we modeled three different sets of parameters:
 %We also generated a synthetic dataset with realistic streaming workload based on the methodology proposed in \cite{Tang07}. To generate a workload suitable for SC systems we modeled three different sets of parameters:
 
-\noindent \textbf{Temporal Parameters:} In \cite{Basu15}, it is shown that with crowdsourcing environments, workers and tasks arrive following Poisson processes \cite{Stoyan87}.The default Poisson arrival rates for tasks and workers are \boldmath$\mu_t = 20/min$ and $\mu_w = 3/min$, respectively. Subsequently, the duration of the tasks and workers were randomly sampled from closed range of \boldmath{$\left[1,4 \right]$} \textbf{hours} and $\left[1,8 \right]$ \textbf{hours}, respectively.
+\noindent \textbf{Temporal Parameters:} In \cite{Basu15}, it is shown that in crowdsourcing environments, workers and tasks arrive following Poisson processes \cite{Stoyan87}. In our experiments, the default Poisson arrival rates for tasks and workers are \boldmath$\mu_t = 20/min$ and $\mu_w = 3/min$, respectively. Subsequently, the duration of the tasks and workers were randomly sampled from closed range of \boldmath{$\left[1,4 \right]$} \textbf{hours} and $\left[1,8 \right]$ \textbf{hours}, respectively.
 
 \noindent \textbf{Spatial Parameters:} \cref{fig:la_gowalla} shows the spatial distribution of tasks from our real-world dataset in Los Angeles. As depicted, the tasks are not uniformly distributed in space. The spatial distribution is rather skewed, meaning that the density of the tasks at certain areas is higher. To model the same behavior with our synthetic workloads, we created 6 two dimensional Gaussian clusters with randomly selected means and standard deviations. Eighty percent of the tasks are sampled within the clusters and the rest are uniformly distributed.
 
-\noindent \textbf{Static Parameters:} In addition to the spatiotemporal parameters, we consider two other parameters. The default \emph{workload size} of each experiment is \textbf{50K tasks}. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the worker arrival rate, the total number of workers may vary.\\
+\noindent \textbf{Static Parameters:} In addition to the spatiotemporal parameters, we consider two other parameters. The default \emph{workload size} of each experiment is \textbf{50K tasks}. The task arrival rate and the number of tasks determine the duration of the simulation. Based on the duration of the simulation and the workers' arrival rate, the total number of workers may vary.\\
 The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniformly random number from the closed interval \boldmath$\left[8,12 \right]$.
 
 \begin{figure}[h]
@@ -53,12 +54,12 @@ The maximum number of tasks a worker can perform, i.e., $w_{max}$, is a uniforml
 \subsection{Experiment Setup}
 \label{subsec:exp_setup}
 
-In our experiments, we evaluate two different aspects of our framework. First, we compare the assignment quality of the proposed algorithms, i.e., the percentage of tasks the are completed. We compare the assignment quality of Auction-SC with the batched assignment framework (BATCHED) from \cite{Deng15}. We also compare the assignment quality of SC bidding rules with non-SC bidding rules (\cref{subsec:bidding}). Following, we evaluate the scalability of Auction-SC. In addition to comparing the scalability of Auction-SC with BATCHED, we also show that a monolithic server is not able to scale as high as Auction-SC.\\
+In our experiments, we evaluate two different aspects of our framework. First, we compare the assignment quality of the proposed algorithms, i.e., the percentage of tasks that are completed. We compare the assignment quality of Auction-SC with those of the batched assignment framework (BCHD) from \cite{Deng15}. We also compare the assignment quality of SC bidding rules with non-SC bidding rules (\cref{subsec:bidding}). Following, we measure the scalability of Auction-SC. In addition to comparing the scalability of Auction-SC with BCHD, we also show that a monolithic server is not able to scale as high as Auction-SC.\\
 
-In order to account for communication cost in Auction-SC, for each incoming task, we compute the size of the messages being transferred between the SC-Server and workers. We assume Auction-SC is running over a 3G cellular network with a transmission speed of $100 Kb/s$. We divide the transmission speed by the size of the message and get the transmission time of each message.\\
+In order to account for communication cost in Auction-SC, for each incoming task, we compute the size of the messages being transferred between the SC-Server and workers. We assume Auction-SC is running over a 3G cellular network with a transmission speed of $100 Kb/s$. We divide the transmission speed by the size of the message and get the transmission time of each message. All experiments were conducted on an Intel(R) Core(TM)2 Dou 3.16GHz PC running Windows 10. Methods were implemented in Java.\\
 
 \subsection{Assignment Quality}
-In this section we evaluate the quality of the assignments of Auction-SC with those of BCHD. We utilize Auction-SC with various biding rules discussed in \cref{subsec:bidding} to study their effect on the assignment quality. First, we compare the algorithms using the our real-time and the default parameters of our synthetic datasets. Subsequently, using the synthetic datasets, we show how varying spatial and temporal parameters of the problem can affect the performance of the real-time assignment quality.
+In this section we evaluate the quality of the assignments of Auction-SC with those of BCHD. We utilize Auction-SC with various biding rules discussed in \cref{subsec:bidding} to observe their effect on the assignment quality. First, we compare the algorithms using our real-time and synthetic dataset. Subsequently, using the synthetic datasets, we show how varying spatial and temporal parameters of the problem can affect the performance of the assignment quality.
 
 \begin{figure}[h]
     \centering
@@ -79,9 +80,9 @@ In this section we evaluate the quality of the assignments of Auction-SC with th
     \label{fig:quality}
 \end{figure}
 
-\cref{fig:quality} compares the assignment quality of different real-time algorithms. As we can see, both SC approaches outperforms the best non-SC algorithm by almost 25\%. The main reason as explained in \cref{sec:onlinealgo} is that, the SC rules perform scheduling when matching tasks with workers. Also, BD outperforms BI by at most 10\%. This is not surprising as BD tends to ``move" workers to areas where future tasks are more likely to appear, thus achieving higher assignment in long term. Among the non-SC approaches NN outperforms other rules by almost 2 times more completed tasks. The reason MFT does not outperform RNK can be explained by what we call a \emph{radical move}. A \emph{radical move} is when the SC-Server assigns a task to a worker which requires it to move a relatively long distance to reach the location of that task. Since we do not consider any spatial proximity to the task with MFT, there is a high chance to end up with assignments resulting in radical moves. With NN and BI the general idea is to prevent radical moves as much as possible. With BD, although radical moves occur, but only if the worker moves to areas where there will be more tasks to complete.\\
+\cref{fig:quality} compares the assignment quality of different algorithms. As we can see, both SC bidding rules (i.e., BI and BD) outperforms the best non-SC rules by almost 25\%. The main reason as explained in \cref{sec:onlinealgo} is that, the SC rules perform scheduling when matching tasks with workers. Also, BD outperforms BI by at most 10\%. This is not surprising as BD tends to ``move" workers to areas where future tasks are more likely to appear, thus achieving higher assignment in long term. Among the non-SC approaches NN outperforms other rules by almost 2 times. The reason MFT does not outperform RNK can be explained by what we call a \emph{radical move}. A \emph{radical move} is when the SC-Server assigns a task to a worker which requires the worker to move a relatively long distance to reach the location of that task. Since we do not consider any spatial proximity to the task with MFT, there is a high chance to end up with assignments resulting in radical moves. With NN and BI the general idea is to prevent radical moves as much as possible. With BD, although radical moves occur, but only if the worker moves to areas where there will be more tasks to complete.\\
 
-Furthermore, SC bidding rules (i.e.; BI and BD) outperform BCHD by almost a similar margin. One reason is that BCHD performs the matching phase and then attempts to schedule tasks for their matched workers. All tasks that could not be scheduled for their matched workers, will go back to the matching phase and the process continues until all tasks are scheduled or there is no more worker to match with a task. When performing the matching, the schedule of the worker is not considered and hence a task might end up getting matched to and scheduled for a worker that was not the best worker. This in turn, can lower the chances of that worker to get assigned to a new task in the future. The second reason is that while a task is waiting at the server to get processed with the next batch, depending on the length of the batching  interval, it will lose some portion of its available time before its deadline, which in turn, can lower the chances of the task fitting a worker's schedule (more details in \cref{subsec:exp_scale}).\\
+Furthermore, SC bidding rules outperform BCHD by almost a similar margin. One reason is that BCHD performs the matching phase and then attempts to schedule tasks for their matched workers. All tasks that could not be scheduled for their matched workers, will go back to the matching phase and the process continues until all tasks are scheduled or there is no more worker to match with a task. When performing the matching, the schedule of the worker is not considered and hence, a task might end up getting matched to and scheduled for a worker that was not the best worker. This in turn, can lower the chances of that worker to get assigned to a new task in the future. The second reason is that while a task is waiting at the server to get processed with the next batch, depending on the length of the batching  interval, it will lose some portion of its available time before its deadline, which in turn, can lower the chances of the task fitting a worker's schedule (more details in \cref{subsec:exp_scale}).\\
 
 \begin{figure}[h]
     \centering
@@ -114,7 +115,7 @@ Furthermore, SC bidding rules (i.e.; BI and BD) outperform BCHD by almost a simi
     \label{fig:tw_rate}
 \end{figure}
 
-In order to study the effect of temporal parameters of SC, we ran several experiments using different pairs of task arrival rates ($t_{rate}$) and worker arrival rates ($w_{rate}$). In \cref{fig:tw_rate} we show the effect of increasing $t_{rate}$ and $w_{rate}$ on the quality of the assignment. The level of grayness corresponds to the percentage of completed tasks with black and white representing 100\% and 0\%, respectively. As we can see with small number of workers, as we increase the task arrival rate, the percentage of completed tasks decreases where at the top left corner of each plot we get close to 0\%. On the other hand with small number of incoming tasks, as we increase $w_{rate}$, eventually all tasks will be completed. \cref{fig:tw_rate} shows that among non-SC rules NN outperform RNK and MFT independent of the $t_{rate}$ and $w_{rate}$ and hence, for the remainder of experiments, we only consider NN among non-SC rules.
+In order to study the effect of temporal parameters of SC, we ran several experiments using different pairs of task arrival rates ($t_{rate}$) and worker arrival rates ($w_{rate}$). In \cref{fig:tw_rate} we show the effect of increasing $t_{rate}$ and $w_{rate}$ on the quality of the assignment. The level of grayness corresponds to the percentage of completed tasks with black and white representing 100\% and 0\%, respectively. As we can see with small number of workers, as we increase the task arrival rate, the percentage of completed tasks decreases where at the top left corner of each plot we get close to 0\%. On the other hand with small number of incoming tasks, as we increase $w_{rate}$, eventually all tasks will be completed. \cref{fig:tw_rate} shows that among non-SC rules NN outperform RNK and MFT independent of the $t_{rate}$ and $w_{rate}$ and hence, for the remainder of experiments, we only consider NN among non-SC rules.\\
 
 \begin{figure}[h]
 	\centering
@@ -137,7 +138,7 @@ In order to study the effect of temporal parameters of SC, we ran several experi
 	\caption{Assignment Difference of BD Vs. BI}\label{fig:emd_bi}
 \end{figure}
 
-To better evaluate the leading approaches, NN, BI, BD and BCHD, in \cref{fig:rate_comp} we performed a pair-wise comparison by taking their task completion rates. For example, \cref{fig:bi_nn} shows the difference between BI and NN. We observe that all approaches perform similarly at the two extreme cases discussed in \cref{fig:tw_rate}, i.e., high task-low worker and low task-high worker. BI outperform NN and BCHD up to 30\% when the problem is more complex, i.e., outside the extreme cases. An interesting observation in \cref{fig:bi_nn} is that BI outperforms NN by a larger margin at scale (higher $t_{rate}$ and $w_{rate}$). The reason is that with higher $t_{rate}$ and $w_{rate}$ more workers are moving around and more tasks come and leave so in general the spatiotemporal dynamism of the system increases. BI and BD cope with the dynamism by guaranteeing a task gets assigned to worker that can complete it. On the contrary, NN ignores the schedule of a worker during matching and this becomes more important as there is more dynamism in the system.
+To better evaluate the leading approaches, NN, BI, BD and BCHD, in \cref{fig:bi_nn,fig:bi_bchd,fig:emd_bi} we performed a pair-wise comparison by taking their task completion rates. For example, \cref{fig:bi_nn} shows the difference between BI and NN. We observe that all approaches perform similarly at the two extreme cases discussed in \cref{fig:tw_rate}, i.e., high task-low worker and low task-high worker. BI outperform NN and BCHD up to 30\% when the problem is more complex, i.e., outside the extreme cases. An interesting observation in \cref{fig:bi_nn} is that BI outperforms NN by a larger margin at scale (higher $t_{rate}$ and $w_{rate}$). The reason is that with higher $t_{rate}$ and $w_{rate}$ more workers are moving around and more tasks come and leave so in general the spatiotemporal dynamism of the system increases. BI and BD cope with the dynamism by guaranteeing a task gets assigned to worker that can complete it. On the contrary, NN ignores the schedule of a worker during matching and this becomes more important as there is more dynamism in the system.\\
 
 \begin{figure}[h]
 	\centering
@@ -146,9 +147,9 @@ To better evaluate the leading approaches, NN, BI, BD and BCHD, in \cref{fig:rat
 	\caption{Assignment Difference of BI Vs. ApproxBI}\label{fig:bi_abi}
 \end{figure}
 
-We mentioned earlier that with the SC-rules, the workers perform an exhaustive search to find out if they can fit a new task into their schedule. As workers accept new tasks, they also complete some other tasks so as we observed in our experiments, performing an exhaustive search did not cause any scalability issues. Nevertheless, one might want to replace the exhaustive search with a polynomial time approximate algorithm. With ApproxBI, we use the insertion algorithm from \cite{Rosenkrantz74} that runs in $O(n^2)$. \cref{fig:bi_abi} shows the change affects the quality of the assignment by less than 5\%. The difference caused by ApproxBI is that the workers that are eligible for a task using BI, may not be able to fit the task in their schedules using ApproxBI due to the approximation. As a result, using ApproxBI the server may not be able to assign some tasks even if they can be completed using BI. Fortunately, as shown in \cref{fig:bi_abi}, that does not happen very often regardless of $t_{rate}$ and $w_{rate}$.
+We mentioned earlier that with the SC-rules, the workers perform an exhaustive search to find out if they can fit a new task into their schedule \cref{algo:can_schedule}. As workers accept new tasks, they also complete some other tasks so as we observed in our experiments, performing an exhaustive search did not cause any scalability issues. Nevertheless, one might want to replace the exhaustive search with a polynomial time approximate algorithm. With ApproxBI, we use the insertion algorithm from \cite{Rosenkrantz74} that runs in $O(n^2)$. \cref{fig:bi_abi} shows the change affects the quality of the assignment by less than 5\%. The difference caused by ApproxBI is that the workers that are eligible for a task using BI, may not be able to fit the task in their schedules using ApproxBI due to the approximation. As a result, using ApproxBI the server may not be able to assign some tasks even if they can be completed using BI. Fortunately, as shown in \cref{fig:bi_abi}, that does not happen very often regardless of $t_{rate}$ and $w_{rate}$.\\
 
-The next set of experiments compare the effect of the spatial distribution of tasks. We compared the quality of the final assignment for three different distribution. Even though real-world data usually follow a skewed spatial distribution (\cref{subsec:dataset}), the results of these experiments show that regardless of the distribution, BI and BD outperform NN and BCHD. With the first distribution, the location of the tasks follow a spatial Poisson process \cite{Baddeley07}. The other two distributions are a Uniform 2D distribution and a Skewed distribution. The results in \cref{fig:dists} show that BI and BD generate assignments at least 20\% better than NN and BCHD. Also, we can see with Poisson and Uniform distributions, there is not much difference between BI and BD. The reason is that both distributions generate tasks at completely random locations. Consequently, tasks are released at every area with the same probability and hence BD and BI become similar.
+The next set of experiments compare the effect of the spatial distribution of tasks. We compared the quality of the final assignment for three different distribution. Even though real-world data usually follow a skewed spatial distribution (\cref{subsec:dataset}), the results of these experiments show that regardless of the distribution, BI and BD outperform NN and BCHD. With the first distribution, the location of the tasks follow a spatial Poisson process \cite{Baddeley07}. The other two distributions are a Uniform 2D distribution and a Skewed distribution. The results in \cref{fig:dists} show that BI and BD generate assignments at least 20\% better than NN and BCHD. Also, we can see with Poisson and Uniform distributions, there is not much difference between BI and BD. The reason is that both distributions generate tasks at completely random locations. Consequently, tasks are released at every area with the same probability and hence BD and BI become similar.\\
 
 \begin{figure}[h]
 	\centering
@@ -157,14 +158,11 @@ The next set of experiments compare the effect of the spatial distribution of ta
 	\caption{Assignment Difference-Varying Distribution}\label{fig:dists}
 \end{figure}
 
-Earlier we explained for some use cases (e.g., Uber), batched assignment does not even satisfy application requirements. Nevertheless, the results in \cref{fig:bi_lals} show even if non real-time assignments are tolerable, the quality of batched assignment is not as good as the online assignment. 
-
-
 \subsection{Scalability}
 \label{subsec:exp_scale}
-The last set of experiments focus on measuring the scalability of BCHD, Auction-SC and a monolithic server. We compare the scalability of BI and BD bidding rules in Auction-SC (i.e., \textbf{A-BI} and \textbf{A-BD}) with the equivalent implementation of the same algorithms on a monolithic SC-Server.  and call them \textbf{M-BI} and \textbf{M-BD}.
+The last set of experiments focus on measuring the scalability of BCHD, Auction-SC and a monolithic-SC. We compare the scalability of BI and BD bidding rules in Auction-SC (i.e., \textbf{A-BI} and \textbf{A-BD}) with the equivalent implementation of the same algorithms on monolithic-SC and call them \textbf{M-BI} and \textbf{M-BD}, respectively.\\
 
-We can measure the scalability of SC systems by their throughput: the number of tasks processed per second , or equivalently, the processing time per task, shown in \cref{fig:runtime}. Since Auction-SC utilizes the workers for scheduling an incoming task, In \cref{fig:runtime} we see that the average processing time of a single task does not change as the arrival rate of workers increases. On the contrary, with the M-BI, M-BD and BCHD, the average processing time of a single task increases linearly as we increase the number of workers and is several orders of magnitude higher than A-BI and A-BD. 
+We can measure the scalability of SC systems by their throughput: the number of tasks processed per second , or equivalently, the processing time per task, shown in \cref{fig:runtime}. Since Auction-SC utilizes the workers for scheduling an incoming task, In \cref{fig:runtime} we see that the average processing time of a single task does not change as the arrival rate of workers increases. On the contrary, with M-BI, M-BD and BCHD, the average processing time of a single task increases as we increase the number of workers and is several orders of magnitude higher than A-BI and A-BD.\\
 
 \begin{figure}[h]
     \centering
@@ -193,7 +191,7 @@ We can measure the scalability of SC systems by their throughput: the number of 
     \label{fig:runtime}
 \end{figure}
 
-For a \emph{CEP} engine, it is also common to measure the queuing delay of events \cite{Wu06} once they arrive at the system as a metric for the scalablility of the systems. In \cref{fig:queue} we compare the average queuing delay of tasks for A-BI, A-BD, M-BI and M-BD after running them for 1 hour (Because BCHD does not process tasks one task at a time, the concept of queuing delay is irrelevant). We can see that monolithic-SC suffers from queuing delays with less than 10 tasks/second. On the other hand, with Auction-SC, even for BD, we do not observe queuing delays for up to 50 tasks/second.
+For a \emph{CEP} engine, it is also common to measure the queuing delay of events \cite{Wu06} once they arrive at the system as a metric for the scalablility of the systems. In \cref{fig:queue} we compare the average queuing delay of tasks for A-BI, A-BD, M-BI and M-BD after running them for 1 hour (because BCHD does not process tasks one at a time, the concept of queuing delay is irrelevant). We can see that monolithic-SC suffers from queuing delays with less than 10 tasks/second. On the other hand, with Auction-SC, even for BD, we do not observe queuing delays for up to 50 tasks/second.
 
 \begin{figure}[h]
 	\centering
@@ -202,7 +200,7 @@ For a \emph{CEP} engine, it is also common to measure the queuing delay of event
 	\caption{Average queuing delay}\label{fig:queue}
 \end{figure}
 
-Earlier, we explained that with BCHD, as task has to wait in a queue for the server to finish processing an earlier batch. Depending, on the batching interval, the negative effect of batching can propagate over time. For example, if we start with a batching interval of 1 second while having a task arrival rate of 10 tasks/second, the first batch will run with \textasciitilde 10 tasks. If processing the first batch takes 2 seconds, by the time we want to process the second batch \textasciitilde 20 tasks have been queued and have to be process. Consequently, the second batch will take longer than two seconds and so on so forth. In \cref{fig:bs} we run BCHD with a task arrival rate of 10 tasks/second. We measure the following three metrics for different batches over time: (1) the number of tasks per batch, (2) the processing time of each batch and (3) the average delay of each task before its processed (i.e., the duration between the time the task arrives in the system and the time its processing starts). \cref{fig:bs} shows how the negative effects of batching propagates over time.
+Earlier, we explained that with BCHD, a task has to wait in a queue for the server to finish processing an earlier batch. Depending on the batching interval, the negative effect of batching can propagate over time. For example, if we start with a batching interval of 1 second while having a task arrival rate of 10 tasks/second, the first batch will run with \textasciitilde 10 tasks. If processing the first batch takes 2 seconds, by the time we want to process the second batch \textasciitilde 20 tasks have been queued and have to be process. Consequently, the second batch will take longer than 2 seconds and so on so forth. In \cref{fig:bs} we run BCHD with a task arrival rate of 10 tasks/second. We measure the following three metrics for different batches over time: (1) the number of tasks per batch, (2) the processing time of each batch and (3) the average delay of each task before it is processed (i.e., the duration between the time the task arrives in the system and the time its processing starts). \cref{fig:bs} shows how the negative effects of batching propagates over time.\\
 
 \begin{figure}[h]
     \centering
@@ -223,7 +221,7 @@ Earlier, we explained that with BCHD, as task has to wait in a queue for the ser
     \label{fig:bs}
 \end{figure}
 
-\cref{fig:bss} shows the same three metrics when varying the task arrival rate. As it can be seen, for task arrival rates smaller then 10 tasks/second, the processing time of each batch doesn't change over time. However, for a task arrival rate of only 10 tasks/second, BCHD can no longer scale.
+\cref{fig:bss} shows the same three metrics when varying the task arrival rate. As it can be seen, for task arrival rates smaller then 10 tasks/second, the processing time of each batch does not change over time. However, for a task arrival rate of only 10 tasks/second, BCHD can no longer scale.
 
 \begin{figure}[h]
     \centering
@@ -244,7 +242,7 @@ Earlier, we explained that with BCHD, as task has to wait in a queue for the ser
     \label{fig:bss}
 \end{figure}
 
-To provide a more practical perspective, in \cref{fig:req} we compare the scalability of different approaches given the current requirements of a ride sharing application in New York City \cite{NYCTaxi}. As shown, while M-BD, M-BI and BCHD cannot satisfy the current requirements, Auction-SC can scale much higher than what currently is needed.
+To provide a more practical perspective, in \cref{fig:req} we compare the scalability of different approaches given the current minimum requirements of a ride sharing application in New York City \cite{NYCTaxi}. As shown, while M-BD, M-BI and BCHD cannot satisfy the current requirements, Auction-SC can scale much higher than what currently is needed.
 
 \begin{figure}[h]
 	\centering
@@ -253,7 +251,7 @@ To provide a more practical perspective, in \cref{fig:req} we compare the scalab
 	\caption{Real-world Scalability Requirements}\label{fig:req}
 \end{figure}
 
-To summarize the results of our experiments, we showed that when SC bidding rules are used, the quality of the assignment is much higher as compared to when BCHD or a non-SC rule is used. The consideration of scheduling at the time a task is being matched is the main reason for the better overall assignments. When running on a monolithic SC-Server, neither one of bidding rules can scale. Furthermore, the time required to process a single task increases linearly as more workers are added to the system except for Auction-SC. On the other hand , Auction-AC can afford to execute complex SC bidding rules, resulting in a very high quality assignment. Finally, BD incurs higher delay than BI but results in higher completion rates (\cref{fig:quality,fig:emd_bi}). Users of Auction-SC can choose between BD and BI to balance their needs for assignment quality and efficiency.
+To summarize the results of our experiments, we showed that when SC bidding rules are used, the quality of the assignment is much higher as compared to when BCHD or a non-SC rule is used. The immediate assignment of tasks along with consideration of scheduling at the time a task is being matched are the main reasons for the better overall assignments. When running on a monolithic SC-Server, none of the bidding rules can scale. Furthermore, the time required to process a single task increases linearly as more workers are added to the system for BCHD and monolithic-SC. On the other hand , Auction-AC can afford to execute complex SC bidding rules, resulting in a very high quality assignment. Finally, BD incurs higher delay than BI but results in higher completion rates (\cref{fig:quality,fig:emd_bi}). Users of Auction-SC can choose between BD and BI to balance their needs for assignment quality and efficiency.
 %\cref{tab:summary} shows the summary of our experimental results.
 
 %\begin{table*}
