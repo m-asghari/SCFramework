@@ -63,13 +63,17 @@ In this section we evaluate the quality of the assignments using different real-
 
 \begin{figure}[h]
     \centering
-    \subfigure[Flickr]{
-        \label{fig:quality_real}
-        \includegraphics[width = 0.45\columnwidth]{figures/quality_real.jpg}
+    \subfigure[Gowalla]{
+        \label{fig:gowalla}
+        \includegraphics[width = 0.45\columnwidth]{figures/gowalla.eps}
+    }
+    \subfigure[Foursquare]{
+        \label{fig:foursquare}
+        \includegraphics[width = 0.45\columnwidth]{figures/foursquare.eps}
     }
     \subfigure[Synthetic]{
-        \label{fig:quality_syn}
-        \includegraphics[width = 0.45\columnwidth]{figures/quality_syn.jpg}
+        \label{fig:syn}
+        \includegraphics[width = 0.45\columnwidth]{figures/syn.eps}
     }
     \vspace{-0.15in}
     \caption{Assignment Quality of Real-Time Approaches}
@@ -80,29 +84,29 @@ In this section we evaluate the quality of the assignments using different real-
 
 \begin{figure}[h]
     \centering
-    \subfigure[Rnd]{
-        \label{fig:rnd_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/rnd.jpg}
-    }
-    \subfigure[Rnk]{
+    \subfigure[RNK]{
         \label{fig:rnk_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/rnk.jpg}
+        \includegraphics[width = 0.45\columnwidth]{figures/rnk.eps}
     }
     \subfigure[MFT]{
         \label{fig:mft_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/mft.jpg}
+        \includegraphics[width = 0.45\columnwidth]{figures/mft.eps}
     }
     \subfigure[NN]{
         \label{fig:nn_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/nn.jpg}
+        \includegraphics[width = 0.45\columnwidth]{figures/nn.eps}
     }
     \subfigure[BI]{
         \label{fig:bi_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/bi.jpg}
+        \includegraphics[width = 0.45\columnwidth]{figures/bi.eps}
     }
     \subfigure[BD]{
         \label{fig:emd_comp}
-        \includegraphics[width = 0.45\columnwidth]{figures/emd.jpg}
+        \includegraphics[width = 0.45\columnwidth]{figures/emd.eps}
+    }
+    \subfigure[BCHD]{
+        \label{fig:bchd_comp}
+        \includegraphics[width = 0.45\columnwidth]{figures/bchd.eps}
     }
     \vspace{-0.15in}
     \caption{\small{Assignment Profile-Varying Worker/Task Arrival Rates}}
@@ -113,27 +117,30 @@ In order to study the effect of temporal parameters of SC, we ran several experi
 
 \begin{figure}[h]
 	\centering
-	\subfigure[BI Vs. NN]{
-        \label{fig:bi_nn}
-        \includegraphics[width = 0.45\columnwidth]{figures/bi_nn.jpg}
-    }
-    \subfigure[BD Vs. NN]{
-        \label{fig:emd_nn}
-        \includegraphics[width = 0.45\columnwidth]{figures/emd_nn.jpg}
-    }
-    \subfigure[BD Vs. BI]{
-        \label{fig:emd_bi}
-        \includegraphics[width = 0.45\columnwidth]{figures/emd_bi.jpg}
-    }
-    \vspace{-0.15in}
-	\caption{\small{Assignment Difference-Varying Worker/Task Arrival Rates}}\label{fig:rate_comp}
+	\includegraphics[width = 0.65\columnwidth]{figures/bi_nn.eps}
+	\vspace{-0.1in}
+	\caption{Assignment Difference of BI Vs. NN}\label{fig:bi_nn}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 0.65\columnwidth]{figures/bi_bchd.eps}
+	\vspace{-0.1in}
+	\caption{Assignment Difference of BI Vs. BCHD}\label{fig:bi_bchd}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width = 0.65\columnwidth]{figures/emd_bi.eps}
+	\vspace{-0.1in}
+	\caption{Assignment Difference of BD Vs. BI}\label{fig:emd_bi}
 \end{figure}
 
 To better evaluate the leading real-time approaches, NN, BI and BD, in \cref{fig:rate_comp} we performed a pair-wise comparison by taking their task completion rates. For example, \cref{fig:bi_nn} shows the difference between BI and NN. We observe that these three approaches perform similarly at the two extreme cases discussed in \cref{fig:tw_rate}, i.e., high task-low worker and low task-high worker. BI and BD outperform NN up to 30\% when the problem is more complex, i.e., outside the extreme cases. An interesting observation in \cref{fig:bi_nn,fig:emd_nn} is that BI and BD outperform NN by a much larger margin at scale (higher $t_{rate}$ and $w_{rate}$). The reason is that with higher higher $t_{rate}$ and $w_{rate}$ more workers are moving around and more tasks come and leave so in general the spatiotemporal dynamism of the system increases. BI and BD cope with the dynamism by guaranteeing a task gets assigned to worker that can complete it. On the contrary, NN ignores the schedule of a worker during matching and this becomes more important as there is more dynamism in the system.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.25]{figures/bi_abi.jpg}
+	\includegraphics[width = 0.65\columnwidth]{figures/bi_abi.eps}
 	\vspace{-0.1in}
 	\caption{Assignment Difference of BI Vs. ApproxBI}\label{fig:bi_abi}
 \end{figure}
@@ -144,18 +151,9 @@ The next set of experiments compare the effect of the spatial distribution of ta
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.25]{figures/dists.jpg}
+	\includegraphics[width=0.75\columnwidth]{figures/dists.eps}
 	\vspace{-0.1in}
 	\caption{Assignment Difference-Varying Distribution}\label{fig:dists}
-\end{figure}
-
-The final set of experiments regarding assignment quality, compare bathed assignment with online assignment results. For batched assignment we used the LALS algorithm from \cite{Deng15} \footnote{The reported runtimes in \cite{Deng15} outperform those of \cite{Chen15}}.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.25]{figures/bi_lals.jpg}
-	\vspace{-0.1in}
-	\caption{Assignment Difference of BI Vs. LALS}\label{fig:bi_lals}
 \end{figure}
 
 Earlier we explained for some use cases (e.g., Uber), batched assignment does not even satisfy application requirements. Nevertheless, the results in \cref{fig:bi_lals} show even if non real-time assignments are tolerable, the quality of batched assignment is not as good as the online assignment. One reason is that the LALS algorithm performs the matching phase and then attempts to schedule tasks for their matched workers. All tasks that could not be scheduled for their matched workers, will go back to the matching phase and the process continues until all tasks are scheduled or there is no more worker to match with a task. When performing the matching, the schedule of the worker is not considered and hence a task might end up getting matched to and scheduled for a worker that was not the best worker. This in turn, can lower the chances of that worker to get assigned to a new task in the future. The second reason is that while a task is waiting at the server to get processed with the next batch, depending on the length of the batching time interval, it will lose some portion of its availability time which in turn, can lower the chances of the task fitting a worker's schedule.
@@ -168,23 +166,27 @@ We can measure the scalability of SC systems by their throughput: the number of 
 
 \begin{figure}[h]
     \centering
-    \subfigure[\emph{\small{wRate = 1 worker/min}}]{
-        \label{fig:runtime_50}
-        \includegraphics[width = 0.45\columnwidth]{figures/run_time_50.jpg}
+    \subfigure[M-BI]{
+        \label{fig:runtime_mbi}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_mbi.eps}
     }
-    \subfigure[\emph{\small{wRate = 2 worker/min}}]{
-        \label{fig:runtime_100}
-        \includegraphics[width = 0.45\columnwidth]{figures/run_time_100.jpg}
+    \subfigure[A-BI]{
+        \label{fig:runtime_abi}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_abi.eps}
     }
-    \subfigure[\emph{\small{wRate = 4 worker/min}}]{
-        \label{fig:runtime_200}
-        \includegraphics[width = 0.45\columnwidth]{figures/run_time_200.jpg}
+    \subfigure[M-BD]{
+        \label{fig:runtime_mbd}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_mbd.eps}
     }
-    \subfigure[\emph{\small{wRate = 8 worker/min}}]{
-        \label{fig:runtime_400}
-        \includegraphics[width = 0.45\columnwidth]{figures/run_time_400.jpg}
+    \subfigure[A-BD]{
+        \label{fig:runtime_abd}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_abd.eps}
     }
-       \vspace{-0.15in}
+    \subfigure[BCHD]{
+        \label{fig:runtime_bchd}
+        \includegraphics[width = 0.45\columnwidth]{figures/run_time_bchd.eps}
+    }
+    \vspace{-0.15in}
     \caption{Average processing time for a single task}
     \label{fig:runtime}
 \end{figure}
@@ -192,23 +194,53 @@ We can measure the scalability of SC systems by their throughput: the number of 
 For a \emph{CEP} engine, it is also common to measure the queuing delay of events \cite{Wu06} once they arrive at the system as a metric for the scalablility of the systems. In \cref{fig:queue} we compare the average queuing delay of tasks in the two architectures after running them for 1 hour. We can see that the centralized system suffers from queuing delays with less than 10 tasks/second. On the other hand, with Auction-SC, even for BD, we do not observe queuing delays for up to 500 tasks/second. To provide a more practical perspective, in \cref{fig:req} we compare the scalability of the centralized approach with Auction-SC given the current requirements of a ride sharing application in New York City \cite{NYCTaxi}, for both BI and BD bidding rules. As shown, while a centralized server is not able to satisfy the current requirements, Auction-SC can scale orders of magnitudes higher than what currently is needed. \cref{fig:queue_auc} also shows that BD incurs higher delay than BI but results in higher completion rates (\cref{fig:quality,fig:rate_comp}). Users of Auction-SC can choose between BD and BI to balance their needs for assignment quality and efficiency.
 
 \begin{figure}[h]
+	\centering
+	\includegraphics[width = 0.75\columnwidth]{figures/queue.eps}
+	\vspace{-0.1in}
+	\caption{Average queuing delay}\label{fig:queue}
+\end{figure}
+
+\begin{figure}[h]
     \centering
-    \subfigure[\emph{\small{Centralized}}]{
-        \label{fig:queue_cent}
-        \includegraphics[width = 0.65\columnwidth]{figures/queue_cent.jpg}
+    \subfigure[Tasks per Batch]{
+        \label{fig:bs_tpb}
+        \includegraphics[width = 0.45\columnwidth]{figures/bs_tpb.eps}
     }
-    \subfigure[\emph{\small{Auction-SC}}]{
-        \label{fig:queue_auc}
-        \includegraphics[width = 0.65\columnwidth]{figures/queue_auc.jpg}
+    \subfigure[Batch Processing Time]{
+        \label{fig:bs_bpt}
+        \includegraphics[width = 0.45\columnwidth]{figures/bs_bpt.eps}
+    }
+    \subfigure[Task Avg Delay per Batch]{
+        \label{fig:bs_tad}
+        \includegraphics[width = 0.45\columnwidth]{figures/bs_tad.eps}
     }
     \vspace{-0.15in}
-    \caption{Average queuing delay}
-    \label{fig:queue}
+    \caption{BCHD Scalability ($tRate = 10 task/minute$)}
+    \label{fig:runtime}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \subfigure[Tasks per Batch]{
+        \label{fig:bs_tpb}
+        \includegraphics[width = 0.45\columnwidth]{figures/bss_tpb.eps}
+    }
+    \subfigure[Batch Processing Time]{
+        \label{fig:bs_bpt}
+        \includegraphics[width = 0.45\columnwidth]{figures/bss_bpt.eps}
+    }
+    \subfigure[Task Avg Delay per Batch]{
+        \label{fig:bs_tad}
+        \includegraphics[width = 0.45\columnwidth]{figures/bss_tad.eps}
+    }
+    \vspace{-0.15in}
+    \caption{BCHD Scalability}
+    \label{fig:runtime}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.25]{figures/scale_req.jpg}
+	\includegraphics[width = 0.75\columnwidth]{figures/scale_req.eps}
 	\vspace{-0.1in}
 	\caption{Real-world Scalability Requirements}\label{fig:req}
 \end{figure}
