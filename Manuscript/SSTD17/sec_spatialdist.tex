@@ -1,0 +1,56 @@
+\section{Non-Clairvoyant Algorithm}
+
+In previous sections, we were assuming there existed a clairvoyant server which had a global knowledge of future tasks and workers. However, in a real-world spatial crowdsourcing environment, you cannot make this assumption. The server will know about different attributes of a task at the same time the task is released. Also, at each point of time, the server knows only about the workers that are available at that time. In such environment, once a task gets released the server has to make a decision whether to assign the task to a worker or not. We assume that the server's decision is irrevocable. Clearly it is not possible for the server to make these decision such that we end up with an optimal assignment in the end.\\
+
+In this section we propose a greedy algorithm for the server to assign a task to a worker once the task arrives. Since this algorithm makes the assignments as soon as a task arrives and on the fly, we call it the \emph{OnlineTASC} algorithm. The general idea of OnlineTASC is to distribute the workers within the entire region such that the spatial distribution of \emph{currently available} workers ($S_W$) is as close as possible to the \emph{overall} spatial distribution of tasks ($S_T$). In other words, the server should attempt to put more available workers in regions where there's a higher chance for a task to show up. Therefore, the server needs to know $S_T$. For this, it can either start with a uniform distribution and update it as new tasks arrive or we can assume the server has $S_T$ as a priori. As for the spatial distributions, we assume we have a grid on the entire region. For each cell $i$ in the grid, we assign the probability $P(i)$ to this cell as the likeliness of a spatial entity (task or worker) being located in cell $i$.\\
+
+We can summarize the general heuristic of OnlineTASC as follows: Upon arrival of task $t$, among all the workers \emph{eligible} to perform $t$, we assign $t$ to the worker $w$ such that moving $w$ from $w.l$ to $t.l$ will result in minimum difference between $S_W$ and $S_T$. This suggests that we need to have a measure which tells us how different two spatial distributions are. With the way we model our spatial distributions, we can think of them as \emph{discrete probability distributions}. This allows us to use some concepts widely used in the field of information theory to measure the distance between two probability distributions.
+
+\begin{definition}[Kullback-Leibler Divergence]
+\label{def:KLD}
+Let $P_1$ and $P_2$ be two discrete probability distributions. The \emph{KL} divergence \cite{Kullback51} of $P_2$ from $P_1$ is defined as:
+\begin{equation*}
+D_{KL}\left( P_1 \parallel P_2 \right) = \sum_i P_1(i) \log \frac{P_1(i)}{P_2(i)}
+\end{equation*}
+\end{definition}
+
+The advantage of $D_{KL}$ is that it is simple to compute which is necessary in our scenario where we want close to real-time decisions. On the other hand $D_{KL}$is a non-symmetric measure meaning that $D_{KL}(P_1 \parallel P_2) \neq D_{KL}(P_2 \parallel P_1)$. In addition, $D_{KL}(P_1 \parallel P_2)$ is only defined when we have $P_2(i) = 0 \implies P_1(i) = 0$. However, this is not the case with $S_W$ and $S_T$. Therefore, we need a measure that overcomes this problem yet remains simple to compute.
+
+\begin{definition}[Jensen-Shannon Divergence]
+Let $P_1$ and $P_2$ be two discrete probability distributions and $\pi_1, \pi_2 \geq 0, \pi_1 + \pi_2 = 1$ be the relative weights for distributions $P_1()$ and $P_2$, respectively. The \emph{JS} divergence \cite{Lin91} of $P_2$ from $P_1$ is defined as:
+\begin{equation*}
+D_{JS}\left( P_1 \parallel P_2 \right) = H \left( \pi_1P_1 + \pi_2P_2 \right) - \pi_1H\left( P_1 \right) - \pi_2H\left( P_2 \right)
+\end{equation*}
+where $H()$ is the Shannon entropy \cite{Shannon48}.
+\end{definition}
+
+For two distributions of similar importance, we set $\pi_1 = \pi_2 = \frac{1}{2}$. Then we will have:
+\begin{equation*}
+D_{JS}\left( P_1 \parallel P_2 \right) = \frac{1}{2}D_{KL} \left( P_1 \parallel Q \right) + \frac{1}{2}D_{KL} \left( P_2 \parallel Q \right)
+\end{equation*}
+where $Q = \frac{1}{2} \left( P_1 + P_2 \right)$.\\
+
+\cref{algo:OnlineTASC} outlines the process of assigning a task $t$ to a worker once $t$ arrives. It is important to note that, when computing the spatial distribution of the workers (line 3), we do not only consider the presence of a worker in a specific region. What we really care about is the availability of the workers in different regions. Therefore, a worker that is willing to accept 2 more tasks, is twice as important as a worker who can take only 1 more task. Therefore, for each worker $w$ in a specific region, we need to consider the value $m = w.max - \left\vert w.T \right\vert$. Also, in line 4, we sort the workers based on their distance to $t$. The reason is that if we assume the current distribution of workers is relatively close to $S_T$, we can claim that a rather small movement in the location of a single worker will most probably still keep $S_W$ close to $S_T$. In this way, we can minimize the number of times the algorithm passes the condition of the if clause on line 7. 
+
+\begin{algorithm}
+\caption{OnlineTASC($W, S_T, t$)}
+\label{algo:OnlineTASC}
+\begin{algorithmic}[1]
+\REQUIRE $W$ is the set of currently available workers, $S_T$ is the spatial distribution of tasks and $t$ is a task the has just released
+\ENSURE Either $w \in W$ as the worker task $t$ should be assigned to or \emph{null} if no worker is selected
+\STATE $w_{selected} = $ \emph{null}
+\STATE $min = \infty$
+\STATE $S_W = $ Spatial Distribution of current workers
+\STATE $W_{sorted} = $ Sort $W$ based their distance to $t$.
+\FOR{$w \in W_{sorted}$}
+	\STATE $Q_w = $ Modify $S_W$ by moving $w$ from $w.l$ to $t.l$
+	\IF{$D_{JS}\left( Q_w \parallel S_T \right) < min$}
+		\IF{IsPotentialSubset($w.T \cup t, w$)}
+			\STATE $min = \delta$
+			\STATE $w_{selected} = w$
+		\ENDIF
+	\ENDIF
+\ENDFOR
+\RETURN $w_{selected}$
+\end{algorithmic}
+\end{algorithm}
