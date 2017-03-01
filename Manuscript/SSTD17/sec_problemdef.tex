@@ -1,7 +1,7 @@
 \section{Preliminaries}
 \label{sec:prelim}
 
-In this section, we define the terminologies used in the paper and give a formal definition of the problem under consideration. In addition, we analyze the complexity of the problem and its hardness.
+In this section, we define the terminologies used in the paper and provide a formal definition of the problem under consideration. In addition, we analyze the complexity of the problem and its hardness.
 
 \subsection{Problem Definition}
 \label{subsec:problemdef}
@@ -18,7 +18,7 @@ It should be pointed out that in a spatial crowdsourcing environment, a spatial 
 A worker w shown as $\left\langle l, T, max, [s, e] \right\rangle$ is any entity, e.g., a person, willing to perform spatial tasks. We show the current location of the worker by w.l. Each worker has a list of tasks assigned to it, w.T, and a maximum number of tasks it is willing to perform, w.max. Also w.s and w.e show the availability of the worker such that the worker is available during the time interval $\left( w.s, w.e \right]$.
 \end{definition}
 
-Throughout the paper we assume every worker moves one unit of length per unit of time. Therefore, we can assume that $distance \left( a,b \right)$ is also the \emph{time} required to move from point $a$ to point $b$.
+Throughout the paper, we assume every worker moves one unit of length per unit of time. Therefore, we can assume that $distance \left( a,b \right)$ is also the \emph{time} required to move from point $a$ to point $b$.
 
 \begin{definition} [Schedule]
 We call an ordered list of tasks a schedule. We show s as $\left\langle t_1, ..., t_n \right\rangle$ where n is the number of tasks in s. If we show the $i^{th}$ task in s with $s^i$, we say worker w is able to perform schedule s if and only if:
@@ -37,7 +37,9 @@ Value(M) = \vert M \vert
 \end{equation*}
 \end{definition}
 
-\noindent A matching $M$ is valid if and only if, for every worker $w$, there exists a schedule $s_w$, such that $(w, t_i) \in M \implies t_i \in s_w$. 
+\begin{definition} [Valid Matching]
+A matching $M$ is valid if and only if, for every worker $w$, there exists a schedule $s_w$, such that $(w, t_i) \in M \implies t_i \in s_w$. 
+\end{definition}
 
 Now we can formally define the Task Assignment in Spatial Crowdsourcing (TASC) as follows:
 
@@ -47,7 +49,7 @@ Given a set of workers $W$, a set of spatial tasks $T$ and a cost function $d: \
 
 It is important to note that with task assignment in SC, the goal is to find a \textit{valid matching}. This means that in addition to finding a \textit{matching} between tasks and workers, the SC-Server has to also find a \textit{schedule} for each worker to perform the tasks. Throughout this paper we use the terms \textit{matching phase} and \textit{scheduling phase} to refer to the two different aspects of task assignment in SC.\\
 
-In a real life scenario, the SC-Server only finds out about the exact properties of tasks once they are submitted. Similarly, the server does not know when future workers will become available. Consequently, a real-world SC-Server can either process every single task as soon as it becomes available (Online) or periodically wait for a specific duration and process all the tasks that have been submitted during that time (Batched). In this paper we study the \textit{OnlineTASC} problem, where the server processes an incoming task as soon as it is submitted by the requester.\cref{tab:notation} lists the notations we frequently use in this paper.\\
+In a real life scenario, the SC-Server only finds out about the exact properties of tasks once they are submitted. Similarly, the server does not know when future workers will become available. Consequently, a real-world SC-Server can either process every single task as soon as it becomes available (Online) or periodically wait for a specific duration and process all the tasks that have been submitted during that time (Batched). In this paper, we study the \textit{OnlineTASC} problem, where the server processes an incoming task as soon as it is submitted by the requester. \cref{tab:notation} lists the notations we frequently use in this paper.\\
 
 \begin{table}
 \begin{center}
@@ -72,7 +74,7 @@ $w.max$		&	maximum number of tasks worker $w$ \\
 
 Previous studies have shown the TASC problem is NP-Hard \cite{Kazemi13, Deng15}. However, the focus of this study is the OnlineTASC problem and hence, in this section we briefly discuss the complexity of OnlineTASC.\\
 
-In order to analyze online algorithms, where each request is processed without being able to see the future, we use a method named \textit{competitive analysis}\cite{Sleator85}. With this method, the performance of an online algorithm is compared to the performance of an optimal offline algorithm that has knowledge of future events. For the TASC problem, we measure the performance of each algorithm based on the number of assigned task. Assuming we show the performance of algorithm $\mathcal{A}$ on input $\mathcal{I}$ as $\vert \mathcal{A}\left( \mathcal{I} \right) \vert$ we can define \textit{competitive ratio} of an algorithm as:
+In order to analyze online algorithms, where each request is processed without knowing the future, we use a method named \textit{competitive analysis}\cite{Sleator85}. With this method, the performance of an online algorithm is compared to the performance of an optimal offline algorithm (clairvoyant) that has knowledge of future events. For the TASC problem, we measure the performance of each algorithm based on the number of assigned task. Assuming we show the performance of algorithm $\mathcal{A}$ on input $\mathcal{I}$ as $\vert \mathcal{A}\left( \mathcal{I} \right) \vert$ we can define \textit{competitive ratio} of an algorithm as:
 
 \begin{definition} [Competitive Ratio]
 For an online algorithm $\mathcal{A}$, we say $\mathcal{A}$ is c-competitive for some $c > 0$, if and only if:
@@ -92,7 +94,7 @@ There does not exist a deterministic online algorithm for the OnlineTASC problem
 \begin{proof}
 Suppose there exists an algorithm $\mathcal{A}$ that is \textit{c-competitive} for some $c \geq 0$. To prove no such algorithm exists, all we need to do is to prove there is at least one possible input ($\mathcal{I}$), for which $\frac{\vert \mathcal{A}(\mathcal{I}) \vert}{\vert \mathcal{A}^{*}(\mathcal{I}) \vert}$ is unboundedly small. For analyzing the \textit{competitive ratio} of a deterministic online algorithm $\mathcal{A}$, it is assumed that there exist an adversary which knows every decision $\mathcal{A}$ makes and creates an input knowing what decisions $\mathcal{A}$ is going to make. Here we show, how an adversary can generate an input for which the competitive ratio of any algorithm is unboundadly small. For simplicity, we only consider points on the x-axis and assume there is only one worker at point $x=0$ in the beginning.\\
 
-The input starts with $t_1$ such that $t_1 = \left\langle 5, \left[0, 5 \right] \right\rangle$ (\cref{fig:prooft0}; a task at point $5$ with release time $0$ and deadline $5$). The algorithm can make two choices for the worker. (1) move towards $t_1$ or (2) stay still (In theory it can also make the worker  to move away from $t_1$ which in the context of this proof would be similar to case (2)). If choice 1 is selected, the adversary can generate the input such that at time $t = 2$, tasks $t_2, ... t_n$ are all submitted with the exact same properties as $\left\langle -4, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft21}). Considering that at the release time of $t2, ..., t_n$ the worker is at point $x=2$, it does not have enough time to get to $t_2, ..., t_n$ before their deadline. However, an optimal offline algorithm would have known about $t_2, ..., t_n$ in advance and would have ignored $t_1$ in order to be able to complete $n-1$ tasks instead. In other words, $\vert \mathcal{A} \vert = 1$ where $\vert \mathcal{A}^{*} \vert = n - 1$ and the ratio could be unboundedly small by increasing $n$. Therefore, we contradicted the assumption that $\mathcal{A}$ is \textit{c-competitive}. A similar argument can be made if choice 2 was selected by the algorithm by releasing tasks $t_2, ...,t_n$ with properties as $\left\langle 7, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft22}).
+The input starts with $t_1$ such that $t_1 = \left\langle 5, \left[0, 5 \right] \right\rangle$ (\cref{fig:prooft0}; a task at point $5$ with release time $0$ and deadline $5$). The algorithm can make two choices for the worker: (1) move towards $t_1$ or (2) stay still (in theory it can also make the worker  to move away from $t_1$ which in the context of this proof would be similar to case (2)). If choice 1 is selected, the adversary can generate the input such that at time $t = 2$, tasks $t_2, ... t_n$ are all submitted with the exact same properties as $\left\langle -4, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft21}). Considering that at the release time of $t2, ..., t_n$ the worker is at point $x=2$, it does not have enough time to get to $t_2, ..., t_n$ before their deadline. However, an optimal offline algorithm would have known about $t_2, ..., t_n$ in advance and would have ignored $t_1$ in order to be able to complete $n-1$ tasks instead. In other words, $\vert \mathcal{A} \vert = 1$ where $\vert \mathcal{A}^{*} \vert = n - 1$ and the ratio could be unboundedly small by increasing $n$. Therefore, we contradicted the assumption that $\mathcal{A}$ is \textit{c-competitive}. A similar argument can be made if choice 2 was selected by the algorithm by releasing tasks $t_2, ...,t_n$ with properties as $\left\langle 7, \left[2, 7 \right] \right\rangle$ (\cref{fig:prooft22}).
 \end{proof}
 
 \begin{figure}[h]
