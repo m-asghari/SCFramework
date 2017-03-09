@@ -21,16 +21,29 @@ In this section we introduce Auction-SC which has neither shortcomings and gener
 
 %In a centralized implementation, when a new task arrives, the SC-Server has to perform the scheduling phase for all eligible workers. This means that it has to compute a potential best schedule for those workers considering that the new task is assigned to them. When presented with a large number of workers this can become computationally expensive. In this paper we propose an auction-based framework, Auction-SC, that overcomes the high computation cost of scheduling by distributing the process among workers. In the remainder of this section we discuss the details of Auction-SC and analyze the computation and communication costs of it compared to a centralized approach.
 
-Auction methods have been effectively used for assignment problems in dynamic multi-agent environments \cite{Mehta05,Lagoudakis04}. The main advantage of auction methods are their simplicity and the fact that they allow for a decentralized implementation. Auction-SC considers workers as bidders and tasks as goods. Furthermore, the SC-Server plays the role of an auctioneer in Auction-SC. \cref{fig:dispatch} explains how tasks are dispatched to workers at a very high level. Once a requester submits a new task to the SC-Server (auctioneer), the server presents the task to the workers (bidders). However, broadcasting every incoming task to all available workers incurs a large communication cost on the system. Auction-SC lowers the communication cost by only sending any incoming task to the \textit{eligible workers} that are define as:
+Auction methods have been effectively used for assignment problems in dynamic multi-agent environments \cite{Mehta05,Lagoudakis04}. The main advantage of auction methods are their simplicity and the fact that they allow for a decentralized implementation. Auction-SC considers workers as bidders and tasks as goods. Furthermore, the SC-Server plays the role of an auctioneer in Auction-SC. \cref{fig:dispatch} explains how tasks are dispatched to workers at a very high level:\\
+(1) Everything starts with a requester submitting a new spatial task to the SC-Server.\\
+(2) Once the SC-Server receives a new task, it notifies the available workers about the new task.\\
+(3) Each worker independently computes his bid by only considering the new task and his current schedule and submits a bid to the SC-Server.\\
+(4) Once all the bids are received, the SC-Server assigns the task to the worker with the optimal bid.\\
+
+Broadcasting every incoming task to all available workers incurs a large communication cost on the system. Auction-SC lowers the communication cost by only sending any incoming task to the \textit{eligible workers} that are define as:
 
 \begin{definition} [Eligible Worker]
+\label{def:elig}
 An available worker w is said to be eligible for performing a newly released task t, if and only if:
 \begin{equation*}
 distance(w, t) \leq w.d - t.r \wedge distance(w, t) \leq t.d - t.r
 \end{equation*}
 \end{definition}
 
-\noindent In other words, an available worker \textit{w} is eligible for performing task \textit{t}, if it has enough time to reach the location of \textit{t} before either \textit{t} expires or \textit{w} leaves the system. Because the server is not responsible for performing scheduling for workers, it does not need to know their exact location. With Auction-SC, the SC-Server maintains a spatial grid on the location of the workers and only keeps track of the workers' cell. Upon arrival of a task $t$, the server first finds the cells that are within $t.d$ distance of the task (Shaded cells in \cref{fig:dispatch}) and broadcasts the new task only to workers within those cells.\\
+\noindent This means an available worker \textit{w} is eligible for performing task \textit{t}, if it has enough time to reach the location of \textit{t} before either \textit{t} expires or \textit{w} leaves the system. Ideally, $distance(w, t)$ in \cref{def:elig} is equal to the road network distance between $w.l$ and $t.l$. However, computing the network distance for all workers is time consuming and hence, in Auction-SC, we use the Euclidean distance between $w.l$ and $t.l$ as a lower bound to their network distance. Furthermore, maintaining the exact location of every worker with a spatial index (e.g., R-Tree) while the workers' locations are constantly changing is too costly and cannot be done in real-time \cite{Akdogan14}. Consequently, with Auction-SC, the SC-Server maintains a spatial grid on the location of the workers and only keeps track of the workers' cell. If we assume that worker $w$ is in cell $c_i$ of the spatial grid, then $distance(w, t)$ is computed as:
+
+\begin{equation*}
+distance(w, t) = distance(p^*, t) \ \mathrm{s.t.} \ p^* = \min_{p\ in\ c_i} \left\lbrace distance(p, t) \right\rbrace 
+\end{equation*}
+
+\noindent In other words, if any point in cell $c_i$ satisfies the constraints of \cref{def:elig}, all the workers in $c_i$ are considered as eligible workers. Therefore, upon arrival of a task $t$, the server first finds the cells that are within $t.d$ distance of the task (Shaded cells in \cref{fig:dispatch}) and broadcasts the new task only to workers within those cells.\\
 
 \begin{figure}[h]
     \centering
@@ -40,33 +53,33 @@ distance(w, t) \leq w.d - t.r \wedge distance(w, t) \leq t.d - t.r
     \label{fig:dispatch}
 \end{figure}
 
-Depending on the \textit{bidding rule}, which is common among all workers, each worker computes its own bid and submits the bid to the server. As mentioned earlier, the bid computation process is done by a software installed on the workers cell phone. As a result, the process is the same for all workers and more importantly, it does not require any interaction with the human worker. The bidding process is performed similar to a \textit{sealed-bid auction} where workers simultaneously submit bids and no other workers knows how much the other workers have bid. The SC-Server selects the worker with either the lowest or highest bid (depending on the bidding rule) as the winner and matches the task with the worker.\\
+Once the eligible workers are notified about a new task, depending on the \textit{bidding rule}, which is common among all workers, each worker computes its own bid and submits the bid to the server. As mentioned earlier, the bid computation process is done by a software installed on the workers' cell phone. As a result, the process is the same for all workers and more importantly, it does not require any interaction with the human worker. The bidding process is performed similar to a \textit{sealed-bid auction} where workers simultaneously submit bids and no worker knows how much the other workers have bid. The SC-Server selects the worker with the optimal bid as the winner and matches the task with that worker.\\
 
 \begin{algorithm}
 \caption{OnlineTASC($W, t$)}
 \label{algo:OnlineTASC}
 \begin{algorithmic}[1]
-\REQUIRE $W$ is the set of currently available workers and $t$ is a task the has just released
+\REQUIRE $W$ is the set of currently available workers and $t$ is a task that has just released
 \ENSURE Either $w \in W$ as the worker task $t$ should be assigned to or \emph{null} if no worker is selected
 \STATE $w_{selected} = $ \emph{null}
 \STATE $Bids = \emptyset$
-\FOR{$w \in W_t$} \label{line:loop_start}
-	\STATE $bid = w$.ComputeBid$(t)$ \label{line:compute}
-	\STATE $Bids \leftarrow \left\langle w, bid \right\rangle$
-\ENDFOR \label{line:loop_end}
+\STATE Broadcast $t$ to every $w \in W_t$ \label{line:broadcast}
+\WHILE {$w \in W_t$ has not submitted bid}\label{line:while_start}
+	\STATE $Bids \leftarrow \left\langle w, bid \right\rangle$ \label{line:rec_bid}
+\ENDWHILE \label{line:while_end}
 \STATE $w_{selected} = $ SelectBestBid$(Bids)$ \label{line:select}
 \RETURN $w_{selected}$
 \end{algorithmic}
 \end{algorithm}
 
-\cref{algo:OnlineTASC} outlines the process of assigning an incoming task $t$. $W_t$ in line \ref{line:loop_start} is the set of eligible workers for task \textit{t}. Notice that all the iterations of the \textbf{for} loop in \cref{algo:OnlineTASC} (lines \ref{line:loop_start}-\ref{line:loop_end}) run in parallel. The \emph{ComputeBid()} method (line \ref{line:compute}) that each worker executes depends on the implemented bidding rule. Similarly, the \emph{SelectBestBid()} method (line \ref{line:select}) returns the worker with either the highest or lowest bid. In case of a tie, the \emph{SelectBestBid()} method, randomly selects one worker among the ones with optimal bid.\\
+\cref{algo:OnlineTASC} outlines the process of assigning an incoming task $t$. $W_t$ in line~\ref{line:broadcast} is the set of eligible workers for task \textit{t}. While there are workers who have not submitted their bids yet (lines~\ref{line:while_start}-\ref{line:while_end}), the server will keep accepting bids and adds every received bid to the set $Bids$ (line~\ref{line:rec_bid}). Once all eligible workers submit their bids, the \emph{SelectBestBid()} method (line~\ref{line:select}) returns the worker with the optimal bid. In case of a tie, the \emph{SelectBestBid()} method, randomly selects one worker among the ones with the optimal bid.\\
 
-We end this section with a brief discussion on the communication cost in Auction-SC. As a result of task dispatching and bid submission in Auctions-SC, it seems that the communication cost in this framework will limit its advantages over existing approaches; i.e., batched assignment and monolithic-SC. However, regardless of the approach, there is always going to be some communication cost. In every other approach, the SC-Server is responsible for performing scheduling. Consequently, unlike Auction-SC, the server requires the \textit{exact} location of the workers. As shown in \cite{Akdogan14}, in the presence of only hundreds of moving workers, the update cost of any spatial index is too costly for the SC-Server to afford. Therefore, each time the server needs to perform scheduling for a worker, it needs to request the worker's location which requires communication between the SC-Server and workers. On the other hand, the server in Auction-SC does not require the exact location of the workers and instead, has some communication cost for dispatching tasks and submitting bids. Nevertheless, in our experiments, we do consider the communication cost in Auction-SC and because other approaches fail to discuss their communication model, we ignore the communication cost in other approaches. We still show that Auction-SC scales better than both batched assignment and monolithic-SC.\\
+We end this section with a brief discussion on the communication cost in Auction-SC. As a result of task dispatching and bid submission in Auctions-SC, it seems that the communication cost in this framework will limit its advantages over existing approaches: i.e., batched assignment and monolithic-SC. However, regardless of the approach, there is always going to be some communication cost. In both the batched and online monolithic-SC approaches, the SC-Server is responsible for performing scheduling. To perform scheduling, the server requires the \textit{exact} location of the workers, which means the workers have to constantly communicate with the server to update their locations. At the very least, each time a new task arrives, the server needs to communicate with the eligible workers to get their exact locations. On the other hand, the server in Auction-SC does not require the exact location of the workers as it is not responsible for performing scheduling for the workers. Instead, the server in Auction-SC has some communication cost for dispatching tasks and submitting bids. Nevertheless, in our experiments, we do consider the communication cost in Auction-SC and since other approaches do not discuss their communication model, we ignore the communication cost in other approaches. We still show that Auction-SC scales better than both the batched and the online monolithic-SC approaches.\\
 
 \subsection{Worker's Bid Computation}
 \label{subsec:bidding}
 
-With Auction-SC, every worker computes its bid using a predefined bidding rule. A worker's bid represents how good it is to be matched with the task. When computing a bid for a task, the workers have no knowledge about other tasks that might arrive in the future. Consequently, they have to make a greedy decision based on their current status. First we introduce four simple bidding rules based on heuristics that are used for other problems that seem to be similar to task assignment in SC, hence we call them non-SC rules. These problems do not consider either the spatial or temporal dynamism of SC. We use non-SC rules in the experiments to show the importance of both spatial and temporal aspects of SC. The four non-SC rules used in our experiments are:
+With Auction-SC, every worker computes his bid using a predefined bidding rule. A worker's bid represents how good it is for him to be matched with the task. When computing a bid for a task, the workers have no knowledge about other tasks that might arrive in the future. Consequently, they have to make a greedy decision based on their current status. First we introduce three simple bidding rules based on heuristics that are used for other problems that seem to be similar to task assignment in SC, hence we call them non-SC rules. These problems do not consider either the spatial or temporal dynamism of SC. We use non-SC rules in the experiments to show the importance of both spatial and temporal aspects of SC. The four non-SC rules used in our experiments are:
 
 \noindent\textbf{Ranking (Rnk)}:
 Based on the ideas in \emph{Online Bipartite Matching} \cite{Karp90}, the workers are ranked from 1 to $n$ (the workers' order do not change over time). Each eligible worker submits a bid of value 1 and the SC-Server selects the eligible worker with the lowest rank as the winner. This heuristic does not consider either spatial or temporal aspects of SC.
@@ -77,7 +90,7 @@ Similar to the the \emph{Spatial Matching} problem \cite{Wong07}, for this biddi
 \noindent\textbf{Most Free Time (MFT)}:
 In this bidding rule, based on the ideas in \emph{Online Scheduling} \cite{Lee13}, we give priority to workers that have more time before they leave the system. At each point of time, a worker computes its \emph{free time} as the duration between the time it finishes its current schedule and the time it leaves the system. Each worker submits a bid equal to its \emph{free time} and the SC-Server selects the worker with the highest bid as the winner. This bidding rule only considers the temporal dynamism of SC.
  
-In addition to the four non-SC rules, we propose two bidding rules that consider both spatial and temporal constraints of SC and hence, we call them SC rules. The intuition behind the first bidding rule is that the less time a worker spends completing an incoming task, the higher the chances are that it is available in the future to perform more tasks. Our second SC rule, tends to move workers to areas that there is a higher chance for a task to show up in the future. We describe how workers compute their bids and how the server selects the winner in the following.\\
+In addition to these non-SC rules, we propose two bidding rules that consider both spatial and temporal constraints of SC and hence, we call them SC rules. The intuition behind the first bidding rule is that the less time a worker spends completing an incoming task, the higher the chances are that it is available in the future to perform more tasks. Our second SC rule, tends to move workers to areas that there is a higher chance for a task to show up in the future. We describe how workers compute their bids and how the server selects the winner in the following.\\
 
 %\noindent \textbf{Best Insertion (BI)}: 
 \subsubsection{Best Insertion (BI)}
